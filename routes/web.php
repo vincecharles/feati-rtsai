@@ -1,0 +1,91 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\ProfileController;
+
+Route::get('/', fn () => view('welcome'));
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth','verified'])->name('dashboard');
+
+Route::middleware(['auth'])->group(function () {
+    // Dashboard API routes
+    Route::get('/api/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
+    Route::get('/api/dashboard/statistics', [DashboardController::class, 'getStatistics'])->name('dashboard.statistics');
+
+    // Employee routes
+    Route::resource('employees', EmployeeController::class);
+    Route::post('/employees/{employee}/dependents', [EmployeeController::class,'addDependent'])
+        ->name('employees.dependents.store');
+    Route::delete('/employees/{employee}/dependents/{dependent}', [EmployeeController::class,'removeDependent'])
+        ->name('employees.dependents.destroy');
+
+    // Violation routes
+    Route::resource('violations', App\Http\Controllers\ViolationController::class);
+    Route::post('/violations/{violation}/resolve', [App\Http\Controllers\ViolationController::class, 'resolve'])->name('violations.resolve');
+    Route::get('/api/violations/statistics', [App\Http\Controllers\ViolationController::class, 'getStatistics'])->name('violations.statistics');
+
+    // Student routes
+    Route::resource('students', StudentController::class);
+    Route::get('/api/students/statistics', [StudentController::class, 'getStatistics'])->name('students.statistics');
+    Route::post('/api/students/bulk-action', [StudentController::class, 'bulkAction'])->name('students.bulk-action');
+
+    // Application routes
+    Route::resource('applications', ApplicationController::class);
+    Route::post('/applications/{application}/review', [ApplicationController::class, 'review'])->name('applications.review');
+    Route::get('/api/applications/statistics', [ApplicationController::class, 'getStatistics'])->name('applications.statistics');
+
+    // Event routes
+    Route::resource('events', EventController::class);
+    Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
+    Route::post('/events/{event}/cancel-registration', [EventController::class, 'cancelRegistration'])->name('events.cancel-registration');
+    Route::get('/api/events/statistics', [EventController::class, 'getStatistics'])->name('events.statistics');
+    Route::get('/api/events/upcoming', [EventController::class, 'getUpcomingEvents'])->name('events.upcoming');
+
+    // Reports routes
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/students', [ReportsController::class, 'studentEnrollment'])->name('reports.students');
+    Route::get('/reports/employees', [ReportsController::class, 'employeeReport'])->name('reports.employees');
+    Route::get('/reports/applications', [ReportsController::class, 'applicationReport'])->name('reports.applications');
+    Route::get('/reports/events', [ReportsController::class, 'eventReport'])->name('reports.events');
+    Route::get('/reports/analytics', [ReportsController::class, 'analytics'])->name('reports.analytics');
+
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+require __DIR__.'/student.php';
+
+// API Authentication Routes
+Route::prefix('api/auth')->group(function () {
+    // Registration API
+    Route::post('/register', [App\Http\Controllers\Auth\RegisteredUserController::class, 'apiStore']);
+    Route::get('/check-email', [App\Http\Controllers\Auth\RegisteredUserController::class, 'checkEmail']);
+    Route::get('/roles', [App\Http\Controllers\Auth\RegisteredUserController::class, 'getRoles']);
+    
+    // Login/Logout API
+    Route::post('/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'apiStore']);
+    Route::post('/logout', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'apiDestroy']);
+    Route::get('/session', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'sessionInfo']);
+    
+    // Password Reset API
+    Route::post('/forgot-password', [App\Http\Controllers\Auth\PasswordResetLinkController::class, 'apiStore']);
+    Route::post('/reset-password', [App\Http\Controllers\Auth\NewPasswordController::class, 'apiStore']);
+    Route::post('/validate-token', [App\Http\Controllers\Auth\NewPasswordController::class, 'validateToken']);
+    Route::get('/check-reset-email', [App\Http\Controllers\Auth\PasswordResetLinkController::class, 'checkEmail']);
+    
+    // Password Update API
+    Route::put('/password', [App\Http\Controllers\Auth\PasswordController::class, 'apiUpdate']);
+    Route::post('/check-password-strength', [App\Http\Controllers\Auth\PasswordController::class, 'checkPasswordStrength']);
+    Route::get('/password-requirements', [App\Http\Controllers\Auth\PasswordController::class, 'getPasswordRequirements']);
+});
+

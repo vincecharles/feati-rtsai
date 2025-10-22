@@ -17,8 +17,8 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['role', 'profile'])
-            ->whereHas('profile')
+        $query = User::with('role')
+            ->whereNotNull('student_id')
             ->whereHas('role', function($q) {
                 $q->where('name', 'student');
             });
@@ -29,19 +29,14 @@ class StudentController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('profile', function($profileQuery) use ($search) {
-                      $profileQuery->where('first_name', 'like', "%{$search}%")
-                                  ->orWhere('last_name', 'like', "%{$search}%")
-                                  ->orWhere('employee_number', 'like', "%{$search}%");
-                  });
+                  ->orWhere('student_id', 'like', "%{$search}%")
+                  ->orWhere('program', 'like', "%{$search}%");
             });
         }
 
-        // Filter by department
+        // Filter by department (program for students)
         if ($request->has('department') && $request->department) {
-            $query->whereHas('profile', function($q) use ($request) {
-                $q->where('department', $request->department);
-            });
+            $query->where('program', $request->department);
         }
 
         // Filter by status

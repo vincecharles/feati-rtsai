@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Application Reports -->
+        {{-- Application Reports - Feature Removed
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow">
             <div class="p-6">
                 <div class="flex items-center">
@@ -76,8 +76,9 @@
                 </div>
             </div>
         </div>
+        --}}
 
-        <!-- Event Reports -->
+        {{-- Event Reports - Feature Removed
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow">
             <div class="p-6">
                 <div class="flex items-center">
@@ -97,6 +98,7 @@
                 </div>
             </div>
         </div>
+        --}}
 
         <!-- Disciplinary Reports -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow">
@@ -149,20 +151,20 @@
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">0</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $overviewStats['total_students'] ?? 0 }}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">Total Students</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">0</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $overviewStats['total_employees'] ?? 0 }}</div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">Total Employees</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">0</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Pending Applications</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $overviewStats['active_students'] ?? 0 }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Active Students</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">0</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Active Violations</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $overviewStats['total_violations'] ?? 0 }}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Violations</div>
                 </div>
             </div>
         </div>

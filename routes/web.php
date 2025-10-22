@@ -8,8 +8,15 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/welcome', function () {
+    return view('auth.welcome-splash');
+})->middleware('auth')->name('welcome.splash');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth','verified'])->name('dashboard');
@@ -30,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('violations', App\Http\Controllers\ViolationController::class);
     Route::post('/violations/{violation}/resolve', [App\Http\Controllers\ViolationController::class, 'resolve'])->name('violations.resolve');
     Route::get('/api/violations/statistics', [App\Http\Controllers\ViolationController::class, 'getStatistics'])->name('violations.statistics');
+    Route::get('/api/violations/students', [App\Http\Controllers\ViolationController::class, 'getStudents'])->name('violations.students');
 
     // Student routes
     Route::resource('students', StudentController::class);
@@ -52,8 +60,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/reports/students', [ReportsController::class, 'studentEnrollment'])->name('reports.students');
     Route::get('/reports/employees', [ReportsController::class, 'employeeReport'])->name('reports.employees');
-    Route::get('/reports/applications', [ReportsController::class, 'applicationReport'])->name('reports.applications');
-    Route::get('/reports/events', [ReportsController::class, 'eventReport'])->name('reports.events');
+    Route::get('/reports/violations', [ReportsController::class, 'violationsReport'])->name('reports.violations');
+    // Route::get('/reports/applications', [ReportsController::class, 'applicationReport'])->name('reports.applications');
+    // Route::get('/reports/events', [ReportsController::class, 'eventReport'])->name('reports.events');
     Route::get('/reports/analytics', [ReportsController::class, 'analytics'])->name('reports.analytics');
 
     // Profile routes

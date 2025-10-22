@@ -13,27 +13,21 @@ class Violation extends Model
 
     protected $fillable = [
         'student_id',
-        'violation_type_id',
         'reported_by',
-        'incident_date',
-        'incident_location',
+        'violation_type',
+        'level',
         'description',
-        'severity_level',
         'status',
-        'resolution_notes',
-        'resolved_by',
-        'resolved_at',
-        'penalty',
-        'penalty_description',
-        'appeal_status',
-        'appeal_notes',
-        'created_by',
-        'updated_by',
+        'severity',
+        'violation_date',
+        'action_taken',
+        'resolution_date',
+        'notes',
     ];
 
     protected $casts = [
-        'incident_date' => 'datetime',
-        'resolved_at' => 'datetime',
+        'violation_date' => 'date',
+        'resolution_date' => 'date',
     ];
 
     // Relationships
@@ -42,45 +36,15 @@ class Violation extends Model
         return $this->belongsTo(User::class, 'student_id');
     }
 
-    public function violationType(): BelongsTo
-    {
-        return $this->belongsTo(ViolationType::class);
-    }
-
     public function reporter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reported_by');
     }
 
-    public function resolver(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'resolved_by');
-    }
-
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updater(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    public function evidence(): HasMany
-    {
-        return $this->hasMany(ViolationEvidence::class);
-    }
-
-    public function appeals(): HasMany
-    {
-        return $this->hasMany(ViolationAppeal::class);
-    }
-
     // Scopes
-    public function scopeActive($query)
+    public function scopePending($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'pending');
     }
 
     public function scopeResolved($query)
@@ -88,20 +52,20 @@ class Violation extends Model
         return $query->where('status', 'resolved');
     }
 
-    public function scopePending($query)
+    public function scopeUnderReview($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', 'under_review');
     }
 
     public function scopeBySeverity($query, $severity)
     {
-        return $query->where('severity_level', $severity);
+        return $query->where('severity', $severity);
     }
 
     // Accessors
     public function getSeverityColorAttribute()
     {
-        return match($this->severity_level) {
+        return match($this->severity) {
             'minor' => 'yellow',
             'moderate' => 'orange',
             'major' => 'red',
@@ -114,7 +78,7 @@ class Violation extends Model
     {
         return match($this->status) {
             'pending' => 'yellow',
-            'active' => 'blue',
+            'under_review' => 'blue',
             'resolved' => 'green',
             'dismissed' => 'gray',
             default => 'gray'

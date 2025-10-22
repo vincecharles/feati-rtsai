@@ -92,11 +92,14 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
                 <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                     <option value="">All Departments</option>
-                    <option value="Engineering" {{ request('department') == 'Engineering' ? 'selected' : '' }}>Engineering</option>
-                    <option value="Business" {{ request('department') == 'Business' ? 'selected' : '' }}>Business</option>
-                    <option value="IT" {{ request('department') == 'IT' ? 'selected' : '' }}>Information Technology</option>
-                    <option value="Arts" {{ request('department') == 'Arts' ? 'selected' : '' }}>Liberal Arts</option>
-                    <option value="Science" {{ request('department') == 'Science' ? 'selected' : '' }}>Natural Sciences</option>
+                    <option value="Computer Science" {{ request('department') == 'Computer Science' ? 'selected' : '' }}>Computer Science</option>
+                    <option value="Information Technology" {{ request('department') == 'Information Technology' ? 'selected' : '' }}>Information Technology</option>
+                    <option value="Mechanical Engineering" {{ request('department') == 'Mechanical Engineering' ? 'selected' : '' }}>Mechanical Engineering</option>
+                    <option value="Civil Engineering" {{ request('department') == 'Civil Engineering' ? 'selected' : '' }}>Civil Engineering</option>
+                    <option value="Electrical Engineering" {{ request('department') == 'Electrical Engineering' ? 'selected' : '' }}>Electrical Engineering</option>
+                    <option value="Architecture" {{ request('department') == 'Architecture' ? 'selected' : '' }}>Architecture</option>
+                    <option value="Business Administration" {{ request('department') == 'Business Administration' ? 'selected' : '' }}>Business Administration</option>
+                    <option value="Accountancy" {{ request('department') == 'Accountancy' ? 'selected' : '' }}>Accountancy</option>
                 </select>
             </div>
             <div class="flex items-end">
@@ -148,17 +151,17 @@
                                         {{ $student->name }}
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $student->email }}
+                                        {{ $student->student_id ?? 'No ID' }}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900 dark:text-gray-100">{{ $student->profile->course ?? 'N/A' }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $student->profile->department ?? 'N/A' }}</div>
+                            <div class="text-sm text-gray-900 dark:text-gray-100">{{ $student->program ?? 'N/A' }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $student->email }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                            {{ $student->profile->year_level ?? 'N/A' }}
+                            {{ $student->year_level ?? 'N/A' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full

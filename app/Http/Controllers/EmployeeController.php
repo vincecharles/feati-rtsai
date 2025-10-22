@@ -18,10 +18,27 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = User::with(['role', 'profile'])
-            ->whereHas('profile')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+
+        $query = User::with(['role', 'profile'])
+            ->whereHas('profile');
+
+        // Role-based filtering
+        if ($userRole === 'dept_head' && $userDepartment) {
+            // Department heads can only see employees in their department
+            $query->whereHas('profile', function($q) use ($userDepartment) {
+                $q->where('department', $userDepartment);
+            });
+        } elseif ($userRole === 'teacher') {
+            // Teachers can't view employee list
+            abort(403, 'You do not have permission to view the employee list.');
+        }
+        // Super Admin and other roles can see all employees
+
+        $employees = $query->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         return view('employees.index', compact('employees'));
     }

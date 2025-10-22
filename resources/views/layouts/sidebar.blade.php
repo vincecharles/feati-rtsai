@@ -77,20 +77,6 @@
                         Students
                     </a>
 
-                    <!-- Applications -->
-                    <a href="{{ route('applications.index') }}" 
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('applications.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
-                        <i class="fas fa-file-alt mr-3 text-lg"></i>
-                        Applications
-                    </a>
-
-                    <!-- Events -->
-                    <a href="{{ route('events.index') }}" 
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('events.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
-                        <i class="fas fa-calendar-alt mr-3 text-lg"></i>
-                        Events
-                    </a>
-
                     <!-- Disciplinary -->
                     <a href="{{ route('violations.index') }}" 
                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('violations.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
@@ -188,5 +174,7 @@
     <!-- Mobile sidebar overlay -->
     <div x-show="sidebarOpen" @click="sidebarOpen = false" 
          class="fixed inset-0 z-40 lg:hidden bg-gray-600 bg-opacity-75"></div>
+
+    @stack('scripts')
 </body>
 </html>

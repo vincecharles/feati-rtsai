@@ -246,18 +246,8 @@ class AuthenticatedSessionController extends Controller
      */
     protected function getRedirectPath(User $user): string
     {
-        $role = $user->role?->name;
-
-        switch ($role) {
-            case 'admin':
-                return route('dashboard');
-            case 'employee':
-                return route('dashboard');
-            case 'student':
-                return route('dashboard');
-            default:
-                return route('dashboard');
-        }
+        // Redirect to welcome splash screen after login
+        return route('welcome.splash');
     }
 
     /**

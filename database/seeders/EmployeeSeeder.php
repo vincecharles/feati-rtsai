@@ -12,7 +12,12 @@ class EmployeeSeeder extends Seeder
 {
     public function run(): void
     {
-        $employeeRole = Role::where('name', 'employee')->first();
+        $superAdminRole = Role::where('name', 'super_admin')->first();
+        $teacherRole = Role::where('name', 'teacher')->first();
+        $securityRole = Role::where('name', 'security')->first();
+        $osaRole = Role::where('name', 'osa')->first();
+        $departmentHeadRole = Role::where('name', 'department_head')->first();
+        $programHeadRole = Role::where('name', 'program_head')->first();
 
         // 1. Super Admin - Melanie Flores
         $superAdmin = User::create([
@@ -20,7 +25,7 @@ class EmployeeSeeder extends Seeder
             'email' => 'melanie.flores@feati.edu.ph',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'role_id' => $employeeRole->id,
+            'role_id' => $superAdminRole->id,
             'status' => 'active',
         ]);
 
@@ -46,7 +51,7 @@ class EmployeeSeeder extends Seeder
                 'email' => fake()->unique()->safeEmail(),
                 'email_verified_at' => now(),
                 'password' => Hash::make('password'),
-                'role_id' => $employeeRole->id,
+                'role_id' => $securityRole->id ?? $teacherRole->id,
                 'status' => 'active',
             ]);
 
@@ -73,7 +78,7 @@ class EmployeeSeeder extends Seeder
                 'email' => fake()->unique()->safeEmail(),
                 'email_verified_at' => now(),
                 'password' => Hash::make('password'),
-                'role_id' => $employeeRole->id,
+                'role_id' => $osaRole->id ?? $teacherRole->id,
                 'status' => 'active',
             ]);
 
@@ -101,7 +106,7 @@ class EmployeeSeeder extends Seeder
                 'email' => fake()->unique()->safeEmail(),
                 'email_verified_at' => now(),
                 'password' => Hash::make('password'),
-                'role_id' => $employeeRole->id,
+                'role_id' => $departmentHeadRole->id ?? $teacherRole->id,
                 'status' => 'active',
             ]);
 
@@ -139,7 +144,7 @@ class EmployeeSeeder extends Seeder
                     'email' => fake()->unique()->safeEmail(),
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
-                    'role_id' => $employeeRole->id,
+                    'role_id' => $programHeadRole->id ?? $teacherRole->id,
                     'status' => 'active',
                 ]);
 
@@ -178,7 +183,7 @@ class EmployeeSeeder extends Seeder
                 'email' => fake()->unique()->safeEmail(),
                 'email_verified_at' => now(),
                 'password' => Hash::make('password'),
-                'role_id' => $employeeRole->id,
+                'role_id' => $teacherRole->id,
                 'status' => 'active',
             ]);
 

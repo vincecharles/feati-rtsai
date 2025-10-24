@@ -4,27 +4,36 @@
 
 @section('content')
 @php
-    use App\Models\User;
-    use App\Models\Role;
-    use App\Models\EmployeeProfile;
+    use App\Models\Violation;
+    use Illuminate\Support\Facades\Auth;
     
-    $studentRole = Role::where('name', 'student')->first();
-    $employeeRole = Role::where('name', 'employee')->first();
+    // Get the role-filtered stats from the controller (already passed via compact('stats'))
+    // The $stats variable now contains role-based filtered data
     
-    $stats = [
-        'total_students' => $studentRole ? User::where('role_id', $studentRole->id)->count() : 0,
-        'total_employees' => $employeeRole ? User::where('role_id', $employeeRole->id)->count() : 0,
-        'total_violations' => \App\Models\Violation::count(),
-        'pending_violations' => \App\Models\Violation::where('status', 'pending')->count(),
-    ];
+    // Get role-filtered programs based on user role
+    $programs = [];
+    $yearLevels = [];
+    $userRole = Auth::user()->role->name ?? null;
+    $userDept = Auth::user()->profile->department ?? null;
     
-    $programs = User::whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
-    $yearLevels = User::whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+    if ($userRole === 'department_head' || $userRole === 'program_head') {
+        // Department heads and program heads only see their department
+        $programs = \App\Models\User::where('program', $userDept)->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = \App\Models\User::where('program', $userDept)->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+    } elseif ($userRole === 'security') {
+        // Security only sees students with violations
+        $programs = \App\Models\User::whereHas('violations')->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = \App\Models\User::whereHas('violations')->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+    } else {
+        // Super admin sees all
+        $programs = \App\Models\User::whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = \App\Models\User::whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+    }
     
     $violationStats = [
-        'pending' => \App\Models\Violation::where('status', 'pending')->count(),
-        'resolved' => \App\Models\Violation::where('status', 'resolved')->count(),
-        'under_review' => \App\Models\Violation::where('status', 'under_review')->count(),
+        'pending' => Violation::where('status', 'pending')->count(),
+        'resolved' => Violation::where('status', 'resolved')->count(),
+        'under_review' => Violation::where('status', 'under_review')->count(),
     ];
 @endphp
 
@@ -59,27 +68,6 @@
         </div>
     </div>
 
-    <!-- Total Employees -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-users text-3xl text-green-600"></i>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Total Employees
-                        </dt>
-                        <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                            {{ number_format($stats['total_employees']) }}
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Total Violations -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <div class="p-6">
@@ -93,7 +81,7 @@
                             Total Violations
                         </dt>
                         <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                            {{ number_format($stats['total_violations']) }}
+                            {{ number_format(Violation::count()) }}
                         </dd>
                     </dl>
                 </div>
@@ -114,7 +102,7 @@
                             Pending Violations
                         </dt>
                         <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                            {{ number_format($stats['pending_violations']) }}
+                            {{ number_format($stats['pending_approvals'] ?? 0) }}
                         </dd>
                     </dl>
                 </div>
@@ -125,10 +113,10 @@
 
 <!-- Charts Section -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- Student Enrollment Trend -->
+    <!-- Student Overview -->
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Student & Employee Overview</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Student Overview</h3>
         </div>
         <div class="p-6" style="height: 300px;">
             <canvas id="enrollmentChart"></canvas>
@@ -178,10 +166,19 @@
             </div>
             <div class="p-6">
                 @php
-                    $recentViolations = \App\Models\Violation::with('student')
-                        ->latest()
-                        ->take(5)
-                        ->get();
+                    $recentViolationsQuery = \App\Models\Violation::with('student')->latest();
+                    
+                    // Filter violations by role
+                    if ($userRole === 'department_head' || $userRole === 'program_head') {
+                        $recentViolationsQuery = $recentViolationsQuery->whereHas('student', function($q) use ($userDept) {
+                            $q->where('program', $userDept);
+                        });
+                    } elseif ($userRole === 'security') {
+                        // Security only sees violations they reported or are investigating
+                        // For now, show all violations
+                    }
+                    
+                    $recentViolations = $recentViolationsQuery->take(5)->get();
                 @endphp
                 
                 @if($recentViolations->count() > 0)

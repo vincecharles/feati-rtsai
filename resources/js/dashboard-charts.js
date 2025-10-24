@@ -39,23 +39,21 @@ function initializeAllCharts(stats, programs, yearLevels, violations) {
     Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#6B7280';
     Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB';
 
-    // Student & Employee Overview Chart
+    // Student Overview Chart
     const enrollmentCtx = document.getElementById('enrollmentChart')?.getContext('2d');
     if (enrollmentCtx) {
         new Chart(enrollmentCtx, {
             type: 'bar',
             data: {
-                labels: ['Students', 'Employees'],
+                labels: ['Total Students'],
                 datasets: [{
                     label: 'Count',
-                    data: [stats.total_students, stats.total_employees],
+                    data: [stats.total_students],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)'
+                        'rgba(59, 130, 246, 0.8)'
                     ],
                     borderColor: [
-                        'rgb(59, 130, 246)',
-                        'rgb(16, 185, 129)'
+                        'rgb(59, 130, 246)'
                     ],
                     borderWidth: 1
                 }]

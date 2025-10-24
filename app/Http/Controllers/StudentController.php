@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\EmployeeProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -17,11 +18,35 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+
         $query = User::with('role')
             ->whereNotNull('student_id')
             ->whereHas('role', function($q) {
                 $q->where('name', 'student');
             });
+
+        // Apply role-based department filtering
+        switch ($userRole) {
+            case 'department_head':
+            case 'program_head':
+                // Department and program heads can only see their own department's students
+                $query->where('program', $userDepartment);
+                break;
+            case 'student':
+                // Students can only see themselves
+                $query->where('id', $user->id);
+                break;
+            case 'teacher':
+                // Teachers can see all students (no restriction)
+                break;
+            case 'security':
+                // Security can see all students
+                break;
+            // super_admin and others see all students
+        }
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -34,9 +59,17 @@ class StudentController extends Controller
             });
         }
 
-        // Filter by department (program for students)
+        // Filter by department (program for students) - only if user has permission
         if ($request->has('department') && $request->department) {
-            $query->where('program', $request->department);
+            if ($userRole === 'super_admin' || $userRole === 'security' || $userRole === 'osa') {
+                // Only super admin, security, and osa can filter by arbitrary departments
+                $query->where('program', $request->department);
+            } elseif ($userRole === 'department_head' || $userRole === 'program_head') {
+                // Dept heads and program heads can only see their own department
+                if ($request->department === $userDepartment) {
+                    $query->where('program', $request->department);
+                }
+            }
         }
 
         // Filter by status
@@ -61,6 +94,11 @@ class StudentController extends Controller
      */
     public function create()
     {
+        // Only super_admin can create students
+        if (Auth::user()->role->name !== 'super_admin') {
+            abort(403, 'Only Super Admin can create students.');
+        }
+
         $roles = Role::where('name', 'student')->get();
         $departments = $this->getDepartments();
         
@@ -72,6 +110,11 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        // Only super_admin can store students
+        if (Auth::user()->role->name !== 'super_admin') {
+            abort(403, 'Only Super Admin can create students.');
+        }
+
         $validated = $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
@@ -185,6 +228,11 @@ class StudentController extends Controller
      */
     public function edit(User $student)
     {
+        // Only super_admin can edit students
+        if (Auth::user()->role->name !== 'super_admin') {
+            abort(403, 'Only Super Admin can edit students.');
+        }
+
         $roles = Role::where('name', 'student')->get();
         $departments = $this->getDepartments();
         $student->load('profile');
@@ -197,6 +245,11 @@ class StudentController extends Controller
      */
     public function update(Request $request, User $student)
     {
+        // Only super_admin can update students
+        if (Auth::user()->role->name !== 'super_admin') {
+            abort(403, 'Only Super Admin can update students.');
+        }
+
         $validated = $request->validate([
             'email' => ['required', 'email', Rule::unique('users')->ignore($student->id)],
             'password' => 'nullable|min:8',
@@ -299,6 +352,11 @@ class StudentController extends Controller
      */
     public function destroy(User $student)
     {
+        // Only super_admin can delete students
+        if (Auth::user()->role->name !== 'super_admin') {
+            abort(403, 'Only Super Admin can delete students.');
+        }
+
         try {
             DB::beginTransaction();
 

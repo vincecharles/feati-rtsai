@@ -14,8 +14,10 @@ class ViolationSeeder extends Seeder
         $studentRole = Role::where('name', 'student')->first();
         $students = User::where('role_id', $studentRole->id)->limit(30)->get();
         
-        $employeeRole = Role::where('name', 'employee')->first();
-        $reporters = User::where('role_id', $employeeRole->id)->limit(10)->get();
+        // Get any employees (teachers, security, etc.) as reporters
+        $reporters = User::whereHas('role', function($q) {
+            $q->whereIn('name', ['super_admin', 'teacher', 'security', 'osa']);
+        })->limit(10)->get();
 
         $violationTypes = [
             'Uniform Violation',

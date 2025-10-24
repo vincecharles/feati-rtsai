@@ -33,8 +33,22 @@
             
             <!-- Session Status -->
             @if (session('status'))
-                <div class="mb-4 font-medium text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                <div class="mb-4 font-medium text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
                     {{ session('status') }}
+                </div>
+            @endif
+
+            <!-- Success Message -->
+            @if (session('success'))
+                <div class="mb-4 font-medium text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <!-- Error Message -->
+            @if (session('error'))
+                <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+                    {{ session('error') }}
                 </div>
             @endif
 

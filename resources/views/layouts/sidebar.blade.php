@@ -63,12 +63,14 @@
                         Dashboard
                     </a>
 
-                    <!-- Employees -->
+                    <!-- Employees (Only Super Admin) -->
+                    @if(Auth::user()->role->name === 'super_admin')
                     <a href="{{ route('employees.index') }}" 
                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('employees.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
                         <i class="fas fa-user-tie mr-3 text-lg"></i>
                         Employees
                     </a>
+                    @endif
 
                     <!-- Students -->
                     <a href="{{ route('students.index') }}" 
@@ -84,12 +86,14 @@
                         Disciplinary
                     </a>
 
-                    <!-- Reports -->
+                    <!-- Reports (Only Super Admin and OSA) -->
+                    @if(in_array(Auth::user()->role->name, ['super_admin', 'osa']))
                     <a href="{{ route('reports.index') }}" 
                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('reports.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
                         <i class="fas fa-chart-bar mr-3 text-lg"></i>
                         Reports
                     </a>
+                    @endif
 
                     <!-- Settings -->
                     <a href="#" 
@@ -135,7 +139,7 @@
                                 <div class="flex items-center space-x-3">
                                     <div class="text-right">
                                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Super Admin</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ str_replace('_', ' ', ucwords(Auth::user()->role->name ?? 'user')) }}</p>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
                                 </div>

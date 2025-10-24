@@ -9,16 +9,30 @@ use App\Models\Violation;
 // use App\Models\Event;
 use App\Models\Dependent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ReportsController extends Controller
 {
     /**
+     * Check if user has permission to access reports
+     */
+    private function checkReportAccess()
+    {
+        $userRole = Auth::user()->role->name ?? null;
+        if (!in_array($userRole, ['super_admin', 'osa'])) {
+            abort(403, 'You do not have permission to access reports.');
+        }
+    }
+
+    /**
      * Display the reports dashboard
      */
     public function index()
     {
+        $this->checkReportAccess();
+        
         $overviewStats = $this->getOverviewStatistics();
         $chartData = $this->getChartData();
         
@@ -30,6 +44,8 @@ class ReportsController extends Controller
      */
     public function studentEnrollment(Request $request)
     {
+        $this->checkReportAccess();
+        
         $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
@@ -86,6 +102,8 @@ class ReportsController extends Controller
      */
     public function violationsReport(Request $request)
     {
+        $this->checkReportAccess();
+        
         $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
@@ -142,8 +160,13 @@ class ReportsController extends Controller
     /**
      * Generate employee report
      */
+    /**
+     * Generate employee report
+     */
     public function employeeReport(Request $request)
     {
+        $this->checkReportAccess();
+        
         $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
@@ -209,8 +232,13 @@ class ReportsController extends Controller
     /**
      * Generate application report
      */
+    /**
+     * Generate application report
+     */
     public function applicationReport(Request $request)
     {
+        $this->checkReportAccess();
+        
         $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
@@ -269,6 +297,8 @@ class ReportsController extends Controller
      */
     public function eventReport(Request $request)
     {
+        $this->checkReportAccess();
+        
         $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
@@ -327,6 +357,8 @@ class ReportsController extends Controller
      */
     public function analytics(Request $request)
     {
+        $this->checkReportAccess();
+        
         try {
             $period = $request->get('period', 'month');
             $startDate = $this->getStartDate($period);

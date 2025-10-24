@@ -11,10 +11,12 @@
             <p class="text-gray-600 dark:text-gray-400">Manage student records and information</p>
         </div>
         <div class="flex space-x-3">
+            @if(Auth::user()->role->name === 'super_admin')
             <a href="{{ route('students.create') }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-plus mr-2"></i> Add Student
             </a>
+            @endif
         </div>
     </div>
 
@@ -88,20 +90,24 @@
                     <option value="graduated" {{ request('status') == 'graduated' ? 'selected' : '' }}>Graduated</option>
                 </select>
             </div>
+            
+            <!-- Department Filter (Only Super Admin) -->
+            @if(Auth::user()->role->name === 'super_admin')
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
                 <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                     <option value="">All Departments</option>
-                    <option value="Computer Science" {{ request('department') == 'Computer Science' ? 'selected' : '' }}>Computer Science</option>
-                    <option value="Information Technology" {{ request('department') == 'Information Technology' ? 'selected' : '' }}>Information Technology</option>
-                    <option value="Mechanical Engineering" {{ request('department') == 'Mechanical Engineering' ? 'selected' : '' }}>Mechanical Engineering</option>
-                    <option value="Civil Engineering" {{ request('department') == 'Civil Engineering' ? 'selected' : '' }}>Civil Engineering</option>
-                    <option value="Electrical Engineering" {{ request('department') == 'Electrical Engineering' ? 'selected' : '' }}>Electrical Engineering</option>
-                    <option value="Architecture" {{ request('department') == 'Architecture' ? 'selected' : '' }}>Architecture</option>
-                    <option value="Business Administration" {{ request('department') == 'Business Administration' ? 'selected' : '' }}>Business Administration</option>
-                    <option value="Accountancy" {{ request('department') == 'Accountancy' ? 'selected' : '' }}>Accountancy</option>
+                    <option value="BS Computer Science" {{ request('department') == 'BS Computer Science' ? 'selected' : '' }}>BS Computer Science</option>
+                    <option value="BS Information Technology" {{ request('department') == 'BS Information Technology' ? 'selected' : '' }}>BS Information Technology</option>
+                    <option value="BS Mechanical Engineering" {{ request('department') == 'BS Mechanical Engineering' ? 'selected' : '' }}>BS Mechanical Engineering</option>
+                    <option value="BS Civil Engineering" {{ request('department') == 'BS Civil Engineering' ? 'selected' : '' }}>BS Civil Engineering</option>
+                    <option value="BS Electrical Engineering" {{ request('department') == 'BS Electrical Engineering' ? 'selected' : '' }}>BS Electrical Engineering</option>
+                    <option value="BS Architecture" {{ request('department') == 'BS Architecture' ? 'selected' : '' }}>BS Architecture</option>
+                    <option value="BS Business Administration" {{ request('department') == 'BS Business Administration' ? 'selected' : '' }}>BS Business Administration</option>
+                    <option value="BS Accountancy" {{ request('department') == 'BS Accountancy' ? 'selected' : '' }}>BS Accountancy</option>
                 </select>
             </div>
+            @endif
             <div class="flex items-end">
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
                     <i class="fas fa-search mr-2"></i> Filter
@@ -182,19 +188,21 @@
                                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('students.edit', $student) }}" 
-                                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            onclick="return confirm('Are you sure you want to delete this student?')"
-                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                @if(Auth::user()->role->name === 'super_admin')
+                                    <a href="{{ route('students.edit', $student) }}" 
+                                       class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                onclick="return confirm('Are you sure you want to delete this student?')"
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

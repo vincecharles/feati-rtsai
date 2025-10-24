@@ -23,14 +23,22 @@ class ViolationController extends Controller
         $filterDepartment = $request->has('department') && $request->department ? $request->department : null;
 
         // Role-based filtering
-        if ($userRole === 'dept_head' && $userDepartment) {
+        if ($userRole === 'department_head' && $userDepartment) {
             // Department heads can only see violations for their department's students
             $query->whereHas('student', function($q) use ($userDepartment) {
                 $q->where('program', $userDepartment);
             });
+        } elseif ($userRole === 'program_head' && $userDepartment) {
+            // Program heads can only see violations for their program's students
+            $query->whereHas('student', function($q) use ($userDepartment) {
+                $q->where('program', $userDepartment);
+            });
         } elseif ($userRole === 'teacher') {
-            // Teachers can't view all violations (implement if needed)
+            // Teachers can't view violations (implement if needed)
             abort(403, 'You do not have permission to view violations.');
+        } elseif ($userRole === 'student') {
+            // Students can only see their own violations
+            $query->where('student_id', $user->id);
         } else if ($filterDepartment && in_array($userRole, ['super_admin', 'osa', 'security'])) {
             // Super Admin, OSA, Security can filter by department
             $query->whereHas('student', function($q) use ($filterDepartment) {

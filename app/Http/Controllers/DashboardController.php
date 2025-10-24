@@ -7,6 +7,7 @@ use App\Models\EmployeeProfile;
 use App\Models\Dependent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -28,8 +29,48 @@ class DashboardController extends Controller
      */
     private function getDashboardStats()
     {
+        $user = Auth::user();
+        
+        // Get base query for students
+        $studentQuery = User::where('role_id', function($q) {
+            $q->select('id')->from('roles')->where('name', 'student');
+        });
+
+        // Apply role-based filtering
+        switch ($user->role->name ?? null) {
+            case 'department_head':
+                // Department head sees only their department
+                $dept = $user->profile->department;
+                $studentQuery->where('program', $dept);
+                break;
+            
+            case 'program_head':
+                // Program head sees only their program
+                $dept = $user->profile->department;
+                $studentQuery->where('program', $dept);
+                break;
+            
+            case 'security':
+                // Security sees only students with violations
+                $studentQuery->whereHas('violations');
+                break;
+            
+            case 'student':
+                // Students only see their own profile
+                return [
+                    'total_students' => 1,
+                    'active_applications' => 0,
+                    'pending_approvals' => 0,
+                    'events_this_month' => $this->getEventsThisMonthCount(),
+                ];
+            
+            default:
+                // Super admin and others see all
+                break;
+        }
+
         return [
-            'total_students' => User::whereHas('profile')->count(),
+            'total_students' => $studentQuery->count(),
             'active_applications' => $this->getActiveApplicationsCount(),
             'pending_approvals' => $this->getPendingApprovalsCount(),
             'events_this_month' => $this->getEventsThisMonthCount(),

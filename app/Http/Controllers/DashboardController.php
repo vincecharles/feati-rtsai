@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use App\Models\EmployeeProfile;
 use App\Models\Dependent;
 use Illuminate\Http\Request;
@@ -31,46 +32,47 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Get base query for students
         $studentQuery = User::where('role_id', function($q) {
             $q->select('id')->from('roles')->where('name', 'student');
         });
 
-        // Apply role-based filtering
         switch ($user->role->name ?? null) {
             case 'department_head':
-                // Department head sees only their department
                 $dept = $user->profile->department;
                 $studentQuery->where('program', $dept);
                 break;
             
             case 'program_head':
-                // Program head sees only their program
                 $dept = $user->profile->department;
                 $studentQuery->where('program', $dept);
                 break;
             
             case 'security':
-                // Security sees only students with violations
                 $studentQuery->whereHas('violations');
                 break;
             
             case 'student':
-                // Students only see their own profile
                 return [
                     'total_students' => 1,
+                    'total_employees' => 0,
                     'active_applications' => 0,
                     'pending_approvals' => 0,
                     'events_this_month' => $this->getEventsThisMonthCount(),
                 ];
             
             default:
-                // Super admin and others see all
                 break;
+        }
+
+        $totalEmployees = 0;
+        if ($user->role->name === 'admin') {
+            $employeeRoleIds = Role::whereIn('name', ['department_head', 'program_head', 'teacher', 'security', 'osa'])->pluck('id');
+            $totalEmployees = User::whereIn('role_id', $employeeRoleIds)->count();
         }
 
         return [
             'total_students' => $studentQuery->count(),
+            'total_employees' => $totalEmployees,
             'active_applications' => $this->getActiveApplicationsCount(),
             'pending_approvals' => $this->getPendingApprovalsCount(),
             'events_this_month' => $this->getEventsThisMonthCount(),
@@ -120,7 +122,7 @@ class DashboardController extends Controller
                                    ->first();
             
             $newEnrollments[] = $enrollment ? $enrollment->count : 0;
-            $graduations[] = rand(80, 120); // Mock data for graduations
+            $graduations[] = rand(80, 120);
         }
 
         return [
@@ -303,22 +305,13 @@ class DashboardController extends Controller
         // Mock data - replace with actual application logic
         return 156;
     }
-
-    /**
-     * Get pending approvals count
-     */
     private function getPendingApprovalsCount()
     {
-        // Mock data - replace with actual approval logic
         return 23;
     }
 
-    /**
-     * Get events this month count
-     */
     private function getEventsThisMonthCount()
     {
-        // Mock data - replace with actual events logic
         return 12;
     }
 

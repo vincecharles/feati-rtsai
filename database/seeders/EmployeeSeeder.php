@@ -12,39 +12,13 @@ class EmployeeSeeder extends Seeder
 {
     public function run(): void
     {
-        $superAdminRole = Role::where('name', 'super_admin')->first();
+        $superAdminRole = Role::where('name', 'admin')->first();
         $teacherRole = Role::where('name', 'teacher')->first();
         $securityRole = Role::where('name', 'security')->first();
         $osaRole = Role::where('name', 'osa')->first();
         $departmentHeadRole = Role::where('name', 'department_head')->first();
         $programHeadRole = Role::where('name', 'program_head')->first();
 
-        // 1. Super Admin - Melanie Flores
-        $superAdmin = User::create([
-            'name' => 'Melanie Flores',
-            'email' => 'melanie.flores@feati.edu.ph',
-            'email_verified_at' => now(),
-            'password' => Hash::make('password'),
-            'role_id' => $superAdminRole->id,
-            'status' => 'active',
-        ]);
-
-        EmployeeProfile::create([
-            'user_id' => $superAdmin->id,
-            'employee_number' => 'EMP-00001',
-            'first_name' => 'Melanie',
-            'last_name' => 'Flores',
-            'date_of_birth' => fake()->date('Y-m-d', '-40 years'),
-            'sex' => 'Female',
-            'gender' => 'Female',
-            'mobile' => fake()->numerify('09#########'),
-            'current_address' => fake()->address(),
-            'date_hired' => now()->subYears(15)->format('Y-m-d'),
-            'position' => 'Super Admin',
-            'department' => 'Administration',
-        ]);
-
-        // 2. Security - 15 members
         for ($i = 1; $i <= 15; $i++) {
             $user = User::create([
                 'name' => fake()->name(),
@@ -98,7 +72,6 @@ class EmployeeSeeder extends Seeder
             ]);
         }
 
-        // 4. Department Heads - 6 persons
         $deptHeadDepts = ['College of Engineering', 'College of Maritime Education', 'College of Business', 'College of Architecture', 'School of Fine Arts', 'College of Arts, Sciences, and Education'];
         foreach ($deptHeadDepts as $dept) {
             $user = User::create([
@@ -126,7 +99,6 @@ class EmployeeSeeder extends Seeder
             ]);
         }
 
-        // 5. Program Chairs
         $programChairs = [
             'College of Engineering' => 9,
             'College of Maritime Education' => 2,
@@ -166,8 +138,7 @@ class EmployeeSeeder extends Seeder
             }
         }
 
-        // 6. Teachers - remaining employees
-        $teachersNeeded = 100 - (1 + 15 + 3 + 6 + 17); // Total - (Super Admin + Security + OSA + Dept Heads + Program Chairs)
+        $teachersNeeded = 100 - (15 + 3 + 6 + 17);
         $departments = [
             'College of Engineering',
             'College of Maritime Education',
@@ -203,6 +174,7 @@ class EmployeeSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Created 100 employees with proper hierarchy successfully!');
+        $this->command->info('Created 99 employees with proper hierarchy successfully!');
+        $this->command->info('Note: Super Admin (admin@gmail.com) is created by AdminUserSeeder');
     }
 }

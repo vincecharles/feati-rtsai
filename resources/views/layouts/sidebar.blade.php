@@ -12,7 +12,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    {{-- Dark mode bootstrap: apply stored choice or system preference ASAP --}}
+
     <script>
     (() => {
     const ls = localStorage.getItem('theme');
@@ -27,12 +27,12 @@
     })();
     </script>
 
-    {{-- Font Awesome for icons --}}
+
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         referrerpolicy="no-referrer" />
 
-    {{-- Chart.js for graphs --}}
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -64,7 +64,7 @@
                     </a>
 
                     <!-- Employees (Only Super Admin) -->
-                    @if(Auth::user()->role->name === 'super_admin')
+                    @if(Auth::user()->role->name === 'admin')
                     <a href="{{ route('employees.index') }}" 
                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('employees.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
                         <i class="fas fa-user-tie mr-3 text-lg"></i>
@@ -87,7 +87,7 @@
                     </a>
 
                     <!-- Reports (Only Super Admin and OSA) -->
-                    @if(in_array(Auth::user()->role->name, ['super_admin', 'osa']))
+                    @if(in_array(Auth::user()->role->name, ['admin', 'osa']))
                     <a href="{{ route('reports.index') }}" 
                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('reports.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100' }}">
                         <i class="fas fa-chart-bar mr-3 text-lg"></i>

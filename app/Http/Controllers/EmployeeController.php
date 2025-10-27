@@ -9,6 +9,7 @@ use App\Models\Dependent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
@@ -18,7 +19,12 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        // Only super_admin can view employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can view employees.');
+        }
+
+        $user = Auth::user();
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
 
@@ -27,12 +33,12 @@ class EmployeeController extends Controller
 
         // Role-based filtering
         if ($userRole === 'dept_head' && $userDepartment) {
-            // Department heads can only see employees in their department
+           
             $query->whereHas('profile', function($q) use ($userDepartment) {
                 $q->where('department', $userDepartment);
             });
         } elseif ($userRole === 'teacher') {
-            // Teachers can't view employee list
+          
             abort(403, 'You do not have permission to view the employee list.');
         }
         // Super Admin and other roles can see all employees
@@ -48,6 +54,11 @@ class EmployeeController extends Controller
      */
     public function create()
     {
+        // Only super_admin can create employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can create employees.');
+        }
+
         $roles = Role::orderBy('label')->get();
         return view('employees.create', compact('roles'));
     }
@@ -57,6 +68,11 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        // Only super_admin can store employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can create employees.');
+        }
+
         $validated = $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
@@ -145,6 +161,11 @@ class EmployeeController extends Controller
      */
     public function show(User $employee)
     {
+        // Only super_admin can view employee details
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can view employee details.');
+        }
+
         $employee->load(['role', 'profile', 'dependents']);
         return view('employees.show', compact('employee'));
     }
@@ -154,6 +175,11 @@ class EmployeeController extends Controller
      */
     public function edit(User $employee)
     {
+        // Only super_admin can edit employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can edit employees.');
+        }
+
         $roles = Role::orderBy('label')->get();
         $employee->load('profile');
         return view('employees.edit', compact('employee', 'roles'));
@@ -164,6 +190,11 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, User $employee)
     {
+        // Only super_admin can update employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can update employees.');
+        }
+
         $validated = $request->validate([
             'email' => ['required', 'email', Rule::unique('users')->ignore($employee->id)],
             'password' => 'nullable|min:8',
@@ -261,6 +292,11 @@ class EmployeeController extends Controller
      */
     public function destroy(User $employee)
     {
+        // Only super_admin can delete employees
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can delete employees.');
+        }
+
         try {
             DB::beginTransaction();
 

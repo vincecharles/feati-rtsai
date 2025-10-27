@@ -68,6 +68,29 @@
         </div>
     </div>
 
+    @if(Auth::user()->role->name === 'admin')
+    <!-- Total Employees (Super Admin Only) -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-user-tie text-3xl text-green-600"></i>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Total Employees
+                        </dt>
+                        <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            {{ number_format($stats['total_employees'] ?? 0) }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Total Violations -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <div class="p-6">

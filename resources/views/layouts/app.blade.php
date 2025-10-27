@@ -12,7 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        {{-- Dark mode bootstrap: apply stored choice or system preference ASAP --}}
+
         <script>
         (() => {
         const ls = localStorage.getItem('theme');
@@ -27,7 +27,7 @@
         })();
         </script>
 
-        {{-- (optional) Font Awesome for icons --}}
+
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
             referrerpolicy="no-referrer" />

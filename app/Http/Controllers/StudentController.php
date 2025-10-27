@@ -61,7 +61,7 @@ class StudentController extends Controller
 
         // Filter by department (program for students) - only if user has permission
         if ($request->has('department') && $request->department) {
-            if ($userRole === 'super_admin' || $userRole === 'security' || $userRole === 'osa') {
+            if ($userRole === 'admin' || $userRole === 'security' || $userRole === 'osa') {
                 // Only super admin, security, and osa can filter by arbitrary departments
                 $query->where('program', $request->department);
             } elseif ($userRole === 'department_head' || $userRole === 'program_head') {
@@ -95,7 +95,7 @@ class StudentController extends Controller
     public function create()
     {
         // Only super_admin can create students
-        if (Auth::user()->role->name !== 'super_admin') {
+        if (Auth::user()->role->name !== 'admin') {
             abort(403, 'Only Super Admin can create students.');
         }
 
@@ -111,7 +111,7 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         // Only super_admin can store students
-        if (Auth::user()->role->name !== 'super_admin') {
+        if (Auth::user()->role->name !== 'admin') {
             abort(403, 'Only Super Admin can create students.');
         }
 
@@ -150,7 +150,7 @@ class StudentController extends Controller
                 throw new \Exception('Student role not found');
             }
 
-            // Create user
+            
             $user = User::create([
                 'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
                 'email' => $validated['email'],
@@ -229,7 +229,7 @@ class StudentController extends Controller
     public function edit(User $student)
     {
         // Only super_admin can edit students
-        if (Auth::user()->role->name !== 'super_admin') {
+        if (Auth::user()->role->name !== 'admin') {
             abort(403, 'Only Super Admin can edit students.');
         }
 
@@ -246,7 +246,7 @@ class StudentController extends Controller
     public function update(Request $request, User $student)
     {
         // Only super_admin can update students
-        if (Auth::user()->role->name !== 'super_admin') {
+        if (Auth::user()->role->name !== 'admin') {
             abort(403, 'Only Super Admin can update students.');
         }
 
@@ -280,7 +280,7 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update user
+            
             $userData = [
                 'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
                 'email' => $validated['email'],
@@ -353,20 +353,20 @@ class StudentController extends Controller
     public function destroy(User $student)
     {
         // Only super_admin can delete students
-        if (Auth::user()->role->name !== 'super_admin') {
+        if (Auth::user()->role->name !== 'admin') {
             abort(403, 'Only Super Admin can delete students.');
         }
 
         try {
             DB::beginTransaction();
 
-            // Delete dependents first
+            
             $student->dependents()->delete();
             
-            // Delete profile
+            
             $student->profile()->delete();
             
-            // Delete user
+            
             $student->delete();
 
             DB::commit();

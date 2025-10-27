@@ -8,6 +8,7 @@
         Employees
     </h2>
 
+    @if(Auth::user()->role->name === 'admin')
     <a href="{{ route('employees.create') }}"
        class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium
               bg-blue-600 hover:bg-blue-700 text-white shadow-sm
@@ -16,6 +17,7 @@
         <i class="fa-solid fa-user-plus"></i>
         Add Employee
     </a>
+    @endif
 </div>
 
 <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow
@@ -61,26 +63,28 @@
                                     </td>
                                     <td class="px-6 py-3">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('employees.edit', $emp) }}"
-                                               class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium
-                                                      bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm
-                                                      focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                                Edit
-                                            </a>
+                                            @if(Auth::user()->role->name === 'admin')
+                                                <a href="{{ route('employees.edit', $emp) }}"
+                                                   class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium
+                                                          bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm
+                                                          focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                    Edit
+                                                </a>
 
-                                            <form action="{{ route('employees.destroy', $emp) }}" method="POST"
-                                                  onsubmit="return confirm('Delete this employee?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium
-                                                           bg-rose-600 hover:bg-rose-700 text-white shadow-sm
-                                                           focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-offset-gray-800">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    Delete
-                                                </button>
-                                            </form>
+                                                <form action="{{ route('employees.destroy', $emp) }}" method="POST"
+                                                      onsubmit="return confirm('Delete this employee?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium
+                                                               bg-rose-600 hover:bg-rose-700 text-white shadow-sm
+                                                               focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-offset-gray-800">
+                                                        <i class="fa-solid fa-trash-can"></i>
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

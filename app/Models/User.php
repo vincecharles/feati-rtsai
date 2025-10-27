@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Dependent::class);
     }
+
+    public function violations()
+    {
+        return $this->hasMany(Violation::class, 'student_id');
+    }
 }

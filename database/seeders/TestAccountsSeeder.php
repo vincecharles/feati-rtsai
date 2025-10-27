@@ -16,16 +16,15 @@ class TestAccountsSeeder extends Seeder
         try {
             DB::beginTransaction();
 
-            // Get roles
             $deptHeadRole = Role::where('name', 'department_head')->first();
             $programHeadRole = Role::where('name', 'program_head')->first();
             $securityRole = Role::where('name', 'security')->first();
+            $studentRole = Role::where('name', 'student')->first();
 
             if (!$deptHeadRole || !$programHeadRole || !$securityRole) {
                 throw new \Exception('Required roles not found. Run RoleSeeder first.');
             }
 
-            // 1. Department Head - Computer Science
             $deptHead = User::create([
                 'name' => 'Dr. Maria Santos',
                 'email' => 'dept.head.cs@feati.edu',
@@ -44,7 +43,6 @@ class TestAccountsSeeder extends Seeder
                 'date_hired' => now(),
             ]);
 
-            // 2. Program Head - Mechanical Engineering
             $programHead = User::create([
                 'name' => 'Eng. Juan Cruz',
                 'email' => 'program.head.me@feati.edu',
@@ -63,7 +61,6 @@ class TestAccountsSeeder extends Seeder
                 'date_hired' => now(),
             ]);
 
-            // 3. Security Personnel
             $security = User::create([
                 'name' => 'Security Officer Raul',
                 'email' => 'security.raul@feati.edu',
@@ -80,6 +77,18 @@ class TestAccountsSeeder extends Seeder
                 'department' => 'Security',
                 'position' => 'Security Personnel',
                 'date_hired' => now(),
+            ]);
+
+            $student = User::create([
+                'name' => 'Juan Dela Cruz',
+                'email' => 'juan.dela.cruz@feati.edu',
+                'password' => Hash::make('Student123!'),
+                'role_id' => $studentRole->id,
+                'status' => 'active',
+                'email_verified_at' => now(),
+                'student_id' => 'STU-2025-001',
+                'program' => 'BS Information Technology',
+                'year_level' => 1,
             ]);
 
             DB::commit();
@@ -99,6 +108,11 @@ class TestAccountsSeeder extends Seeder
             $this->command->info('Security Account:');
             $this->command->info('  Email: security.raul@feati.edu');
             $this->command->info('  Password: Security123!');
+            $this->command->info('');
+            $this->command->info('Student Account:');
+            $this->command->info('  Email: juan.dela.cruz@feati.edu');
+            $this->command->info('  Password: Student123!');
+            $this->command->info('  Department: BS Information Technology');
             $this->command->info('');
 
         } catch (\Exception $e) {

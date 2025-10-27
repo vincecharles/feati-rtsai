@@ -11,7 +11,7 @@
             <p class="text-gray-600 dark:text-gray-400">Manage student records and information</p>
         </div>
         <div class="flex space-x-3">
-            @if(Auth::user()->role->name === 'super_admin')
+            @if(Auth::user()->role->name === 'admin')
             <a href="{{ route('students.create') }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-plus mr-2"></i> Add Student
@@ -92,7 +92,7 @@
             </div>
             
             <!-- Department Filter (Only Super Admin) -->
-            @if(Auth::user()->role->name === 'super_admin')
+            @if(Auth::user()->role->name === 'admin')
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
                 <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
@@ -188,7 +188,7 @@
                                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                @if(Auth::user()->role->name === 'super_admin')
+                                @if(Auth::user()->role->name === 'admin')
                                     <a href="{{ route('students.edit', $student) }}" 
                                        class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
                                         <i class="fas fa-edit"></i>

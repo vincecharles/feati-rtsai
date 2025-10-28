@@ -21,61 +21,28 @@ function initCharts() {
         const programs = JSON.parse(dashboardData.getAttribute('data-programs'));
         const yearLevels = JSON.parse(dashboardData.getAttribute('data-year-levels'));
         const violations = JSON.parse(dashboardData.getAttribute('data-violations'));
+        const severity = JSON.parse(dashboardData.getAttribute('data-severity') || '{}');
+        const topTypes = JSON.parse(dashboardData.getAttribute('data-top-types') || '[]');
+        const trends = JSON.parse(dashboardData.getAttribute('data-trends') || '[]');
         
-        console.log('✓ Data parsed successfully:', { stats, programs, yearLevels, violations });
+        console.log('✓ Data parsed successfully:', { stats, violations, severity, topTypes, trends });
         
         // Now initialize the charts with the data
-        initializeAllCharts(stats, programs, yearLevels, violations);
+        initializeAllCharts(stats, programs, yearLevels, violations, severity, topTypes, trends);
     } catch (e) {
         console.error('❌ Error parsing dashboard data:', e);
         return;
     }
 }
 
-function initializeAllCharts(stats, programs, yearLevels, violations) {
+function initializeAllCharts(stats, programs, yearLevels, violations, severity, topTypes, trends) {
     console.log('Initializing all charts...');
     
     // Chart.js configuration for dark mode
     Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#6B7280';
     Chart.defaults.borderColor = document.documentElement.classList.contains('dark') ? '#374151' : '#E5E7EB';
 
-    // Student Overview Chart
-    const enrollmentCtx = document.getElementById('enrollmentChart')?.getContext('2d');
-    if (enrollmentCtx) {
-        new Chart(enrollmentCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Total Students'],
-                datasets: [{
-                    label: 'Count',
-                    data: [stats.total_students],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(59, 130, 246)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-    // Violation Status Chart
+    // Disciplinary Overview Chart (Violation Status)
     const violationCtx = document.getElementById('violationChart')?.getContext('2d');
     if (violationCtx) {
         new Chart(violationCtx, {
@@ -108,26 +75,31 @@ function initializeAllCharts(stats, programs, yearLevels, violations) {
         });
     }
 
-    // Program Distribution Chart
-    const programCtx = document.getElementById('programChart')?.getContext('2d');
-    if (programCtx) {
-        new Chart(programCtx, {
-            type: 'pie',
+    // Violations Analytics - Trend Line Chart
+    const violationTrendsCtx = document.getElementById('violationTrendsChart')?.getContext('2d');
+    if (violationTrendsCtx) {
+        const trendLabels = trends.length > 0 ? trends.map(t => {
+            const d = new Date(t.date);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }) : ['No Data'];
+        const trendData = trends.length > 0 ? trends.map(t => t.count) : [0];
+        
+        new Chart(violationTrendsCtx, {
+            type: 'line',
             data: {
-                labels: programs.map(p => p.program),
+                labels: trendLabels,
                 datasets: [{
-                    data: programs.map(p => p.count),
-                    backgroundColor: [
-                        'rgb(59, 130, 246)',
-                        'rgb(16, 185, 129)',
-                        'rgb(251, 191, 36)',
-                        'rgb(168, 85, 247)',
-                        'rgb(239, 68, 68)',
-                        'rgb(236, 72, 153)',
-                        'rgb(14, 165, 233)',
-                        'rgb(139, 92, 246)'
-                    ],
-                    borderWidth: 0
+                    label: 'Daily Violations',
+                    data: trendData,
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(239, 68, 68)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
@@ -135,26 +107,88 @@ function initializeAllCharts(stats, programs, yearLevels, violations) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
         });
     }
 
-    // Year Level Distribution Chart
-    const yearLevelCtx = document.getElementById('yearLevelChart')?.getContext('2d');
-    if (yearLevelCtx) {
-        new Chart(yearLevelCtx, {
+    // Violations by Severity Chart
+    const violationSeverityCtx = document.getElementById('violationSeverityChart')?.getContext('2d');
+    if (violationSeverityCtx) {
+        new Chart(violationSeverityCtx, {
             type: 'bar',
             data: {
-                labels: yearLevels.map(y => y.year_level),
+                labels: ['Minor', 'Moderate', 'Major', 'Critical'],
                 datasets: [{
-                    label: 'Students',
-                    data: yearLevels.map(y => y.count),
-                    backgroundColor: 'rgba(168, 85, 247, 0.8)',
-                    borderColor: 'rgb(168, 85, 247)',
-                    borderWidth: 1
+                    label: 'Count',
+                    data: [
+                        severity.minor || 0,
+                        severity.moderate || 0,
+                        severity.major || 0,
+                        severity.critical || 0
+                    ],
+                    backgroundColor: [
+                        'rgb(34, 197, 94)',
+                        'rgb(251, 191, 36)',
+                        'rgb(249, 115, 22)',
+                        'rgb(239, 68, 68)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'x',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Top Violation Types Chart
+    const topViolationTypesCtx = document.getElementById('topViolationTypesChart')?.getContext('2d');
+    if (topViolationTypesCtx) {
+        const typeLabels = topTypes.length > 0 ? topTypes.map(t => t.name) : ['No Data'];
+        const typeData = topTypes.length > 0 ? topTypes.map(t => t.count) : [0];
+        
+        new Chart(topViolationTypesCtx, {
+            type: 'bar',
+            data: {
+                labels: typeLabels,
+                datasets: [{
+                    label: 'Reports',
+                    data: typeData,
+                    backgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(139, 92, 246)',
+                        'rgb(236, 72, 153)',
+                        'rgb(249, 115, 22)',
+                        'rgb(239, 68, 68)'
+                    ].slice(0, typeData.length),
+                    borderWidth: 0
                 }]
             },
             options: {
@@ -167,7 +201,16 @@ function initializeAllCharts(stats, programs, yearLevels, violations) {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
                     }
                 }
             }

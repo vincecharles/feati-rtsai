@@ -41,6 +41,11 @@ class Violation extends Model
         return $this->belongsTo(User::class, 'reported_by');
     }
 
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(ViolationType::class, 'violation_type_id');
+    }
+
     // Scopes
     public function scopePending($query)
     {

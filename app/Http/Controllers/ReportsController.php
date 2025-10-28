@@ -21,7 +21,7 @@ class ReportsController extends Controller
     private function checkReportAccess()
     {
         $userRole = Auth::user()->role->name ?? null;
-        if (!in_array($userRole, ['super_admin', 'osa'])) {
+        if (!in_array($userRole, ['admin', 'osa'])) {
             abort(403, 'You do not have permission to access reports.');
         }
     }
@@ -396,7 +396,7 @@ class ReportsController extends Controller
         $userDepartment = $user->profile?->department;
 
         // Super Admin: All statistics
-        if ($roleName === 'super_admin') {
+        if ($roleName === 'admin') {
             return [
                 'total_students' => User::whereNotNull('student_id')->count(),
                 'total_employees' => User::whereHas('profile')->count(),

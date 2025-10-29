@@ -12,7 +12,7 @@ trait HasRolePermissions
     public static function getPermissionMatrix()
     {
         return [
-            'super_admin' => [
+            'admin' => [
                 'view_all_students' => true,
                 'view_all_employees' => true,
                 'view_all_violations' => true,
@@ -104,8 +104,8 @@ trait HasRolePermissions
         }
 
         switch ($user->role->name) {
-            case 'super_admin':
-                return $query; // See all
+            case 'admin':
+                return $query; 
             
             case 'department_head':
                 // Department heads see their department only
@@ -150,16 +150,27 @@ trait HasRolePermissions
 
         switch ($user->role->name ?? null) {
             case 'super_admin':
-                // All departments
+                // All programs
                 return [
-                    'BS Computer Science',
-                    'BS Information Technology',
-                    'BS Mechanical Engineering',
                     'BS Civil Engineering',
                     'BS Electrical Engineering',
-                    'BS Architecture',
+                    'BS Geodetic Engineering',
+                    'BS Electronics Engineering',
+                    'BS Information Technology',
+                    'BS Computer Science',
+                    'Associate in Computer Science',
+                    'BS Mechanical Engineering',
+                    'BS Aeronautical Engineering',
+                    'BS Aircraft Maintenance Technology',
+                    'Certificate in Aircraft Maintenance Technology',
+                    'BS Marine Engineering',
+                    'BS Marine Transportation',
+                    'BS Tourism Management',
+                    'BS Customs Administration',
                     'BS Business Administration',
-                    'BS Accountancy',
+                    'BS Architecture',
+                    'BFA major in Visual Communication',
+                    'BA in Communication',
                 ];
             
             case 'department_head':
@@ -168,16 +179,27 @@ trait HasRolePermissions
                 return $user->profile->department ? [$user->profile->department] : [];
             
             case 'security':
-                // All departments for violation tracking
+                // All programs for violation tracking
                 return [
-                    'BS Computer Science',
-                    'BS Information Technology',
-                    'BS Mechanical Engineering',
                     'BS Civil Engineering',
                     'BS Electrical Engineering',
-                    'BS Architecture',
+                    'BS Geodetic Engineering',
+                    'BS Electronics Engineering',
+                    'BS Information Technology',
+                    'BS Computer Science',
+                    'Associate in Computer Science',
+                    'BS Mechanical Engineering',
+                    'BS Aeronautical Engineering',
+                    'BS Aircraft Maintenance Technology',
+                    'Certificate in Aircraft Maintenance Technology',
+                    'BS Marine Engineering',
+                    'BS Marine Transportation',
+                    'BS Tourism Management',
+                    'BS Customs Administration',
                     'BS Business Administration',
-                    'BS Accountancy',
+                    'BS Architecture',
+                    'BFA major in Visual Communication',
+                    'BA in Communication',
                 ];
             
             case 'student':

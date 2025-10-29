@@ -6,9 +6,6 @@
 
     @php
         $p = $employee->profile;
-        $fixed = ['Male','Female','Non-binary','Transgender Male','Transgender Female','Prefer not to say'];
-        $genderSelect = in_array($p->gender, $fixed) ? $p->gender : 'self_describe';
-        $genderCustom = $genderSelect === 'self_describe' ? $p->gender : '';
     @endphp
 
 <div class="space-y-6">
@@ -18,8 +15,25 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="p-3 rounded bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="p-3 rounded bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
+                    <p class="font-semibold mb-2">There were some errors with your submission:</p>
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('employees.update', $employee) }}"
-                  x-data="{ genderSel: '{{ old('gender_select', $genderSelect) }}' }"
+                  x-data="{ }"
                   class="bg-white dark:bg-gray-800 p-6 rounded shadow space-y-6">
                 @csrf @method('PUT')
 
@@ -59,6 +73,33 @@
                             <label class="block text-sm dark:text-gray-300">Date Hired</label>
                             <input type="date" name="date_hired" value="{{ old('date_hired', $p->date_hired) }}" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
                         </div>
+                        <div>
+                            <label class="block text-sm dark:text-gray-300">Department/College</label>
+                            <select name="department" id="department-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
+                                <option value="">— Select Department —</option>
+                                <option value="College of Engineering" {{ old('department', $p->department) == 'College of Engineering' ? 'selected' : '' }}>College of Engineering</option>
+                                <option value="College of Maritime Education" {{ old('department', $p->department) == 'College of Maritime Education' ? 'selected' : '' }}>College of Maritime Education</option>
+                                <option value="College of Business" {{ old('department', $p->department) == 'College of Business' ? 'selected' : '' }}>College of Business</option>
+                                <option value="College of Architecture" {{ old('department', $p->department) == 'College of Architecture' ? 'selected' : '' }}>College of Architecture</option>
+                                <option value="School of Fine Arts" {{ old('department', $p->department) == 'School of Fine Arts' ? 'selected' : '' }}>School of Fine Arts</option>
+                                <option value="College of Arts, Sciences and Education" {{ old('department', $p->department) == 'College of Arts, Sciences and Education' ? 'selected' : '' }}>College of Arts, Sciences and Education</option>
+                                <option value="Administration" {{ old('department', $p->department) == 'Administration' ? 'selected' : '' }}>Administration</option>
+                                <option value="Human Resources" {{ old('department', $p->department) == 'Human Resources' ? 'selected' : '' }}>Human Resources</option>
+                                <option value="Security" {{ old('department', $p->department) == 'Security' ? 'selected' : '' }}>Security</option>
+                                <option value="Office of Student Affairs" {{ old('department', $p->department) == 'Office of Student Affairs' ? 'selected' : '' }}>Office of Student Affairs</option>
+                            </select>
+                            @error('department')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm dark:text-gray-300">Program/Course (Optional)</label>
+                            <select name="program" id="program-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
+                                <option value="">— Select Program (if applicable) —</option>
+                            </select>
+                            @error('program')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
                         <div><label class="block text-sm dark:text-gray-300">Last</label><input name="last_name" value="{{ old('last_name', $p->last_name) }}" required class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"></div>
                         <div><label class="block text-sm dark:text-gray-300">First</label><input name="first_name" value="{{ old('first_name', $p->first_name) }}" required class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"></div>
                         <div><label class="block text-sm dark:text-gray-300">Middle</label><input name="middle_name" value="{{ old('middle_name', $p->middle_name) }}" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"></div>
@@ -86,19 +127,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm dark:text-gray-300">Gender</label>
-                            <select name="gender_select" x-model="genderSel" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
-                                <option value="">— Select —</option>
-                                @foreach(['Male','Female','Non-binary','Transgender Male','Transgender Female','Prefer not to say'] as $g)
-                                    <option value="{{ $g }}" @selected(old('gender_select', $genderSelect)===$g)>{{ $g }}</option>
-                                @endforeach
-                                <option value="self_describe" @selected(old('gender_select', $genderSelect)==='self_describe')>Prefer to self-describe</option>
-                            </select>
-                            <input x-show="genderSel==='self_describe'" type="text" name="gender_custom"
-                                   value="{{ old('gender_custom', $genderCustom) }}"
-                                   class="mt-2 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"
-                                   placeholder="Describe gender">
-                            @error('gender_custom')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
+                            <label class="block text-sm dark:text-gray-300">Age</label>
+                            <input type="number" name="age" value="{{ old('age', $p->age) }}" min="18" max="100"
+                                   class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"
+                                   placeholder="Enter age">
+                            @error('age')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
                         </div>
 
                         <div><label class="block text-sm dark:text-gray-300">Birth Date</label><input type="date" name="date_of_birth" value="{{ old('date_of_birth', $p->date_of_birth) }}" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100"></div>
@@ -189,5 +222,82 @@
                 </ul>
             </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.getElementById('department-select');
+    const programSelect = document.getElementById('program-select');
+    
+    // Define programs by department
+    const programsByDepartment = {
+        'College of Engineering': [
+            'BS Civil Engineering',
+            'BS Electrical Engineering',
+            'BS Geodetic Engineering',
+            'BS Electronics Engineering',
+            'BS Information Technology',
+            'BS Computer Science',
+            'Associate in Computer Science',
+            'BS Mechanical Engineering',
+            'BS Aeronautical Engineering',
+            'BS Aircraft Maintenance Technology',
+            'Certificate in Aircraft Maintenance Technology'
+        ],
+        'College of Maritime Education': [
+            'BS Marine Engineering',
+            'BS Marine Transportation'
+        ],
+        'College of Business': [
+            'BS Tourism Management',
+            'BS Customs Administration',
+            'BS Business Administration'
+        ],
+        'College of Architecture': [
+            'BS Architecture'
+        ],
+        'School of Fine Arts': [
+            'BFA major in Visual Communication'
+        ],
+        'College of Arts, Sciences and Education': [
+            'BA in Communication'
+        ]
+    };
+    
+    // Function to populate programs based on selected department
+    function updatePrograms() {
+        const selectedDepartment = departmentSelect.value;
+        const currentProgram = '{{ old("program", $p->program ?? "") }}';
+        
+        // Clear current options
+        programSelect.innerHTML = '<option value="">— Select Program (if applicable) —</option>';
+        
+        // If department has programs, add them
+        if (programsByDepartment[selectedDepartment]) {
+            programsByDepartment[selectedDepartment].forEach(function(program) {
+                const option = document.createElement('option');
+                option.value = program;
+                option.textContent = program;
+                if (currentProgram === program) {
+                    option.selected = true;
+                }
+                programSelect.appendChild(option);
+            });
+            programSelect.disabled = false;
+        } else if (selectedDepartment) {
+            // For non-academic departments (Admin, HR, Security, OSA)
+            programSelect.disabled = true;
+            programSelect.innerHTML = '<option value="">— Not applicable for this department —</option>';
+        } else {
+            programSelect.disabled = false;
+        }
+    }
+    
+    // Initialize on page load
+    updatePrograms();
+    
+    // Update when department changes
+    departmentSelect.addEventListener('change', updatePrograms);
+});
+</script>
 @endsection
 

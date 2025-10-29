@@ -26,14 +26,31 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Program</label>
                             <select name="department" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">All Programs</option>
-                                <option value="Computer Science" {{ ($filters['department'] ?? '') == 'Computer Science' ? 'selected' : '' }}>Computer Science</option>
-                                <option value="Information Technology" {{ ($filters['department'] ?? '') == 'Information Technology' ? 'selected' : '' }}>Information Technology</option>
-                                <option value="Mechanical Engineering" {{ ($filters['department'] ?? '') == 'Mechanical Engineering' ? 'selected' : '' }}>Mechanical Engineering</option>
-                                <option value="Civil Engineering" {{ ($filters['department'] ?? '') == 'Civil Engineering' ? 'selected' : '' }}>Civil Engineering</option>
-                                <option value="Electrical Engineering" {{ ($filters['department'] ?? '') == 'Electrical Engineering' ? 'selected' : '' }}>Electrical Engineering</option>
-                                <option value="Architecture" {{ ($filters['department'] ?? '') == 'Architecture' ? 'selected' : '' }}>Architecture</option>
-                                <option value="Business Administration" {{ ($filters['department'] ?? '') == 'Business Administration' ? 'selected' : '' }}>Business Administration</option>
-                                <option value="Accountancy" {{ ($filters['department'] ?? '') == 'Accountancy' ? 'selected' : '' }}>Accountancy</option>
+                                <!-- College of Engineering -->
+                                <option value="Civil Engineering" {{ ($filters['department'] ?? '') == 'Civil Engineering' ? 'selected' : '' }}>BS Civil Engineering</option>
+                                <option value="Electrical Engineering" {{ ($filters['department'] ?? '') == 'Electrical Engineering' ? 'selected' : '' }}>BS Electrical Engineering</option>
+                                <option value="Geodetic Engineering" {{ ($filters['department'] ?? '') == 'Geodetic Engineering' ? 'selected' : '' }}>BS Geodetic Engineering</option>
+                                <option value="Electronics Engineering" {{ ($filters['department'] ?? '') == 'Electronics Engineering' ? 'selected' : '' }}>BS Electronics Engineering</option>
+                                <option value="Information Technology" {{ ($filters['department'] ?? '') == 'Information Technology' ? 'selected' : '' }}>BS Information Technology</option>
+                                <option value="Computer Science" {{ ($filters['department'] ?? '') == 'Computer Science' ? 'selected' : '' }}>BS Computer Science</option>
+                                <option value="Associate in Computer Science" {{ ($filters['department'] ?? '') == 'Associate in Computer Science' ? 'selected' : '' }}>Associate in Computer Science</option>
+                                <option value="Mechanical Engineering" {{ ($filters['department'] ?? '') == 'Mechanical Engineering' ? 'selected' : '' }}>BS Mechanical Engineering</option>
+                                <option value="Aeronautical Engineering" {{ ($filters['department'] ?? '') == 'Aeronautical Engineering' ? 'selected' : '' }}>BS Aeronautical Engineering</option>
+                                <option value="Aircraft Maintenance Technology" {{ ($filters['department'] ?? '') == 'Aircraft Maintenance Technology' ? 'selected' : '' }}>BS Aircraft Maintenance Technology</option>
+                                <option value="Certificate in Aircraft Maintenance Technology" {{ ($filters['department'] ?? '') == 'Certificate in Aircraft Maintenance Technology' ? 'selected' : '' }}>Certificate in Aircraft Maintenance Technology</option>
+                                <!-- College of Maritime Education -->
+                                <option value="Marine Engineering" {{ ($filters['department'] ?? '') == 'Marine Engineering' ? 'selected' : '' }}>BS Marine Engineering</option>
+                                <option value="Marine Transportation" {{ ($filters['department'] ?? '') == 'Marine Transportation' ? 'selected' : '' }}>BS Marine Transportation</option>
+                                <!-- College of Business -->
+                                <option value="Tourism Management" {{ ($filters['department'] ?? '') == 'Tourism Management' ? 'selected' : '' }}>BS Tourism Management</option>
+                                <option value="Customs Administration" {{ ($filters['department'] ?? '') == 'Customs Administration' ? 'selected' : '' }}>BS Customs Administration</option>
+                                <option value="Business Administration" {{ ($filters['department'] ?? '') == 'Business Administration' ? 'selected' : '' }}>BS Business Administration</option>
+                                <!-- College of Architecture -->
+                                <option value="Architecture" {{ ($filters['department'] ?? '') == 'Architecture' ? 'selected' : '' }}>BS Architecture</option>
+                                <!-- School of Fine Arts -->
+                                <option value="Fine Arts - Visual Communication" {{ ($filters['department'] ?? '') == 'Fine Arts - Visual Communication' ? 'selected' : '' }}>BFA major in Visual Communication</option>
+                                <!-- College of Arts, Sciences and Education -->
+                                <option value="Communication" {{ ($filters['department'] ?? '') == 'Communication' ? 'selected' : '' }}>BA in Communication</option>
                             </select>
                         </div>
                         <div class="flex items-end gap-2">

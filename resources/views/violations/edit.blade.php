@@ -124,9 +124,16 @@
                             class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="pending" {{ old('status', $violation->status) == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="under_review" {{ old('status', $violation->status) == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                        @if(Auth::user()->role?->name !== 'security')
                         <option value="resolved" {{ old('status', $violation->status) == 'resolved' ? 'selected' : '' }}>Resolved</option>
                         <option value="dismissed" {{ old('status', $violation->status) == 'dismissed' ? 'selected' : '' }}>Dismissed</option>
+                        @endif
                     </select>
+                    @if(Auth::user()->role?->name === 'security')
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Note: Security personnel cannot resolve or dismiss violations. Only OSA and Admin can do this.
+                    </p>
+                    @endif
                     @error('status')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror

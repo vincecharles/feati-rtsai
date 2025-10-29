@@ -212,15 +212,36 @@ class StudentController extends Controller
      */
     public function show(User $student)
     {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+        
+        // Check authorization
+        if (!in_array($userRole, ['admin', 'osa', 'program_head', 'department_head', 'teacher', 'security'])) {
+            abort(403, 'You do not have permission to view student details.');
+        }
+        
+        // Program heads, department heads, and teachers can only view students in their program
+        if (in_array($userRole, ['program_head', 'department_head', 'teacher']) && $userDepartment) {
+            if ($student->program !== $userDepartment) {
+                abort(403, 'You can only view students in your program/department.');
+            }
+        }
+        
         $student->load(['role', 'profile', 'dependents']);
+        
+        // Determine what fields can be viewed based on role
+        $canViewFullInfo = in_array($userRole, ['admin', 'osa']) || 
+                          ($userRole === 'program_head' && $student->program === $userDepartment);
         
         if (request()->expectsJson()) {
             return $this->successResponse('Student retrieved successfully', [
-                'student' => $student
+                'student' => $student,
+                'canViewFullInfo' => $canViewFullInfo
             ]);
         }
         
-        return view('students.show', compact('student'));
+        return view('students.show', compact('student', 'canViewFullInfo'));
     }
 
     /**
@@ -395,14 +416,51 @@ class StudentController extends Controller
     private function getDepartments()
     {
         return [
-            'Engineering' => 'Engineering',
-            'Business' => 'Business Administration',
-            'IT' => 'Information Technology',
-            'Arts' => 'Liberal Arts',
-            'Science' => 'Natural Sciences',
-            'Education' => 'Education',
-            'Nursing' => 'Nursing',
-            'Medicine' => 'Medicine',
+            'COE' => 'College of Engineering',
+            'CME' => 'College of Maritime Education',
+            'COB' => 'College of Business',
+            'COA' => 'College of Architecture',
+            'SFA' => 'School of Fine Arts',
+            'CASE' => 'College of Arts, Sciences and Education',
+        ];
+    }
+
+    /**
+     * Get programs list based on department/college
+     */
+    private function getPrograms()
+    {
+        return [
+            // College of Engineering
+            'BSCE' => 'Bachelor of Science in Civil Engineering',
+            'BSEE' => 'Bachelor of Science in Electrical Engineering',
+            'BSGE' => 'Bachelor of Science in Geodetic Engineering',
+            'BSEcE' => 'Bachelor of Science in Electronics Engineering',
+            'BSIT' => 'Bachelor of Science in Information Technology',
+            'BSCS' => 'Bachelor of Science in Computer Science',
+            'ACS' => 'Associate in Computer Science',
+            'BSME' => 'Bachelor of Science in Mechanical Engineering',
+            'BSAeroE' => 'Bachelor of Science in Aeronautical Engineering',
+            'BSAMT' => 'Bachelor of Science in Aircraft Maintenance Technology',
+            'CAMT' => 'Certificate in Aircraft Maintenance Technology',
+            
+            // College of Maritime Education
+            'BSMarE' => 'Bachelor of Science in Marine Engineering',
+            'BSMarT' => 'Bachelor of Science in Marine Transportation',
+            
+            // College of Business
+            'BSTM' => 'Bachelor of Science in Tourism Management',
+            'BSCA' => 'Bachelor of Science in Customs Administration',
+            'BSBA' => 'Bachelor of Science in Business Administration',
+            
+            // College of Architecture
+            'BSArch' => 'Bachelor of Science in Architecture',
+            
+            // School of Fine Arts
+            'BFA-VC' => 'Bachelor of Fine Arts major in Visual Communication',
+            
+            // College of Arts, Sciences and Education
+            'BAC' => 'Bachelor of Arts in Communication',
         ];
     }
 

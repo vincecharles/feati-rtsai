@@ -25,7 +25,10 @@ function initCharts() {
         const topTypes = JSON.parse(dashboardData.getAttribute('data-top-types') || '[]');
         const trends = JSON.parse(dashboardData.getAttribute('data-trends') || '[]');
         
-        console.log('✓ Data parsed successfully:', { stats, violations, severity, topTypes, trends });
+        console.log('✓ Data parsed successfully');
+        console.log('Severity:', severity);
+        console.log('Top Types:', topTypes);
+        console.log('Trends:', trends);
         
         // Now initialize the charts with the data
         initializeAllCharts(stats, programs, yearLevels, violations, severity, topTypes, trends);
@@ -78,11 +81,17 @@ function initializeAllCharts(stats, programs, yearLevels, violations, severity, 
     // Violations Analytics - Trend Line Chart
     const violationTrendsCtx = document.getElementById('violationTrendsChart')?.getContext('2d');
     if (violationTrendsCtx) {
+        console.log('Initializing Violations Analytics chart');
+        console.log('Trends data:', trends);
+        
         const trendLabels = trends.length > 0 ? trends.map(t => {
             const d = new Date(t.date);
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }) : ['No Data'];
         const trendData = trends.length > 0 ? trends.map(t => t.count) : [0];
+        
+        console.log('Trend labels:', trendLabels);
+        console.log('Trend data:', trendData);
         
         new Chart(violationTrendsCtx, {
             type: 'line',
@@ -171,8 +180,14 @@ function initializeAllCharts(stats, programs, yearLevels, violations, severity, 
     // Top Violation Types Chart
     const topViolationTypesCtx = document.getElementById('topViolationTypesChart')?.getContext('2d');
     if (topViolationTypesCtx) {
+        console.log('Initializing Top Violation Types chart');
+        console.log('Top types data:', topTypes);
+        
         const typeLabels = topTypes.length > 0 ? topTypes.map(t => t.name) : ['No Data'];
         const typeData = topTypes.length > 0 ? topTypes.map(t => t.count) : [0];
+        
+        console.log('Type labels:', typeLabels);
+        console.log('Type data:', typeData);
         
         new Chart(topViolationTypesCtx, {
             type: 'bar',

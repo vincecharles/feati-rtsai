@@ -24,4 +24,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /database/.gitignore
-
+/database/EER Diagram.mwb
+/database/feati_rtsai_schema.sql
+/database/FEATI_RTSAI_EER.pdf

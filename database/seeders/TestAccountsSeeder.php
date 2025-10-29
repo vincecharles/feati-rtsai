@@ -38,7 +38,7 @@ class TestAccountsSeeder extends Seeder
                 'employee_number' => 'EMP-2025-001',
                 'first_name' => 'Maria',
                 'last_name' => 'Santos',
-                'department' => 'BS Computer Science',
+                'department' => 'College of Engineering',
                 'position' => 'Department Head',
                 'date_hired' => now(),
             ]);
@@ -98,12 +98,12 @@ class TestAccountsSeeder extends Seeder
             $this->command->info('Department Head Account:');
             $this->command->info('  Email: dept.head.cs@feati.edu');
             $this->command->info('  Password: DeptHead123!');
-            $this->command->info('  Department: BS Computer Science');
+            $this->command->info('  Department: College of Engineering');
             $this->command->info('');
             $this->command->info('Program Head Account:');
             $this->command->info('  Email: program.head.me@feati.edu');
             $this->command->info('  Password: ProgHead123!');
-            $this->command->info('  Department: BS Mechanical Engineering');
+            $this->command->info('  Department: College of Engineering');
             $this->command->info('');
             $this->command->info('Security Account:');
             $this->command->info('  Email: security.raul@feati.edu');

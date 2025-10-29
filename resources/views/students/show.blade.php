@@ -11,16 +11,33 @@
             <p class="text-gray-600 dark:text-gray-400">{{ $student->name }}</p>
         </div>
         <div class="flex space-x-3">
+            @if($canViewFullInfo ?? false)
             <a href="{{ route('students.edit', $student) }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-edit mr-2"></i> Edit Student
             </a>
+            @endif
             <a href="{{ route('students.index') }}" 
                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Students
             </a>
         </div>
     </div>
+
+    @if(!($canViewFullInfo ?? false))
+    <!-- Limited Access Notice -->
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <div class="flex items-start">
+            <i class="fas fa-info-circle text-yellow-600 dark:text-yellow-400 mt-1 mr-3"></i>
+            <div>
+                <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Limited Information Access</h3>
+                <p class="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                    You have restricted access to student information. Only basic details are visible based on your role.
+                </p>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Student Information -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -43,15 +60,16 @@
                             </p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ $student->profile->date_of_birth ? $student->profile->date_of_birth->format('M d, Y') : 'N/A' }}
-                            </p>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Sex</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                                 {{ $student->profile->sex ?? 'N/A' }}
+                            </p>
+                        </div>
+                        @if($canViewFullInfo ?? false)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $student->profile->date_of_birth ? $student->profile->date_of_birth->format('M d, Y') : 'N/A' }}
                             </p>
                         </div>
                         <div>
@@ -72,6 +90,7 @@
                                 {{ $student->profile->place_of_birth ?? 'N/A' }}
                             </p>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -84,9 +103,10 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</label>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">School Email</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->email }}</p>
                         </div>
+                        @if($canViewFullInfo ?? false)
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Mobile Number</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->profile->mobile ?? 'N/A' }}</p>
@@ -99,6 +119,7 @@
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Permanent Address</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->profile->permanent_address ?? 'N/A' }}</p>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -154,7 +175,7 @@
             </div>
 
             <!-- Emergency Contact -->
-            @if($student->profile->emergency_name)
+            @if(($canViewFullInfo ?? false) && $student->profile->emergency_name)
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Emergency Contact</h3>
@@ -199,6 +220,7 @@
             </div>
 
             <!-- Quick Actions -->
+            @if($canViewFullInfo ?? false)
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Quick Actions</h3>
@@ -218,8 +240,10 @@
                     </form>
                 </div>
             </div>
+            @endif
 
             <!-- Account Information -->
+            @if($canViewFullInfo ?? false)
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Account Information</h3>
@@ -247,6 +271,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </div>

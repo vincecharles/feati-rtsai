@@ -252,12 +252,24 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
+                                @php
+                                    $userRole = Auth::user()->role?->name;
+                                    $canEdit = in_array($userRole, ['admin', 'osa']) || 
+                                               ($userRole === 'security' && $violation->reported_by === Auth::id());
+                                    $canDelete = in_array($userRole, ['admin', 'osa']) || 
+                                                 ($userRole === 'security' && $violation->reported_by === Auth::id());
+                                    $canResolve = in_array($userRole, ['admin', 'osa']);
+                                @endphp
+                                
+                                @if($canEdit)
                                 <a href="{{ route('violations.edit', $violation) }}" 
                                    class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                                    title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                @if($violation->status !== 'resolved' && $violation->status !== 'dismissed')
+                                @endif
+                                
+                                @if($canResolve && $violation->status !== 'resolved' && $violation->status !== 'dismissed')
                                 <form action="{{ route('violations.resolve', $violation) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" 
@@ -268,6 +280,8 @@
                                     </button>
                                 </form>
                                 @endif
+                                
+                                @if($canDelete)
                                 <form action="{{ route('violations.destroy', $violation) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
@@ -278,6 +292,7 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Student\ViolationController;
 use App\Http\Controllers\Student\ApplicationController;
 // use App\Http\Controllers\Student\EventController;
-use App\Http\Controllers\Student\ReportController;
+// use App\Http\Controllers\Student\ReportController;
 use App\Http\Controllers\Student\ProfileController;
 
 // Student routes - require authentication and student role
@@ -33,16 +33,16 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
     // Route::post('/events/{event}/cancel-registration', [EventController::class, 'cancelRegistration'])->name('events.cancel-registration');
     // Route::get('/events/statistics', [EventController::class, 'getStatistics'])->name('events.statistics');
 
-    // Reports
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/violations', [ReportController::class, 'violations'])->name('reports.violations');
+    // Reports - Commented out temporarily
+    // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    // Route::get('/reports/violations', [ReportController::class, 'violations'])->name('reports.violations');
     // Route::get('/reports/applications', [ReportController::class, 'applications'])->name('reports.applications');
     // Route::get('/reports/events', [ReportController::class, 'events'])->name('reports.events');
 
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Profile - Commented out temporarily
+    // Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    // Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Student API routes
@@ -70,8 +70,8 @@ Route::middleware(['auth', 'role:student'])->prefix('api/student')->name('api.st
     // Route::post('/events/{event}/cancel-registration', [EventController::class, 'cancelRegistration']);
     // Route::get('/events/statistics', [EventController::class, 'getStatistics']);
 
-    // Reports API
-    Route::get('/reports/violations', [ReportController::class, 'violations']);
+    // Reports API - Commented out temporarily
+    // Route::get('/reports/violations', [ReportController::class, 'violations']);
     // Route::get('/reports/applications', [ReportController::class, 'applications']);
     // Route::get('/reports/events', [ReportController::class, 'events']);
 });

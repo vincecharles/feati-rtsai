@@ -94,17 +94,34 @@
             <!-- Department Filter (Only Super Admin) -->
             @if(Auth::user()->role->name === 'admin')
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Program</label>
                 <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                    <option value="">All Departments</option>
-                    <option value="BS Computer Science" {{ request('department') == 'BS Computer Science' ? 'selected' : '' }}>BS Computer Science</option>
-                    <option value="BS Information Technology" {{ request('department') == 'BS Information Technology' ? 'selected' : '' }}>BS Information Technology</option>
-                    <option value="BS Mechanical Engineering" {{ request('department') == 'BS Mechanical Engineering' ? 'selected' : '' }}>BS Mechanical Engineering</option>
+                    <option value="">All Programs</option>
+                    <!-- College of Engineering -->
                     <option value="BS Civil Engineering" {{ request('department') == 'BS Civil Engineering' ? 'selected' : '' }}>BS Civil Engineering</option>
                     <option value="BS Electrical Engineering" {{ request('department') == 'BS Electrical Engineering' ? 'selected' : '' }}>BS Electrical Engineering</option>
-                    <option value="BS Architecture" {{ request('department') == 'BS Architecture' ? 'selected' : '' }}>BS Architecture</option>
+                    <option value="BS Geodetic Engineering" {{ request('department') == 'BS Geodetic Engineering' ? 'selected' : '' }}>BS Geodetic Engineering</option>
+                    <option value="BS Electronics Engineering" {{ request('department') == 'BS Electronics Engineering' ? 'selected' : '' }}>BS Electronics Engineering</option>
+                    <option value="BS Information Technology" {{ request('department') == 'BS Information Technology' ? 'selected' : '' }}>BS Information Technology</option>
+                    <option value="BS Computer Science" {{ request('department') == 'BS Computer Science' ? 'selected' : '' }}>BS Computer Science</option>
+                    <option value="Associate in Computer Science" {{ request('department') == 'Associate in Computer Science' ? 'selected' : '' }}>Associate in Computer Science</option>
+                    <option value="BS Mechanical Engineering" {{ request('department') == 'BS Mechanical Engineering' ? 'selected' : '' }}>BS Mechanical Engineering</option>
+                    <option value="BS Aeronautical Engineering" {{ request('department') == 'BS Aeronautical Engineering' ? 'selected' : '' }}>BS Aeronautical Engineering</option>
+                    <option value="BS Aircraft Maintenance Technology" {{ request('department') == 'BS Aircraft Maintenance Technology' ? 'selected' : '' }}>BS Aircraft Maintenance Technology</option>
+                    <option value="Certificate in Aircraft Maintenance Technology" {{ request('department') == 'Certificate in Aircraft Maintenance Technology' ? 'selected' : '' }}>Certificate in Aircraft Maintenance Technology</option>
+                    <!-- College of Maritime Education -->
+                    <option value="BS Marine Engineering" {{ request('department') == 'BS Marine Engineering' ? 'selected' : '' }}>BS Marine Engineering</option>
+                    <option value="BS Marine Transportation" {{ request('department') == 'BS Marine Transportation' ? 'selected' : '' }}>BS Marine Transportation</option>
+                    <!-- College of Business -->
+                    <option value="BS Tourism Management" {{ request('department') == 'BS Tourism Management' ? 'selected' : '' }}>BS Tourism Management</option>
+                    <option value="BS Customs Administration" {{ request('department') == 'BS Customs Administration' ? 'selected' : '' }}>BS Customs Administration</option>
                     <option value="BS Business Administration" {{ request('department') == 'BS Business Administration' ? 'selected' : '' }}>BS Business Administration</option>
-                    <option value="BS Accountancy" {{ request('department') == 'BS Accountancy' ? 'selected' : '' }}>BS Accountancy</option>
+                    <!-- College of Architecture -->
+                    <option value="BS Architecture" {{ request('department') == 'BS Architecture' ? 'selected' : '' }}>BS Architecture</option>
+                    <!-- School of Fine Arts -->
+                    <option value="BFA major in Visual Communication" {{ request('department') == 'BFA major in Visual Communication' ? 'selected' : '' }}>BFA major in Visual Communication</option>
+                    <!-- College of Arts, Sciences and Education -->
+                    <option value="BA in Communication" {{ request('department') == 'BA in Communication' ? 'selected' : '' }}>BA in Communication</option>
                 </select>
             </div>
             @endif

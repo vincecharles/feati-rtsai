@@ -134,8 +134,9 @@ class ViolationController extends Controller
             $q->where('name', 'student');
         });
 
-        // Role-based filtering for department heads
-        if ($userRole === 'dept_head' && $userDepartment) {
+        // Role-based filtering
+        if (in_array($userRole, ['department_head', 'program_head', 'teacher']) && $userDepartment) {
+            // Department heads, program heads, and teachers can only see students in their program/department
             $query->where('program', $userDepartment);
         }
 
@@ -170,9 +171,33 @@ class ViolationController extends Controller
      */
     public function create()
     {
-        $students = User::whereHas('role', function($q) {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+        
+        // Check authorization - only these roles can create violations
+        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            abort(403, 'You do not have permission to create violations.');
+        }
+        
+        // Filter students based on user role
+        $studentsQuery = User::whereHas('role', function($q) {
             $q->where('name', 'student');
-        })->select('id', 'name', 'email', 'student_id')->orderBy('name')->get();
+        });
+        
+        // Program heads and teachers can only report violations for students in their program
+        if (in_array($userRole, ['program_head', 'teacher']) && $userDepartment) {
+            $studentsQuery->where('program', $userDepartment);
+        }
+        // Department heads can report violations for students in their department
+        elseif ($userRole === 'department_head' && $userDepartment) {
+            $studentsQuery->where('program', $userDepartment);
+        }
+        
+        $students = $studentsQuery->select('id', 'name', 'email', 'student_id', 'program')
+            ->orderBy('name')
+            ->get();
         
         return view('violations.create', compact('students'));
     }
@@ -182,6 +207,16 @@ class ViolationController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+        
+        // Check authorization - only these roles can create violations
+        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            abort(403, 'You do not have permission to create violations.');
+        }
+        
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
             'violation_type' => 'required|string|max:255',
@@ -193,6 +228,15 @@ class ViolationController extends Controller
         ]);
 
         try {
+            // Verify that program heads/teachers can only report violations for students in their program
+            if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
+                $student = User::find($validated['student_id']);
+                if ($student->program !== $userDepartment) {
+                    return back()->withInput()
+                        ->with('error', 'You can only report violations for students in your program/department.');
+                }
+            }
+            
             // Create violation
             $violation = Violation::create([
                 'student_id' => $validated['student_id'],
@@ -246,6 +290,19 @@ class ViolationController extends Controller
      */
     public function edit(Violation $violation)
     {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        
+        // Only admin, OSA can edit any violation
+        // Security can only edit violations they created
+        if (!in_array($userRole, ['admin', 'osa'])) {
+            if ($userRole === 'security' && $violation->reported_by !== $user->id) {
+                abort(403, 'Security personnel can only edit violations they reported.');
+            } elseif (!in_array($userRole, ['security'])) {
+                abort(403, 'You do not have permission to edit violations.');
+            }
+        }
+        
         $students = User::whereHas('role', function($q) {
             $q->where('name', 'student');
         })->select('id', 'name', 'email', 'student_id')->orderBy('name')->get();
@@ -258,6 +315,19 @@ class ViolationController extends Controller
      */
     public function update(Request $request, Violation $violation)
     {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        
+        // Only admin, OSA can update any violation
+        // Security can only update violations they created
+        if (!in_array($userRole, ['admin', 'osa'])) {
+            if ($userRole === 'security' && $violation->reported_by !== $user->id) {
+                abort(403, 'Security personnel can only update violations they reported.');
+            } elseif (!in_array($userRole, ['security'])) {
+                abort(403, 'You do not have permission to update violations.');
+            }
+        }
+        
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
             'violation_type' => 'required|string|max:255',
@@ -272,6 +342,12 @@ class ViolationController extends Controller
         ]);
 
         try {
+            // Security personnel cannot change status to 'resolved' or 'dismissed'
+            if ($userRole === 'security' && in_array($validated['status'], ['resolved', 'dismissed'])) {
+                return back()->withInput()
+                    ->with('error', 'Security personnel cannot resolve or dismiss violations. Only OSA and Admin can do this.');
+            }
+            
             $violation->update([
                 'student_id' => $validated['student_id'],
                 'violation_type' => $validated['violation_type'],
@@ -309,6 +385,19 @@ class ViolationController extends Controller
      */
     public function destroy(Violation $violation)
     {
+        $user = auth()->user();
+        $userRole = $user->role?->name;
+        
+        // Only admin, OSA can delete any violation
+        // Security can only delete violations they created
+        if (!in_array($userRole, ['admin', 'osa'])) {
+            if ($userRole === 'security' && $violation->reported_by !== $user->id) {
+                abort(403, 'Security personnel can only delete violations they reported.');
+            } elseif (!in_array($userRole, ['security'])) {
+                abort(403, 'You do not have permission to delete violations.');
+            }
+        }
+        
         try {
             $violation->delete();
 

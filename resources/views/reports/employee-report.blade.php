@@ -26,7 +26,12 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
                             <select name="department" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">All Departments</option>
-                                <option value="Academic Affairs" {{ ($filters['department'] ?? '') == 'Academic Affairs' ? 'selected' : '' }}>Academic Affairs</option>
+                                <option value="College of Engineering" {{ ($filters['department'] ?? '') == 'College of Engineering' ? 'selected' : '' }}>College of Engineering</option>
+                                <option value="College of Maritime Education" {{ ($filters['department'] ?? '') == 'College of Maritime Education' ? 'selected' : '' }}>College of Maritime Education</option>
+                                <option value="College of Business" {{ ($filters['department'] ?? '') == 'College of Business' ? 'selected' : '' }}>College of Business</option>
+                                <option value="College of Architecture" {{ ($filters['department'] ?? '') == 'College of Architecture' ? 'selected' : '' }}>College of Architecture</option>
+                                <option value="School of Fine Arts" {{ ($filters['department'] ?? '') == 'School of Fine Arts' ? 'selected' : '' }}>School of Fine Arts</option>
+                                <option value="College of Arts, Sciences and Education" {{ ($filters['department'] ?? '') == 'College of Arts, Sciences and Education' ? 'selected' : '' }}>College of Arts, Sciences and Education</option>
                                 <option value="Administration" {{ ($filters['department'] ?? '') == 'Administration' ? 'selected' : '' }}>Administration</option>
                                 <option value="Human Resources" {{ ($filters['department'] ?? '') == 'Human Resources' ? 'selected' : '' }}>Human Resources</option>
                                 <option value="Security" {{ ($filters['department'] ?? '') == 'Security' ? 'selected' : '' }}>Security</option>

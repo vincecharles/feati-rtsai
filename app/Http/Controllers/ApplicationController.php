@@ -391,14 +391,12 @@ class ApplicationController extends Controller
     private function getDepartments()
     {
         return [
-            'Engineering' => 'Engineering',
-            'Business' => 'Business Administration',
-            'IT' => 'Information Technology',
-            'Arts' => 'Liberal Arts',
-            'Science' => 'Natural Sciences',
-            'Education' => 'Education',
-            'Nursing' => 'Nursing',
-            'Medicine' => 'Medicine',
+            'COE' => 'College of Engineering',
+            'CME' => 'College of Maritime Education',
+            'COB' => 'College of Business',
+            'COA' => 'College of Architecture',
+            'SFA' => 'School of Fine Arts',
+            'CASE' => 'College of Arts, Sciences and Education',
         ];
     }
 
@@ -408,15 +406,36 @@ class ApplicationController extends Controller
     private function getCourses()
     {
         return [
-            'BSIT' => 'Bachelor of Science in Information Technology',
-            'BSCS' => 'Bachelor of Science in Computer Science',
+            // College of Engineering
             'BSCE' => 'Bachelor of Science in Civil Engineering',
             'BSEE' => 'Bachelor of Science in Electrical Engineering',
+            'BSGE' => 'Bachelor of Science in Geodetic Engineering',
+            'BSEcE' => 'Bachelor of Science in Electronics Engineering',
+            'BSIT' => 'Bachelor of Science in Information Technology',
+            'BSCS' => 'Bachelor of Science in Computer Science',
+            'ACS' => 'Associate in Computer Science',
             'BSME' => 'Bachelor of Science in Mechanical Engineering',
+            'BSAeroE' => 'Bachelor of Science in Aeronautical Engineering',
+            'BSAMT' => 'Bachelor of Science in Aircraft Maintenance Technology',
+            'CAMT' => 'Certificate in Aircraft Maintenance Technology',
+            
+            // College of Maritime Education
+            'BSMarE' => 'Bachelor of Science in Marine Engineering',
+            'BSMarT' => 'Bachelor of Science in Marine Transportation',
+            
+            // College of Business
+            'BSTM' => 'Bachelor of Science in Tourism Management',
+            'BSCA' => 'Bachelor of Science in Customs Administration',
             'BSBA' => 'Bachelor of Science in Business Administration',
-            'BSA' => 'Bachelor of Science in Accountancy',
-            'BSN' => 'Bachelor of Science in Nursing',
-            'BSE' => 'Bachelor of Science in Education',
+            
+            // College of Architecture
+            'BSArch' => 'Bachelor of Science in Architecture',
+            
+            // School of Fine Arts
+            'BFA-VC' => 'Bachelor of Fine Arts major in Visual Communication',
+            
+            // College of Arts, Sciences and Education
+            'BAC' => 'Bachelor of Arts in Communication',
         ];
     }
 

@@ -10,7 +10,7 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         foreach ([
-            ['name' => 'super_admin', 'label' => 'Super Administrator'],
+            ['name' => 'admin', 'label' => 'Super Administrator'], 
             ['name' => 'department_head', 'label' => 'Department Head'],
             ['name' => 'program_head', 'label' => 'Program Head'],
             ['name' => 'security', 'label' => 'Security Personnel'],

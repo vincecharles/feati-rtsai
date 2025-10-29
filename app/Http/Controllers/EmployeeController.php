@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
@@ -19,29 +20,27 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        // Only super_admin can view employees
-        if (Auth::user()->role->name !== 'admin') {
-            abort(403, 'Only Super Admin can view employees.');
-        }
-
         $user = Auth::user();
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
+
+        // Check authorization - allow admin, department_head, and program_head
+        $allowedRoles = ['admin', 'department_head', 'program_head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            abort(403, 'You do not have permission to view the employee list.');
+        }
 
         $query = User::with(['role', 'profile'])
             ->whereHas('profile');
 
         // Role-based filtering
-        if ($userRole === 'dept_head' && $userDepartment) {
-           
+        if (in_array($userRole, ['department_head', 'program_head']) && $userDepartment) {
+            // Department/Program heads can only see employees in their department
             $query->whereHas('profile', function($q) use ($userDepartment) {
                 $q->where('department', $userDepartment);
             });
-        } elseif ($userRole === 'teacher') {
-          
-            abort(403, 'You do not have permission to view the employee list.');
         }
-        // Super Admin and other roles can see all employees
+        // Super Admin can see all employees
 
         $employees = $query->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -59,7 +58,8 @@ class EmployeeController extends Controller
             abort(403, 'Only Super Admin can create employees.');
         }
 
-        $roles = Role::orderBy('label')->get();
+        // Fetch only employee roles (exclude student and admin roles)
+        $roles = Role::whereNotIn('name', ['student', 'admin'])->orderBy('label')->get();
         return view('employees.create', compact('roles'));
     }
 
@@ -83,8 +83,7 @@ class EmployeeController extends Controller
             'suffix' => 'nullable|string|max:10',
             'preferred_name' => 'nullable|string|max:255',
             'sex' => 'required|in:Male,Female',
-            'gender_select' => 'required|string',
-            'gender_custom' => 'required_if:gender_select,self_describe|string|max:255',
+            'age' => 'nullable|integer|min:18|max:100',
             'date_of_birth' => 'nullable|date',
             'place_of_birth' => 'nullable|string|max:255',
             'civil_status' => 'nullable|string|max:50',
@@ -98,6 +97,8 @@ class EmployeeController extends Controller
             'emergency_phone' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
             'date_hired' => 'required|date',
+            'department' => 'nullable|string|max:255',
+            'program' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -114,10 +115,8 @@ class EmployeeController extends Controller
             // Generate employee number
             $employeeNumber = $this->generateEmployeeNumber($validated['date_hired']);
 
-            // Determine gender value
-            $gender = $validated['gender_select'] === 'self_describe' 
-                ? $validated['gender_custom'] 
-                : $validated['gender_select'];
+            // Get role for position
+            $role = Role::find($validated['role_id']);
 
             // Create employee profile
             $user->profile()->create([
@@ -129,7 +128,7 @@ class EmployeeController extends Controller
                 'suffix' => $validated['suffix'],
                 'preferred_name' => $validated['preferred_name'],
                 'sex' => $validated['sex'],
-                'gender' => $gender,
+                'age' => $validated['age'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'place_of_birth' => $validated['place_of_birth'],
                 'civil_status' => $validated['civil_status'],
@@ -142,6 +141,9 @@ class EmployeeController extends Controller
                 'emergency_relationship' => $validated['emergency_relationship'],
                 'emergency_phone' => $validated['emergency_phone'],
                 'emergency_address' => $validated['emergency_address'],
+                'department' => $validated['department'],
+                'program' => $validated['program'],
+                'position' => $role ? $role->label : null,
             ]);
 
             DB::commit();
@@ -161,9 +163,21 @@ class EmployeeController extends Controller
      */
     public function show(User $employee)
     {
-        // Only super_admin can view employee details
-        if (Auth::user()->role->name !== 'admin') {
-            abort(403, 'Only Super Admin can view employee details.');
+        $user = Auth::user();
+        $userRole = $user->role?->name;
+        $userDepartment = $user->profile?->department;
+
+        // Check authorization - allow admin, department_head, and program_head
+        $allowedRoles = ['admin', 'department_head', 'program_head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            abort(403, 'You do not have permission to view employee details.');
+        }
+
+        // Department/Program heads can only view employees in their department
+        if (in_array($userRole, ['department_head', 'program_head']) && $userDepartment) {
+            if ($employee->profile->department !== $userDepartment) {
+                abort(403, 'You can only view employees in your department.');
+            }
         }
 
         $employee->load(['role', 'profile', 'dependents']);
@@ -180,7 +194,8 @@ class EmployeeController extends Controller
             abort(403, 'Only Super Admin can edit employees.');
         }
 
-        $roles = Role::orderBy('label')->get();
+        // Fetch only employee roles (exclude student and admin roles)
+        $roles = Role::whereNotIn('name', ['student', 'admin'])->orderBy('label')->get();
         $employee->load('profile');
         return view('employees.edit', compact('employee', 'roles'));
     }
@@ -205,8 +220,7 @@ class EmployeeController extends Controller
             'suffix' => 'nullable|string|max:10',
             'preferred_name' => 'nullable|string|max:255',
             'sex' => 'required|in:Male,Female',
-            'gender_select' => 'required|string',
-            'gender_custom' => 'required_if:gender_select,self_describe|string|max:255',
+            'age' => 'nullable|integer|min:18|max:100',
             'date_of_birth' => 'nullable|date',
             'place_of_birth' => 'nullable|string|max:255',
             'civil_status' => 'nullable|string|max:50',
@@ -220,6 +234,8 @@ class EmployeeController extends Controller
             'emergency_phone' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
             'date_hired' => 'required|date',
+            'department' => 'nullable|string|max:255',
+            'program' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -238,10 +254,8 @@ class EmployeeController extends Controller
 
             $employee->update($userData);
 
-            // Determine gender value
-            $gender = $validated['gender_select'] === 'self_describe' 
-                ? $validated['gender_custom'] 
-                : $validated['gender_select'];
+            // Get role for position
+            $role = Role::find($validated['role_id']);
 
             // Update or create employee profile
             $profileData = [
@@ -252,7 +266,7 @@ class EmployeeController extends Controller
                 'suffix' => $validated['suffix'],
                 'preferred_name' => $validated['preferred_name'],
                 'sex' => $validated['sex'],
-                'gender' => $gender,
+                'age' => $validated['age'],
                 'date_of_birth' => $validated['date_of_birth'],
                 'place_of_birth' => $validated['place_of_birth'],
                 'civil_status' => $validated['civil_status'],
@@ -265,6 +279,9 @@ class EmployeeController extends Controller
                 'emergency_relationship' => $validated['emergency_relationship'],
                 'emergency_phone' => $validated['emergency_phone'],
                 'emergency_address' => $validated['emergency_address'],
+                'department' => $validated['department'],
+                'program' => $validated['program'],
+                'position' => $role ? $role->label : null,
             ];
 
             if ($employee->profile) {
@@ -282,6 +299,8 @@ class EmployeeController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Employee Update Error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             return back()->withInput()
                 ->with('error', 'Failed to update employee: ' . $e->getMessage());
         }

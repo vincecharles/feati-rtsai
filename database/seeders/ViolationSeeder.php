@@ -16,7 +16,7 @@ class ViolationSeeder extends Seeder
         
         // Get any employees (teachers, security, etc.) as reporters
         $reporters = User::whereHas('role', function($q) {
-            $q->whereIn('name', ['super_admin', 'teacher', 'security', 'osa']);
+            $q->whereIn('name', ['admin', 'teacher', 'security', 'osa']);
         })->limit(10)->get();
 
         $violationTypes = [

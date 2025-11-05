@@ -39,7 +39,7 @@ class ViolationController extends Controller
         } elseif ($userRole === 'student') {
             // Students can only see their own violations
             $query->where('student_id', $user->id);
-        } else if ($filterDepartment && in_array($userRole, ['super_admin', 'osa', 'security'])) {
+        } else if ($filterDepartment && in_array($userRole, ['admin', 'osa', 'security'])) {
             // Super Admin, OSA, Security can filter by department
             $query->whereHas('student', function($q) use ($filterDepartment) {
                 $q->where('program', $filterDepartment);
@@ -95,7 +95,7 @@ class ViolationController extends Controller
             $students = User::whereHas('role', function($q) {
                 $q->where('name', 'student');
             })->where('program', $userDepartment)->select('id', 'name', 'email', 'program')->get();
-        } else if ($filterDepartment && in_array($userRole, ['super_admin', 'osa', 'security'])) {
+        } else if ($filterDepartment && in_array($userRole, ['admin', 'osa', 'security'])) {
             $students = User::whereHas('role', function($q) {
                 $q->where('name', 'student');
             })->where('program', $filterDepartment)->select('id', 'name', 'email', 'program')->get();

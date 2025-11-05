@@ -11,7 +11,7 @@
             <p class="text-gray-600 dark:text-gray-400">Manage student disciplinary records and violations</p>
         </div>
         <div class="flex space-x-3">
-            @if(in_array(Auth::user()->role->name, ['super_admin', 'security', 'osa']))
+            @if(in_array(Auth::user()->role->name, ['admin', 'security', 'osa']))
             <a href="{{ route('violations.create') }}" 
                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-plus mr-2"></i> New Violation
@@ -93,7 +93,7 @@
             <input type="hidden" name="search" id="searchInputHidden" value="{{ request('search') }}">
 
             <!-- Department Filter (Only for Super Admin) -->
-            @if(Auth::user()->role->name === 'super_admin')
+            @if(Auth::user()->role->name === 'admin')
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
                 <select name="department" id="departmentFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">

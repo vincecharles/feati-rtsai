@@ -42,7 +42,7 @@ class CheckPermission
     private function hasPermission(?string $roleName, string $permission, ?string $userDepartment): bool
     {
         $permissions = [
-            'super_admin' => ['super_admin', 'view_all_violations', 'view_all_reports', 'manage_all_employees'],
+            'admin' => ['admin', 'view_all_violations', 'view_all_reports', 'manage_all_employees', 'create_violation', 'edit_violation', 'delete_violation', 'manage_users', 'manage_roles', 'manage_settings', 'view_all_departments'],
             'security' => ['security', 'create_violation', 'edit_own_violations', 'view_violations'],
             'dept_head' => ['dept_head', 'view_department', 'manage_department_employees', 'view_department_violations'],
             'osa' => ['osa', 'create_violation', 'edit_violation', 'view_violations', 'resolve_violations'],

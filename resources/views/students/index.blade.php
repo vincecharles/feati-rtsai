@@ -12,6 +12,14 @@
         </div>
         <div class="flex space-x-3">
             @if(Auth::user()->role->name === 'admin')
+            <form action="{{ route('students.sync-data') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" 
+                        onclick="return confirm('This will sync student data from employee profiles to the users table. Continue?')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-sync mr-2"></i> Sync Data
+                </button>
+            </form>
             <a href="{{ route('students.create') }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="fas fa-plus mr-2"></i> Add Student

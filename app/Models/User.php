@@ -48,6 +48,10 @@ class User extends Authenticatable
             'year_level' => $this->year_level,
             'status' => $this->status,
             'role' => $this->role?->name,
+            'employee_number' => $this->profile?->employee_number,
+            'department' => $this->profile?->department ?? $this->studentProfile?->department,
+            'position' => $this->profile?->position,
+            'mobile' => $this->profile?->mobile ?? $this->studentProfile?->mobile,
         ];
     }
 
@@ -59,6 +63,11 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(EmployeeProfile::class)->withDefault();
+    }
+
+    public function studentProfile()
+    {
+        return $this->hasOne(StudentProfile::class)->withDefault();
     }
 
     public function dependents()

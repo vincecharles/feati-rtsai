@@ -33,35 +33,32 @@ class EmployeeController extends Controller
         $query = User::with(['role', 'profile'])
             ->whereHas('profile');
 
-        // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('mobile', 'like', "%{$search}%")
-                  ->orWhereHas('profile', function($profileQuery) use ($search) {
-                      $profileQuery->where('position', 'like', "%{$search}%")
-                                   ->orWhere('department', 'like', "%{$search}%");
-                  });
-            });
+            
+            $employeeIds = User::search($search)
+                ->whereIn('role', ['teacher', 'department_head', 'program_head', 'osa', 'security'])
+                ->get()
+                ->pluck('id');
+            
+            if ($employeeIds->isNotEmpty()) {
+                $query->whereIn('id', $employeeIds);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
-        // Department filter
         if ($request->filled('department')) {
             $query->whereHas('profile', function($q) use ($request) {
                 $q->where('department', $request->department);
             });
         }
 
-        // Role-based filtering
         if (in_array($userRole, ['department_head', 'program_head']) && $userDepartment) {
-            // Department/Program heads can only see employees in their department
             $query->whereHas('profile', function($q) use ($userDepartment) {
                 $q->where('department', $userDepartment);
             });
         }
-        // Super Admin can see all employees
 
         $employees = $query->orderBy('created_at', 'desc')
             ->paginate(20)
@@ -119,8 +116,8 @@ class EmployeeController extends Controller
             'emergency_phone' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
             'date_hired' => 'required|date',
-            'department' => 'nullable|string|max:255',
-            'program' => 'nullable|string|max:255',
+            'department' => 'required|string|max:255',
+            'position' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -164,8 +161,7 @@ class EmployeeController extends Controller
                 'emergency_phone' => $validated['emergency_phone'],
                 'emergency_address' => $validated['emergency_address'],
                 'department' => $validated['department'],
-                'program' => $validated['program'],
-                'position' => $role ? $role->label : null,
+                'position' => $validated['position'] ?? $role->label,
             ]);
 
             DB::commit();
@@ -256,8 +252,8 @@ class EmployeeController extends Controller
             'emergency_phone' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
             'date_hired' => 'required|date',
-            'department' => 'nullable|string|max:255',
-            'program' => 'nullable|string|max:255',
+            'department' => 'required|string|max:255',
+            'position' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -302,8 +298,7 @@ class EmployeeController extends Controller
                 'emergency_phone' => $validated['emergency_phone'],
                 'emergency_address' => $validated['emergency_address'],
                 'department' => $validated['department'],
-                'program' => $validated['program'],
-                'position' => $role ? $role->label : null,
+                'position' => $validated['position'] ?? $role->label,
             ];
 
             if ($employee->profile) {

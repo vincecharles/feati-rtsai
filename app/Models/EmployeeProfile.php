@@ -12,7 +12,7 @@ class EmployeeProfile extends Model {
         'civil_status','nationality','mobile','email',
         'current_address','permanent_address',
         'emergency_name','emergency_relationship','emergency_phone','emergency_address',
-        'department','position','program',
+        'department','position',
     ];
     public function user(){ return $this->belongsTo(User::class); }
 }

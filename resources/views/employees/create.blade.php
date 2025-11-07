@@ -117,8 +117,8 @@
                             <p class="text-xs text-gray-500 mt-1">Employee number (YY-XXXXXXXX) will be generated from the year hired.</p>
                         </div>
                         <div>
-                            <label class="block text-sm dark:text-gray-300">Department/College</label>
-                            <select name="department" id="department-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
+                            <label class="block text-sm dark:text-gray-300">Department/College <span class="text-red-500">*</span></label>
+                            <select name="department" id="department-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100" required>
                                 <option value="">— Select Department —</option>
                                 <option value="College of Engineering" {{ old('department') == 'College of Engineering' ? 'selected' : '' }}>College of Engineering</option>
                                 <option value="College of Maritime Education" {{ old('department') == 'College of Maritime Education' ? 'selected' : '' }}>College of Maritime Education</option>

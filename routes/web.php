@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('students', StudentController::class);
     Route::get('/api/students/statistics', [StudentController::class, 'getStatistics'])->name('students.statistics');
     Route::post('/api/students/bulk-action', [StudentController::class, 'bulkAction'])->name('students.bulk-action');
+    Route::post('/api/students/sync-data', [StudentController::class, 'syncStudentData'])->name('students.sync-data');
 
     // Application routes
     Route::resource('applications', ApplicationController::class);

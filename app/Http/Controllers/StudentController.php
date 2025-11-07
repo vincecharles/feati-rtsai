@@ -153,7 +153,7 @@ class StudentController extends Controller
             'department' => 'required|string|max:100',
             'course' => 'required|string|max:100',
             'year_level' => 'required|integer|min:1|max:5',
-            'student_id' => 'required|string|unique:employee_profiles,employee_number',
+            'student_id' => 'required|string|unique:student_profiles,student_number',
             'enrollment_date' => 'required|date',
         ]);
 
@@ -173,12 +173,15 @@ class StudentController extends Controller
                 'password' => Hash::make($validated['password']),
                 'role_id' => $studentRole->id,
                 'status' => 'active',
+                'student_id' => $validated['student_id'],
+                'program' => $validated['course'],
+                'year_level' => $validated['year_level'],
             ]);
 
             // Create student profile
-            $user->profile()->create([
-                'employee_number' => $validated['student_id'],
-                'date_hired' => $validated['enrollment_date'],
+            $user->studentProfile()->create([
+                'student_number' => $validated['student_id'],
+                'enrollment_date' => $validated['enrollment_date'],
                 'last_name' => $validated['last_name'],
                 'first_name' => $validated['first_name'],
                 'middle_name' => $validated['middle_name'] ?? null,
@@ -196,6 +199,7 @@ class StudentController extends Controller
                 'emergency_phone' => $validated['emergency_phone'] ?? null,
                 'emergency_address' => $validated['emergency_address'] ?? null,
                 'department' => $validated['department'],
+                'program' => $validated['course'],
                 'course' => $validated['course'],
                 'year_level' => $validated['year_level'],
             ]);
@@ -204,7 +208,7 @@ class StudentController extends Controller
 
             if ($request->expectsJson()) {
                 return $this->successResponse('Student created successfully', [
-                    'student' => $user->load('profile')
+                    'student' => $user->load('studentProfile')
                 ]);
             }
 
@@ -244,7 +248,7 @@ class StudentController extends Controller
             }
         }
         
-        $student->load(['role', 'profile', 'dependents']);
+        $student->load(['role', 'studentProfile', 'dependents']);
         
         // Determine what fields can be viewed based on role
         $canViewFullInfo = in_array($userRole, ['admin', 'osa']) || 
@@ -274,7 +278,7 @@ class StudentController extends Controller
         $departments = $this->getDepartments();
         $programs = $this->getPrograms();
         $departmentPrograms = $this->getDepartmentProgramsMapping();
-        $student->load('profile');
+        $student->load('studentProfile');
         
         // Get all countries using the laravel-countries package
         $countries = \Lwwcas\LaravelCountries\Models\Country::select('id', 'official_name', 'iso_alpha_2')
@@ -318,7 +322,7 @@ class StudentController extends Controller
             'department' => 'required|string|max:100',
             'course' => 'required|string|max:100',
             'year_level' => 'required|integer|min:1|max:5',
-            'student_id' => ['required', 'string', Rule::unique('employee_profiles', 'employee_number')->ignore($student->profile->id)],
+            'student_id' => ['required', 'string', Rule::unique('student_profiles', 'student_number')->ignore($student->studentProfile->id)],
             'enrollment_date' => 'required|date',
             'status' => 'required|in:active,inactive,suspended,graduated',
         ]);
@@ -331,6 +335,9 @@ class StudentController extends Controller
                 'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
                 'email' => $validated['email'],
                 'status' => $validated['status'],
+                'student_id' => $validated['student_id'],
+                'program' => $validated['course'],
+                'year_level' => $validated['year_level'],
             ];
 
             if (!empty($validated['password'])) {
@@ -341,8 +348,8 @@ class StudentController extends Controller
 
             // Update student profile
             $profileData = [
-                'employee_number' => $validated['student_id'],
-                'date_hired' => $validated['enrollment_date'],
+                'student_number' => $validated['student_id'],
+                'enrollment_date' => $validated['enrollment_date'],
                 'last_name' => $validated['last_name'],
                 'first_name' => $validated['first_name'],
                 'middle_name' => $validated['middle_name'] ?? null,
@@ -360,21 +367,22 @@ class StudentController extends Controller
                 'emergency_phone' => $validated['emergency_phone'] ?? null,
                 'emergency_address' => $validated['emergency_address'] ?? null,
                 'department' => $validated['department'],
+                'program' => $validated['course'],
                 'course' => $validated['course'],
                 'year_level' => $validated['year_level'],
             ];
 
-            if ($student->profile) {
-                $student->profile->update($profileData);
+            if ($student->studentProfile) {
+                $student->studentProfile->update($profileData);
             } else {
-                $student->profile()->create($profileData);
+                $student->studentProfile()->create($profileData);
             }
 
             DB::commit();
 
             if ($request->expectsJson()) {
                 return $this->successResponse('Student updated successfully', [
-                    'student' => $student->load('profile')
+                    'student' => $student->load('studentProfile')
                 ]);
             }
 
@@ -406,12 +414,9 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
 
-            
             $student->dependents()->delete();
             
-            
-            $student->profile()->delete();
-            
+            $student->studentProfile()->delete();
             
             $student->delete();
 
@@ -580,6 +585,66 @@ class StudentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse('Failed to perform bulk action: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Sync student data from employee_profiles to users table
+     * This method fetches student_id, program, and year_level from employee_profiles
+     * and updates the corresponding fields in the users table
+     */
+    public function syncStudentData(Request $request)
+    {
+        if (Auth::user()->role->name !== 'admin') {
+            abort(403, 'Only Super Admin can sync student data.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $students = User::with('studentProfile')
+                ->whereHas('role', function($q) {
+                    $q->where('name', 'student');
+                })
+                ->get();
+
+            $updated = 0;
+            $skipped = 0;
+
+            foreach ($students as $student) {
+                if ($student->studentProfile && $student->studentProfile->student_number) {
+                    $student->update([
+                        'student_id' => $student->studentProfile->student_number,
+                        'program' => $student->studentProfile->course ?? $student->studentProfile->program,
+                        'year_level' => $student->studentProfile->year_level,
+                    ]);
+                    $updated++;
+                } else {
+                    $skipped++;
+                }
+            }
+
+            DB::commit();
+
+            if ($request->expectsJson()) {
+                return $this->successResponse('Student data synced successfully', [
+                    'updated' => $updated,
+                    'skipped' => $skipped,
+                    'total' => $students->count()
+                ]);
+            }
+
+            return redirect()->route('students.index')
+                ->with('success', "Student data synced successfully. Updated: {$updated}, Skipped: {$skipped}");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            if ($request->expectsJson()) {
+                return $this->errorResponse('Failed to sync student data: ' . $e->getMessage());
+            }
+            
+            return back()->with('error', 'Failed to sync student data: ' . $e->getMessage());
         }
     }
 }

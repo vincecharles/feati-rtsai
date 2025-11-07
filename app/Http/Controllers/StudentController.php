@@ -22,8 +22,7 @@ class StudentController extends Controller
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
 
-        $query = User::with('role')
-            ->whereNotNull('student_id')
+        $query = User::with(['role', 'studentProfile'])
             ->whereHas('role', function($q) {
                 $q->where('name', 'student');
             });
@@ -33,7 +32,9 @@ class StudentController extends Controller
             case 'department_head':
             case 'program_head':
                 // Department and program heads can only see their own department's students
-                $query->where('program', $userDepartment);
+                $query->whereHas('studentProfile', function($q) use ($userDepartment) {
+                    $q->where('department', $userDepartment);
+                });
                 break;
             case 'student':
                 // Students can only see themselves
@@ -65,15 +66,19 @@ class StudentController extends Controller
             }
         }
 
-        // Filter by department (program for students) - only if user has permission
+        // Filter by department - only if user has permission
         if ($request->has('department') && $request->department) {
             if ($userRole === 'admin' || $userRole === 'security' || $userRole === 'osa') {
                 // Only super admin, security, and osa can filter by arbitrary departments
-                $query->where('program', $request->department);
+                $query->whereHas('studentProfile', function($q) use ($request) {
+                    $q->where('department', $request->department);
+                });
             } elseif ($userRole === 'department_head' || $userRole === 'program_head') {
                 // Dept heads and program heads can only see their own department
                 if ($request->department === $userDepartment) {
-                    $query->where('program', $request->department);
+                    $query->whereHas('studentProfile', function($q) use ($request) {
+                        $q->where('department', $request->department);
+                    });
                 }
             }
         }
@@ -143,12 +148,7 @@ class StudentController extends Controller
         $programs = $this->getPrograms();
         $departmentPrograms = $this->getDepartmentProgramsMapping();
         
-        // Get all countries using the laravel-countries package
-        $countries = \Lwwcas\LaravelCountries\Models\Country::select('id', 'official_name', 'iso_alpha_2')
-            ->where('is_visible', 1)
-            ->orderBy('official_name')
-            ->get()
-            ->pluck('official_name', 'official_name');
+        $countries = $this->getCountries();
         
         return view('students.create', compact('roles', 'departments', 'programs', 'departmentPrograms', 'countries'));
     }
@@ -205,9 +205,6 @@ class StudentController extends Controller
                 'password' => Hash::make($validated['password']),
                 'role_id' => $studentRole->id,
                 'status' => 'active',
-                'student_id' => $validated['student_id'],
-                'program' => $validated['course'],
-                'year_level' => $validated['year_level'],
             ]);
 
             // Create student profile
@@ -275,16 +272,16 @@ class StudentController extends Controller
         
         // Program heads, department heads, and teachers can only view students in their program
         if (in_array($userRole, ['program_head', 'department_head', 'teacher']) && $userDepartment) {
-            if ($student->program !== $userDepartment) {
+            if ($student->studentProfile && $student->studentProfile->department !== $userDepartment) {
                 abort(403, 'You can only view students in your program/department.');
             }
         }
         
-        $student->load(['role', 'studentProfile', 'dependents']);
+        $student->load(['role', 'studentProfile']);
         
         // Determine what fields can be viewed based on role
         $canViewFullInfo = in_array($userRole, ['admin', 'osa']) || 
-                          ($userRole === 'program_head' && $student->program === $userDepartment);
+                          ($userRole === 'program_head' && $student->studentProfile && $student->studentProfile->department === $userDepartment);
         
         if (request()->expectsJson()) {
             return $this->successResponse('Student retrieved successfully', [
@@ -312,12 +309,7 @@ class StudentController extends Controller
         $departmentPrograms = $this->getDepartmentProgramsMapping();
         $student->load('studentProfile');
         
-        // Get all countries using the laravel-countries package
-        $countries = \Lwwcas\LaravelCountries\Models\Country::select('id', 'official_name', 'iso_alpha_2')
-            ->where('is_visible', 1)
-            ->orderBy('official_name')
-            ->get()
-            ->pluck('official_name', 'official_name');
+        $countries = $this->getCountries();
         
         return view('students.edit', compact('student', 'roles', 'departments', 'programs', 'departmentPrograms', 'countries'));
     }
@@ -367,9 +359,6 @@ class StudentController extends Controller
                 'name' => trim($validated['first_name'] . ' ' . $validated['last_name']),
                 'email' => $validated['email'],
                 'status' => $validated['status'],
-                'student_id' => $validated['student_id'],
-                'program' => $validated['course'],
-                'year_level' => $validated['year_level'],
             ];
 
             if (!empty($validated['password'])) {
@@ -445,8 +434,6 @@ class StudentController extends Controller
 
         try {
             DB::beginTransaction();
-
-            $student->dependents()->delete();
             
             $student->studentProfile()->delete();
             
@@ -678,5 +665,61 @@ class StudentController extends Controller
             
             return back()->with('error', 'Failed to sync student data: ' . $e->getMessage());
         }
+    }
+
+    private function getCountries()
+    {
+        return [
+            'Philippines' => 'Philippines',
+            'United States' => 'United States',
+            'Canada' => 'Canada',
+            'United Kingdom' => 'United Kingdom',
+            'Australia' => 'Australia',
+            'China' => 'China',
+            'Japan' => 'Japan',
+            'South Korea' => 'South Korea',
+            'Singapore' => 'Singapore',
+            'Malaysia' => 'Malaysia',
+            'Thailand' => 'Thailand',
+            'Vietnam' => 'Vietnam',
+            'Indonesia' => 'Indonesia',
+            'India' => 'India',
+            'Saudi Arabia' => 'Saudi Arabia',
+            'United Arab Emirates' => 'United Arab Emirates',
+            'Germany' => 'Germany',
+            'France' => 'France',
+            'Italy' => 'Italy',
+            'Spain' => 'Spain',
+            'Netherlands' => 'Netherlands',
+            'Switzerland' => 'Switzerland',
+            'Sweden' => 'Sweden',
+            'Norway' => 'Norway',
+            'Denmark' => 'Denmark',
+            'Finland' => 'Finland',
+            'Belgium' => 'Belgium',
+            'Austria' => 'Austria',
+            'Poland' => 'Poland',
+            'Portugal' => 'Portugal',
+            'Greece' => 'Greece',
+            'Czech Republic' => 'Czech Republic',
+            'Ireland' => 'Ireland',
+            'New Zealand' => 'New Zealand',
+            'Hong Kong' => 'Hong Kong',
+            'Taiwan' => 'Taiwan',
+            'Mexico' => 'Mexico',
+            'Brazil' => 'Brazil',
+            'Argentina' => 'Argentina',
+            'Chile' => 'Chile',
+            'Colombia' => 'Colombia',
+            'Peru' => 'Peru',
+            'Russia' => 'Russia',
+            'Turkey' => 'Turkey',
+            'Israel' => 'Israel',
+            'Egypt' => 'Egypt',
+            'South Africa' => 'South Africa',
+            'Nigeria' => 'Nigeria',
+            'Kenya' => 'Kenya',
+            'Other' => 'Other',
+        ];
     }
 }

@@ -15,6 +15,7 @@ class Violation extends Model
     protected $fillable = [
         'student_id',
         'reported_by',
+        'offense_category',
         'violation_type',
         'sanction',
         'description',
@@ -39,8 +40,8 @@ class Violation extends Model
         return [
             'id' => $this->id,
             'student_name' => $this->student?->name,
-            'student_id' => $this->student?->student_id,
-            'student_program' => $this->student?->program,
+            'student_number' => $this->student?->studentProfile?->student_number,
+            'department' => $this->student?->studentProfile?->department,
             'violation_type' => $this->violation_type,
             'sanction' => $this->sanction,
             'description' => $this->description,
@@ -68,7 +69,7 @@ class Violation extends Model
 
     public function notes(): HasMany
     {
-        return $this->hasMany(ViolationNote::class);
+        return $this->hasMany(ViolationNote::class)->orderBy('created_at', 'desc');
     }
 
     // Scopes

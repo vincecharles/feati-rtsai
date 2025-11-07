@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\ApplicationController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -48,18 +46,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/students/statistics', [StudentController::class, 'getStatistics'])->name('students.statistics');
     Route::post('/api/students/bulk-action', [StudentController::class, 'bulkAction'])->name('students.bulk-action');
     Route::post('/api/students/sync-data', [StudentController::class, 'syncStudentData'])->name('students.sync-data');
-
-    // Application routes
-    Route::resource('applications', ApplicationController::class);
-    Route::post('/applications/{application}/review', [ApplicationController::class, 'review'])->name('applications.review');
-    Route::get('/api/applications/statistics', [ApplicationController::class, 'getStatistics'])->name('applications.statistics');
-
-    // Event routes
-    Route::resource('events', EventController::class);
-    Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
-    Route::post('/events/{event}/cancel-registration', [EventController::class, 'cancelRegistration'])->name('events.cancel-registration');
-    Route::get('/api/events/statistics', [EventController::class, 'getStatistics'])->name('events.statistics');
-    Route::get('/api/events/upcoming', [EventController::class, 'getUpcomingEvents'])->name('events.upcoming');
 
     // Reports routes
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');

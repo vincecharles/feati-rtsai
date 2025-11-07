@@ -42,7 +42,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm dark:text-gray-300">Login Email</label>
-                            <input type="email" name="email" value="{{ old('email', $employee->email) }}" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100" required>
+                            <input type="email" name="email" value="{{ old('email', $employee->email) }}" class="mt-1 w-full rounded border-gray-300 bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed" readonly>
                             @error('email')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
                         </div>
                         <div>
@@ -67,7 +67,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block text-sm dark:text-gray-300">Employee #</label>
-                            <input value="{{ $p->employee_number }}" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100" disabled>
+                            <input value="{{ $p->employee_number }}" class="mt-1 w-full rounded border-gray-300 bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed" disabled>
                         </div>
                         <div>
                             <label class="block text-sm dark:text-gray-300">Date Hired</label>
@@ -75,7 +75,7 @@
                         </div>
                         <div>
                             <label class="block text-sm dark:text-gray-300">Department/College <span class="text-red-500">*</span></label>
-                            <select name="department" id="department-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100" required>
+                            <select name="department" id="department-select" class="mt-1 w-full rounded border-gray-300 bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed" disabled>
                                 <option value="">— Select Department —</option>
                                 <option value="College of Engineering" {{ old('department', $p->department) == 'College of Engineering' ? 'selected' : '' }}>College of Engineering</option>
                                 <option value="College of Maritime Education" {{ old('department', $p->department) == 'College of Maritime Education' ? 'selected' : '' }}>College of Maritime Education</option>
@@ -88,13 +88,15 @@
                                 <option value="Security" {{ old('department', $p->department) == 'Security' ? 'selected' : '' }}>Security</option>
                                 <option value="Office of Student Affairs" {{ old('department', $p->department) == 'Office of Student Affairs' ? 'selected' : '' }}>Office of Student Affairs</option>
                             </select>
+                            <input type="hidden" name="department" value="{{ old('department', $p->department) }}">
                             @error('department')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label class="block text-sm dark:text-gray-300">Program/Course (Optional)</label>
-                            <select name="program" id="program-select" class="mt-1 w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
+                            <select name="program" id="program-select" class="mt-1 w-full rounded border-gray-300 bg-gray-100 dark:bg-gray-900 dark:text-gray-400 cursor-not-allowed" disabled>
                                 <option value="">— Select Program (if applicable) —</option>
                             </select>
+                            <input type="hidden" name="program" value="{{ old('program', $p->program) }}">
                             @error('program')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
                         </div>
                     </div>

@@ -17,7 +17,7 @@ class ViolationController extends Controller
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
 
-        $query = Violation::with(['student', 'reporter', 'notes.user']);
+        $query = Violation::with(['student.studentProfile', 'reporter', 'notes.user']);
 
         // Filter by department if specified
         $filterDepartment = $request->has('department') && $request->department ? $request->department : null;
@@ -25,13 +25,13 @@ class ViolationController extends Controller
         // Role-based filtering
         if ($userRole === 'department_head' && $userDepartment) {
             // Department heads can only see violations for their department's students
-            $query->whereHas('student', function($q) use ($userDepartment) {
-                $q->where('program', $userDepartment);
+            $query->whereHas('student.studentProfile', function($q) use ($userDepartment) {
+                $q->where('department', $userDepartment);
             });
         } elseif ($userRole === 'program_head' && $userDepartment) {
             // Program heads can only see violations for their program's students
-            $query->whereHas('student', function($q) use ($userDepartment) {
-                $q->where('program', $userDepartment);
+            $query->whereHas('student.studentProfile', function($q) use ($userDepartment) {
+                $q->where('department', $userDepartment);
             });
         } elseif ($userRole === 'teacher') {
             // Teachers can't view violations (implement if needed)
@@ -41,8 +41,8 @@ class ViolationController extends Controller
             $query->where('student_id', $user->id);
         } else if ($filterDepartment && in_array($userRole, ['admin', 'osa', 'security'])) {
             // Super Admin, OSA, Security can filter by department
-            $query->whereHas('student', function($q) use ($filterDepartment) {
-                $q->where('program', $filterDepartment);
+            $query->whereHas('student.studentProfile', function($q) use ($filterDepartment) {
+                $q->where('department', $filterDepartment);
             });
         }
 
@@ -93,11 +93,15 @@ class ViolationController extends Controller
         if ($userRole === 'dept_head' && $userDepartment) {
             $students = User::whereHas('role', function($q) {
                 $q->where('name', 'student');
-            })->where('program', $userDepartment)->select('id', 'name', 'email', 'program')->get();
+            })->whereHas('studentProfile', function($q) use ($userDepartment) {
+                $q->where('department', $userDepartment);
+            })->select('id', 'name', 'email')->get();
         } else if ($filterDepartment && in_array($userRole, ['admin', 'osa', 'security'])) {
             $students = User::whereHas('role', function($q) {
                 $q->where('name', 'student');
-            })->where('program', $filterDepartment)->select('id', 'name', 'email', 'program')->get();
+            })->whereHas('studentProfile', function($q) use ($filterDepartment) {
+                $q->where('department', $filterDepartment);
+            })->select('id', 'name', 'email')->get();
         } else {
             $students = User::whereHas('role', function($q) {
                 $q->where('name', 'student');
@@ -129,36 +133,36 @@ class ViolationController extends Controller
         $userDepartment = $user->profile?->department;
         $search = $request->query('q', '');
 
-        $query = User::whereHas('role', function($q) {
+        $query = User::with('studentProfile')->whereHas('role', function($q) {
             $q->where('name', 'student');
         });
 
-        // Role-based filtering
         if (in_array($userRole, ['department_head', 'program_head', 'teacher']) && $userDepartment) {
-            // Department heads, program heads, and teachers can only see students in their program/department
-            $query->where('program', $userDepartment);
-        }
-
-        // Search by name or student_id
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('student_id', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+            $query->whereHas('studentProfile', function($q) use ($userDepartment) {
+                $q->where('department', $userDepartment);
             });
         }
 
-        $students = $query->select('id', 'name', 'student_id', 'email', 'program')
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('studentProfile', function($sq) use ($search) {
+                      $sq->where('student_number', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $students = $query->select('id', 'name', 'email')
             ->limit(20)
             ->get()
             ->map(function ($student) {
                 return [
                     'id' => $student->id,
                     'name' => $student->name,
-                    'student_id' => $student->student_id,
+                    'student_number' => $student->studentProfile->student_number ?? 'N/A',
                     'email' => $student->email,
-                    'program' => $student->program,
-                    'text' => "{$student->name} ({$student->student_id})"
+                    'department' => $student->studentProfile->department ?? 'N/A',
+                    'text' => "{$student->name} (" . ($student->studentProfile->student_number ?? 'No ID') . ")"
                 ];
             });
 
@@ -174,27 +178,45 @@ class ViolationController extends Controller
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
         
-        // Check authorization - only these roles can create violations
         $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
         if (!in_array($userRole, $allowedRoles)) {
             abort(403, 'You do not have permission to create violations.');
         }
         
-        // Get students based on role
         if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
-            $students = User::whereHas('role', function($q) {
-                $q->where('name', 'student');
-            })->where('program', $userDepartment)->get();
+            $students = User::with('studentProfile')
+                ->whereHas('role', function($q) {
+                    $q->where('name', 'student');
+                })
+                ->whereHas('studentProfile', function($q) use ($userDepartment) {
+                    $q->where('department', $userDepartment);
+                })
+                ->get();
         } else {
-            $students = User::whereHas('role', function($q) {
-                $q->where('name', 'student');
-            })->get();
+            $students = User::with('studentProfile')
+                ->whereHas('role', function($q) {
+                    $q->where('name', 'student');
+                })
+                ->get();
         }
         
-        // Get violation types from handbook
+        // Transform students for JavaScript
+        $studentsData = $students->map(function($s) {
+            return [
+                'id' => $s->id,
+                'name' => $s->name,
+                'email' => $s->email,
+                'student_number' => optional($s->studentProfile)->student_number ?? 'N/A',
+                'department' => optional($s->studentProfile)->department ?? 'N/A',
+            ];
+        })->values();
+        
         $violationTypes = \App\Models\ViolationType::orderBy('code')->get()->groupBy('category');
         
-        return view('violations.create', compact('students', 'violationTypes'));
+        // Also get all violation types for JavaScript
+        $allViolationTypes = \App\Models\ViolationType::orderBy('code')->get();
+        
+        return view('violations.create', compact('students', 'studentsData', 'violationTypes', 'allViolationTypes'));
     }    /**
      * Store a newly created violation
      */
@@ -204,7 +226,6 @@ class ViolationController extends Controller
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
         
-        // Check authorization - only these roles can create violations
         $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
         if (!in_array($userRole, $allowedRoles)) {
             abort(403, 'You do not have permission to create violations.');
@@ -212,6 +233,7 @@ class ViolationController extends Controller
         
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
+            'offense_category' => 'required|in:major,minor',
             'violation_type' => 'required|string|max:255',
             'sanction' => 'required|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)',
             'violation_date' => 'required|date',
@@ -220,18 +242,17 @@ class ViolationController extends Controller
         ]);
 
         try {
-            // Verify that program heads/teachers can only report violations for students in their program
             if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
-                $student = User::find($validated['student_id']);
-                if ($student->program !== $userDepartment) {
+                $student = User::with('studentProfile')->find($validated['student_id']);
+                if ($student->studentProfile && $student->studentProfile->department !== $userDepartment) {
                     return back()->withInput()
                         ->with('error', 'You can only report violations for students in your program/department.');
                 }
             }
             
-            // Create violation
             $violation = Violation::create([
                 'student_id' => $validated['student_id'],
+                'offense_category' => $validated['offense_category'],
                 'violation_type' => $validated['violation_type'],
                 'sanction' => $validated['sanction'],
                 'reported_by' => auth()->id(),
@@ -294,7 +315,14 @@ class ViolationController extends Controller
             }
         }
         
-        $violation->load(['student', 'reporter', 'notes.user']);
+        // Load all necessary relationships
+        $violation->load([
+            'student.studentProfile', 
+            'reporter',
+            'notes' => function($query) {
+                $query->with('user')->orderBy('created_at', 'desc');
+            }
+        ]);
         
         return view('violations.edit', compact('violation'));
     }
@@ -445,11 +473,17 @@ class ViolationController extends Controller
                 'note' => $request->note,
             ]);
 
+            // Reload the violation with fresh notes
+            $violation->load('notes.user');
+
             if ($request->expectsJson()) {
-                return $this->successResponse('Note added successfully');
+                return $this->successResponse('Note added successfully', [
+                    'note' => $violation->notes()->latest()->first()
+                ]);
             }
 
-            return back()->with('success', 'Note added successfully.');
+            return redirect()->route('violations.edit', $violation)
+                ->with('success', 'Note added successfully.');
 
         } catch (\Exception $e) {
             if ($request->expectsJson()) {

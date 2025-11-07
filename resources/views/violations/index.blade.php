@@ -176,14 +176,17 @@
                                     {{ $violation->student->name ?? 'Unknown Student' }}
                                 </div>
                                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $violation->student->student_id ?? 'No ID' }}
+                                    {{ $violation->student->studentProfile->student_number ?? 'No ID' }}
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4">
                             <div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                                    {{ ucfirst($violation->offense_category ?? 'N/A') }} Offense
+                                </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ $violation->violation_type }}
+                                    Code {{ $violation->violation_type }}
                                 </div>
                                 <div class="text-sm text-gray-500 dark:text-gray-400">
                                     {{ Str::limit($violation->description, 50) }}
@@ -402,7 +405,7 @@
                             .slice(0, 10)
                             .map(s => `
                                 <div class="px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-600 transition"
-                                     onclick="selectStudent('${s.id}', '${s.name.replace(/'/g, '\\"')} (${s.student_id})');">
+                                     onclick="selectStudent('${s.id}', '${s.name.replace(/'/g, '\\"')} (${s.student_number})');">
                                     <div class="flex items-start space-x-3">
                                         <div class="mt-0.5">
                                             <i class="fas fa-user-circle text-purple-500"></i>
@@ -412,7 +415,7 @@
                                                 ${s.name}
                                             </div>
                                             <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                                <strong>ID:</strong> ${s.student_id} • <strong>Program:</strong> ${s.program}
+                                                <strong>ID:</strong> ${s.student_number} • <strong>Department:</strong> ${s.department}
                                             </div>
                                         </div>
                                     </div>

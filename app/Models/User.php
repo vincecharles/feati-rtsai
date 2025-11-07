@@ -17,9 +17,6 @@ class User extends Authenticatable
         'password',
         'role_id',
         'status',
-        'student_id',
-        'program',
-        'year_level'
     ];
 
     protected $hidden = [
@@ -43,15 +40,15 @@ class User extends Authenticatable
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'student_id' => $this->student_id,
-            'program' => $this->program,
-            'year_level' => $this->year_level,
             'status' => $this->status,
             'role' => $this->role?->name,
             'employee_number' => $this->profile?->employee_number,
+            'student_number' => $this->studentProfile?->student_number,
             'department' => $this->profile?->department ?? $this->studentProfile?->department,
             'position' => $this->profile?->position,
             'mobile' => $this->profile?->mobile ?? $this->studentProfile?->mobile,
+            'first_name' => $this->profile?->first_name ?? $this->studentProfile?->first_name,
+            'last_name' => $this->profile?->last_name ?? $this->studentProfile?->last_name,
         ];
     }
 
@@ -68,11 +65,6 @@ class User extends Authenticatable
     public function studentProfile()
     {
         return $this->hasOne(StudentProfile::class)->withDefault();
-    }
-
-    public function dependents()
-    {
-        return $this->hasMany(Dependent::class);
     }
 
     public function violations()

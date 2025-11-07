@@ -157,7 +157,7 @@
                             Email Address <span class="text-red-500">*</span>
                         </label>
                         <input type="email" id="email" name="email" value="{{ old('email', $student->email) }}" 
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('email') border-red-500 @enderror" required>
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400 cursor-not-allowed" readonly>
                         @error('email')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -257,7 +257,7 @@
                             Student ID <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="student_id" name="student_id" value="{{ old('student_id', $student->studentProfile->student_number ?? '') }}"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('student_id') border-red-500 @enderror" required>
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400 cursor-not-allowed" readonly>
                         @error('student_id')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -268,12 +268,13 @@
                             Department <span class="text-red-500">*</span>
                         </label>
                         <select id="department" name="department" 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('department') border-red-500 @enderror" required>
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400 cursor-not-allowed" disabled>
                             <option value="">Select Department</option>
                             @foreach($departments as $key => $value)
                                 <option value="{{ $key }}" {{ old('department', $student->studentProfile->department ?? '') == $key ? 'selected' : '' }}>{{ $value }}</option>
                             @endforeach
                         </select>
+                        <input type="hidden" name="department" value="{{ old('department', $student->studentProfile->department ?? '') }}">
                         @error('department')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -284,10 +285,11 @@
                             Course/Program <span class="text-red-500">*</span>
                         </label>
                         <select id="course" name="course" 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('course') border-red-500 @enderror" required>
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400 cursor-not-allowed" disabled>
                             <option value="">Select a department first</option>
                         </select>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select a department first to view available programs</p>
+                        <input type="hidden" name="course" value="{{ old('course', $student->studentProfile->course ?? '') }}">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Course/Program cannot be changed</p>
                         @error('course')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror

@@ -232,9 +232,10 @@ class ReportsController extends Controller
     /**
      * Generate application report
      */
-    /**
+    /*
      * Generate application report
      */
+    /*
     public function applicationReport(Request $request)
     {
         $this->checkReportAccess();
@@ -291,10 +292,12 @@ class ReportsController extends Controller
             return $this->errorResponse('Failed to generate application report: ' . $e->getMessage());
         }
     }
+    */
 
-    /**
+    /*
      * Generate event report
      */
+    /*
     public function eventReport(Request $request)
     {
         $this->checkReportAccess();
@@ -351,6 +354,7 @@ class ReportsController extends Controller
             return $this->errorResponse('Failed to generate event report: ' . $e->getMessage());
         }
     }
+    */
 
     /**
      * Generate analytics dashboard data
@@ -498,9 +502,10 @@ class ReportsController extends Controller
         ];
     }
 
-    /**
+    /*
      * Get application trend data
      */
+    /*
     private function getApplicationTrend($startDate, $endDate)
     {
         $applications = Application::selectRaw('
@@ -533,6 +538,7 @@ class ReportsController extends Controller
             'data' => $counts
         ];
     }
+    */
 
     /**
      * Get department distribution (using student programs instead)
@@ -553,9 +559,10 @@ class ReportsController extends Controller
         ];
     }
 
-    /**
+    /*
      * Get application status distribution
      */
+    /*
     private function getApplicationStatusDistribution()
     {
         $statuses = Application::selectRaw('status, COUNT(*) as count')
@@ -567,10 +574,12 @@ class ReportsController extends Controller
             'data' => $statuses->pluck('count')->toArray()
         ];
     }
+    */
 
-    /**
+    /*
      * Get monthly events data
      */
+    /*
     private function getMonthlyEventsData()
     {
         $events = Event::selectRaw('
@@ -603,10 +612,12 @@ class ReportsController extends Controller
             'data' => $counts
         ];
     }
+    */
 
-    /**
+    /*
      * Get event attendance statistics
      */
+    /*
     private function getEventAttendanceStats($startDate, $endDate)
     {
         $events = Event::withCount('attendees')
@@ -619,6 +630,7 @@ class ReportsController extends Controller
             'average_attendance' => $events->avg('attendees_count'),
         ];
     }
+    */
 
     /**
      * Get gender distribution
@@ -675,27 +687,30 @@ class ReportsController extends Controller
             'new_employees' => User::whereHas('role', function($q) {
                 $q->where('name', '!=', 'student');
             })->whereBetween('created_at', [$startDate, $endDate])->count(),
-            'new_applications' => Application::whereBetween('created_at', [$startDate, $endDate])->count(),
-            'new_events' => Event::whereBetween('created_at', [$startDate, $endDate])->count(),
+            // 'new_applications' => Application::whereBetween('created_at', [$startDate, $endDate])->count(),
+            // 'new_events' => Event::whereBetween('created_at', [$startDate, $endDate])->count(),
         ];
     }
 
-    /**
+    /*
      * Get application status counts
      */
+    /*
     private function getApplicationStatusCounts($applications)
     {
         return $applications->groupBy('status')->map->count();
     }
+    */
 
-    /**
+    /*
      * Get event category counts
      */
+    /*
     private function getEventCategoryCounts($events)
     {
         return $events->groupBy('category')->map->count();
     }
-
+    */
     /**
      * Get start date based on period
      */

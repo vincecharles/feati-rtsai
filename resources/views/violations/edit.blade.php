@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative dark:bg-green-900 dark:border-green-700 dark:text-green-100" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative dark:bg-red-900 dark:border-red-700 dark:text-red-100" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
+
     <!-- Header -->
     <div class="flex justify-between items-center">
         <div>
@@ -27,7 +40,11 @@
                 <p class="text-gray-900 dark:text-gray-100">{{ $violation->student->name }} ({{ $violation->student->student_id ?? 'No ID' }})</p>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Violation Type</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Offense Category</label>
+                <p class="text-gray-900 dark:text-gray-100">{{ ucfirst($violation->offense_category ?? 'N/A') }} Offenses</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Offense Code</label>
                 <p class="text-gray-900 dark:text-gray-100">{{ $violation->violation_type }}</p>
             </div>
             <div>
@@ -125,16 +142,22 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">
             <i class="fas fa-sticky-note mr-2"></i> Notes
+            @php
+                $notesCollection = $violation->notes ?? collect();
+            @endphp
+            @if($notesCollection->count() > 0)
+                ({{ $notesCollection->count() }} total)
+            @endif
         </h3>
 
         <!-- Existing Notes -->
         <div class="space-y-4 mb-6">
-            @forelse($violation->notes as $note)
+            @forelse($notesCollection as $note)
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
                             <i class="fas fa-user-circle mr-2"></i>
-                            <span class="font-medium">{{ $note->user->name }}</span>
+                            <span class="font-medium">{{ $note->user->name ?? 'Unknown User' }}</span>
                             <span class="mx-2">•</span>
                             <span>{{ $note->created_at->format('M j, Y g:i A') }}</span>
                         </div>
@@ -153,26 +176,23 @@
                 <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Add New Note
                 </label>
+                <div class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                    <i class="fas fa-user-circle mr-1"></i>
+                    <span>Adding as: <strong>{{ auth()->user()->name }}</strong></span>
+                    <span class="mx-2">•</span>
+                    <span>{{ now()->format('M j, Y g:i A') }}</span>
+                </div>
                 <textarea id="note" name="note" rows="3" required
                           placeholder="Enter your note here..."
                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                 @error('note')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror>
+                @enderror
             </div>
             <div class="mt-4 flex justify-end">
                 <button type="submit"
                         class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                     <i class="fas fa-plus mr-2"></i> Add Note
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-@endsection
-                <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
-                    <i class="fas fa-save mr-2"></i> Update Violation
                 </button>
             </div>
         </form>

@@ -59,30 +59,37 @@
                     @endif
                 </div>
 
-                <!-- Violation Type/Code -->
-                <div class="md:col-span-2">
+                <!-- Offense Category -->
+                <div>
+                    <label for="offense_category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Offense Category <span class="text-red-600">*</span>
+                    </label>
+                    <select id="offense_category" name="offense_category" required
+                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-500 focus:ring-red-500">
+                        <option value="">Select offense category</option>
+                        <option value="major" {{ old('offense_category') == 'major' ? 'selected' : '' }}>Major Offenses</option>
+                        <option value="minor" {{ old('offense_category') == 'minor' ? 'selected' : '' }}>Minor Offenses</option>
+                    </select>
+                    @error('offense_category')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Offense Code -->
+                <div>
                     <label for="violation_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <i class="fas fa-exclamation-triangle mr-1"></i> Offense Code <span class="text-red-600">*</span>
+                        <i class="fas fa-list-ol mr-1"></i> Offense Code <span class="text-red-600">*</span>
                     </label>
                     <select id="violation_type" name="violation_type" required
-                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-500 focus:ring-red-500">
-                        <option value="">Select offense code</option>
-                        
-                        @foreach($violationTypes as $category => $types)
-                            <optgroup label="{{ strtoupper($category) }} OFFENSES">
-                                @foreach($types as $type)
-                                    <option value="{{ $type->code }}" {{ old('violation_type') == $type->code ? 'selected' : '' }}>
-                                        Code {{ $type->code }} - {{ $type->name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                        @endforeach
+                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-500 focus:ring-red-500"
+                            disabled>
+                        <option value="">Select category first</option>
                     </select>
                     @error('violation_type')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        <i class="fas fa-info-circle"></i> Select the appropriate offense code from the Student Handbook
+                        <i class="fas fa-info-circle"></i> Select offense category first to see available codes
                     </p>
                 </div>
 
@@ -177,7 +184,6 @@
 </div>
 
 <script>
-// Student search functionality
 const studentSearchInput = document.getElementById('student_search');
 const studentSuggestions = document.getElementById('student_suggestions');
 const studentIdInput = document.getElementById('student_id');
@@ -186,9 +192,8 @@ const selectedStudentName = document.getElementById('selected_student_name');
 const selectedStudentDetails = document.getElementById('selected_student_details');
 
 let searchTimeout;
-let allStudents = @json($students);
+let allStudents = @json($studentsData);
 
-// Show selected student if there's an old value
 const oldStudentId = "{{ old('student_id') }}";
 if (oldStudentId) {
     const student = allStudents.find(s => s.id == oldStudentId);
@@ -209,8 +214,8 @@ studentSearchInput.addEventListener('input', function(e) {
     searchTimeout = setTimeout(() => {
         const filtered = allStudents.filter(student => {
             return student.name.toLowerCase().includes(query) ||
-                   (student.student_id && student.student_id.toLowerCase().includes(query)) ||
-                   (student.program && student.program.toLowerCase().includes(query));
+                   (student.student_number && student.student_number.toLowerCase().includes(query)) ||
+                   (student.department && student.department.toLowerCase().includes(query));
         });
         
         displayStudentSuggestions(filtered);
@@ -224,15 +229,17 @@ function displayStudentSuggestions(students) {
         return;
     }
     
-    const html = students.slice(0, 10).map(student => `
+    const html = students.slice(0, 10).map(student => {
+        return `
         <div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-200 dark:border-gray-600 last:border-b-0"
-             onclick='selectStudent(${JSON.stringify(student)})'>
+             onclick='selectStudent(${JSON.stringify(student).replace(/'/g, "\\'")})'>
             <div class="font-medium text-gray-900 dark:text-gray-100">${student.name}</div>
             <div class="text-sm text-gray-600 dark:text-gray-300">
-                ${student.student_id || 'No ID'} • ${student.program || 'No Program'} • Year ${student.year_level || 'N/A'}
+                ${student.student_number || 'No ID'} • ${student.department || 'No Department'}
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
     
     studentSuggestions.innerHTML = html;
     studentSuggestions.classList.remove('hidden');
@@ -244,7 +251,7 @@ function selectStudent(student) {
     studentSuggestions.classList.add('hidden');
     
     selectedStudentName.textContent = student.name;
-    selectedStudentDetails.textContent = `(${student.student_id || 'No ID'}) - ${student.program || 'No Program'} - Year ${student.year_level || 'N/A'}`;
+    selectedStudentDetails.textContent = `(${student.student_number || 'No ID'}) - ${student.department || 'No Department'}`;
     selectedStudentDiv.classList.remove('hidden');
 }
 
@@ -260,5 +267,55 @@ document.addEventListener('click', function(e) {
         studentSuggestions.classList.add('hidden');
     }
 });
+
+// Cascading dropdown for offense category and codes
+const offenseCategorySelect = document.getElementById('offense_category');
+const violationTypeSelect = document.getElementById('violation_type');
+
+// All violation types data
+const allViolationTypes = @json($allViolationTypes);
+
+offenseCategorySelect.addEventListener('change', function() {
+    const category = this.value;
+    violationTypeSelect.innerHTML = '<option value="">Select offense code</option>';
+    
+    if (!category) {
+        violationTypeSelect.disabled = true;
+        return;
+    }
+    
+    // Filter violation types by category
+    const filteredTypes = allViolationTypes.filter(type => type.category === category);
+    
+    // Sort by code number
+    filteredTypes.sort((a, b) => {
+        const aNum = parseInt(a.code);
+        const bNum = parseInt(b.code);
+        return aNum - bNum;
+    });
+    
+    // Add options
+    filteredTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type.code;
+        option.textContent = `Code ${type.code} - ${type.name}`;
+        violationTypeSelect.appendChild(option);
+    });
+    
+    violationTypeSelect.disabled = false;
+    
+    // Restore old value if it exists
+    const oldValue = "{{ old('violation_type') }}";
+    if (oldValue) {
+        violationTypeSelect.value = oldValue;
+    }
+});
+
+// Trigger on page load if there's an old value
+const oldCategory = "{{ old('offense_category') }}";
+if (oldCategory) {
+    offenseCategorySelect.value = oldCategory;
+    offenseCategorySelect.dispatchEvent(new Event('change'));
+}
 </script>
 @endsection

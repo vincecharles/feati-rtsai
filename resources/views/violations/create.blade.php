@@ -86,20 +86,21 @@
                     </p>
                 </div>
 
-                <!-- Violation Level -->
+                <!-- Sanction -->
                 <div>
-                    <label for="level" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Violation Level <span class="text-red-600">*</span>
+                    <label for="sanction" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Disciplinary Sanction <span class="text-red-600">*</span>
                     </label>
-                    <select id="level" name="level" required
+                    <select id="sanction" name="sanction" required
                             class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Select level</option>
-                        <option value="Level 1" {{ old('level') == 'Level 1' ? 'selected' : '' }}>Level 1 - Minor infraction</option>
-                        <option value="Level 2" {{ old('level') == 'Level 2' ? 'selected' : '' }}>Level 2 - Moderate offense</option>
-                        <option value="Level 3" {{ old('level') == 'Level 3' ? 'selected' : '' }}>Level 3 - Serious violation</option>
-                        <option value="Expulsion" {{ old('level') == 'Expulsion' ? 'selected' : '' }}>Expulsion - Critical offense</option>
+                        <option value="">Select sanction</option>
+                        <option value="Disciplinary Citation (E)" {{ old('sanction') == 'Disciplinary Citation (E)' ? 'selected' : '' }}>E - Disciplinary Citation</option>
+                        <option value="Suspension (D)" {{ old('sanction') == 'Suspension (D)' ? 'selected' : '' }}>D - Suspension</option>
+                        <option value="Preventive Suspension (C)" {{ old('sanction') == 'Preventive Suspension (C)' ? 'selected' : '' }}>C - Preventive Suspension</option>
+                        <option value="Exclusion (B)" {{ old('sanction') == 'Exclusion (B)' ? 'selected' : '' }}>B - Exclusion</option>
+                        <option value="Expulsion (A)" {{ old('sanction') == 'Expulsion (A)' ? 'selected' : '' }}>A - Expulsion</option>
                     </select>
-                    @error('level')
+                    @error('sanction')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -118,23 +119,6 @@
                     @enderror
                 </div>
 
-                <!-- Severity -->
-                <div>
-                    <label for="severity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Severity Level <span class="text-red-600">*</span>
-                    </label>
-                    <select id="severity" name="severity" required
-                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Select severity</option>
-                        <option value="minor" {{ old('severity') == 'minor' ? 'selected' : '' }}>Minor</option>
-                        <option value="moderate" {{ old('severity') == 'moderate' ? 'selected' : '' }}>Moderate</option>
-                        <option value="major" {{ old('severity') == 'major' ? 'selected' : '' }}>Major</option>
-                        <option value="severe" {{ old('severity') == 'severe' ? 'selected' : '' }}>Severe</option>
-                    </select>
-                    @error('severity')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
 
                 <!-- Description -->
                 <div class="md:col-span-2">

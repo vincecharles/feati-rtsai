@@ -32,6 +32,11 @@ class StudentProfile extends Model
         'year_level',
     ];
 
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'enrollment_date' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

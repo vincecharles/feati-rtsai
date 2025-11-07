@@ -119,41 +119,17 @@
                 </select>
             </div>
 
-            <!-- Level -->
+            <!-- Sanction -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Level</label>
-                <select name="level" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                    <option value="">All Levels</option>
-                    <option value="Level 1" {{ request('level') == 'Level 1' ? 'selected' : '' }}>Level 1</option>
-                    <option value="Level 2" {{ request('level') == 'Level 2' ? 'selected' : '' }}>Level 2</option>
-                    <option value="Level 3" {{ request('level') == 'Level 3' ? 'selected' : '' }}>Level 3</option>
-                    <option value="Expulsion" {{ request('level') == 'Expulsion' ? 'selected' : '' }}>Expulsion</option>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sanction</label>
+                <select name="sanction" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="">All Sanctions</option>
+                    <option value="Disciplinary Citation (E)" {{ request('sanction') == 'Disciplinary Citation (E)' ? 'selected' : '' }}>E - Disciplinary Citation</option>
+                    <option value="Suspension (D)" {{ request('sanction') == 'Suspension (D)' ? 'selected' : '' }}>D - Suspension</option>
+                    <option value="Preventive Suspension (C)" {{ request('sanction') == 'Preventive Suspension (C)' ? 'selected' : '' }}>C - Preventive Suspension</option>
+                    <option value="Exclusion (B)" {{ request('sanction') == 'Exclusion (B)' ? 'selected' : '' }}>B - Exclusion</option>
+                    <option value="Expulsion (A)" {{ request('sanction') == 'Expulsion (A)' ? 'selected' : '' }}>A - Expulsion</option>
                 </select>
-            </div>
-
-            <!-- Severity -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Severity</label>
-                <select name="severity" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                    <option value="">All Severity</option>
-                    <option value="minor" {{ request('severity') == 'minor' ? 'selected' : '' }}>Minor</option>
-                    <option value="moderate" {{ request('severity') == 'moderate' ? 'selected' : '' }}>Moderate</option>
-                    <option value="major" {{ request('major') == 'major' ? 'selected' : '' }}>Major</option>
-                    <option value="severe" {{ request('severity') == 'severe' ? 'selected' : '' }}>Severe</option>
-                </select>
-            </div>
-
-            <!-- Student Autocomplete -->
-            <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Student</label>
-                <input type="hidden" name="student_id" id="studentId" value="{{ request('student_id') }}">
-                <input type="text" id="studentSearch" placeholder="Search students..."
-                       value="{{ request('student_id') ? ($students->find(request('student_id'))->name ?? '') : '' }}"
-                       autocomplete="off"
-                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                <div id="studentSuggestions" class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-50 hidden max-h-80 overflow-y-auto">
-                    <div id="studentSuggestionsContent"></div>
-                </div>
             </div>
 
             <!-- Filter Button -->
@@ -181,10 +157,7 @@
                             Date
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Level
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Severity
+                            Sanction
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Status
@@ -222,22 +195,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                @if($violation->level === 'Level 1') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-                                @elseif($violation->level === 'Level 2') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                                @elseif($violation->level === 'Level 3') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
-                                @elseif($violation->level === 'Expulsion') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                                @if($violation->sanction === 'Disciplinary Citation (E)') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                @elseif($violation->sanction === 'Suspension (D)') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                                @elseif($violation->sanction === 'Preventive Suspension (C)') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                                @elseif($violation->sanction === 'Exclusion (B)') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                                @elseif($violation->sanction === 'Expulsion (A)') bg-red-600 text-white dark:bg-red-800 dark:text-white
                                 @else bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 @endif">
-                                {{ $violation->level ?? 'N/A' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                @if($violation->severity === 'minor') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                                @elseif($violation->severity === 'moderate') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
-                                @elseif($violation->severity === 'major') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                                @elseif($violation->severity === 'severe') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                                @else bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 @endif">
-                                {{ ucfirst($violation->severity) }}
+                                {{ $violation->sanction_label ?? $violation->sanction ?? 'N/A' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

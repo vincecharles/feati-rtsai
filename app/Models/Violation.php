@@ -16,14 +16,12 @@ class Violation extends Model
         'student_id',
         'reported_by',
         'violation_type',
-        'level',
+        'sanction',
         'description',
         'status',
-        'severity',
         'violation_date',
         'action_taken',
         'resolution_date',
-        'notes',
     ];
 
     protected $casts = [
@@ -44,10 +42,9 @@ class Violation extends Model
             'student_id' => $this->student?->student_id,
             'student_program' => $this->student?->program,
             'violation_type' => $this->violation_type,
-            'level' => $this->level,
+            'sanction' => $this->sanction,
             'description' => $this->description,
             'status' => $this->status,
-            'severity' => $this->severity,
             'violation_date' => $this->violation_date?->format('Y-m-d'),
             'reporter_name' => $this->reporter?->name,
         ];
@@ -69,6 +66,11 @@ class Violation extends Model
         return $this->belongsTo(ViolationType::class, 'violation_type_id');
     }
 
+    public function notes(): HasMany
+    {
+        return $this->hasMany(ViolationNote::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {
@@ -85,20 +87,15 @@ class Violation extends Model
         return $query->where('status', 'under_review');
     }
 
-    public function scopeBySeverity($query, $severity)
+    public function getSanctionLabelAttribute()
     {
-        return $query->where('severity', $severity);
-    }
-
-    // Accessors
-    public function getSeverityColorAttribute()
-    {
-        return match($this->severity) {
-            'minor' => 'yellow',
-            'moderate' => 'orange',
-            'major' => 'red',
-            'severe' => 'red',
-            default => 'gray'
+        return match($this->sanction) {
+            'Disciplinary Citation (E)' => 'Citation (E)',
+            'Suspension (D)' => 'Suspension (D)',
+            'Preventive Suspension (C)' => 'Prev. Suspension (C)',
+            'Exclusion (B)' => 'Exclusion (B)',
+            'Expulsion (A)' => 'Expulsion (A)',
+            default => $this->sanction
         };
     }
 

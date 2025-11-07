@@ -54,7 +54,6 @@ class StudentController extends Controller
             
             // Use Scout search
             $studentIds = User::search($search)
-                ->where('role', 'student')
                 ->get()
                 ->pluck('id');
             
@@ -94,6 +93,39 @@ class StudentController extends Controller
         }
 
         return view('students.index', compact('students'));
+    }
+
+    /**
+     * Autocomplete search for students (AJAX endpoint)
+     */
+    public function autocomplete(Request $request)
+    {
+        $search = $request->input('q', '');
+        
+        if (empty($search)) {
+            return response()->json([]);
+        }
+
+        $results = User::search($search)
+            ->take(10)
+            ->get()
+            ->filter(function($user) {
+                return $user->role && $user->role->name === 'student';
+            })
+            ->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->name . ' (' . ($user->student_id ?? 'No ID') . ')',
+                    'name' => $user->name,
+                    'student_id' => $user->student_id ?? 'N/A',
+                    'program' => $user->program ?? 'N/A',
+                    'year_level' => $user->year_level ?? 'N/A',
+                    'email' => $user->email,
+                ];
+            })
+            ->values();
+
+        return response()->json($results);
     }
 
     /**

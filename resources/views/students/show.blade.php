@@ -1,4 +1,4 @@
-﻿@extends('layouts.sidebar')
+@extends('layouts.sidebar')
 
 @section('page-title', 'Student Details')
 
@@ -53,41 +53,41 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->first_name ?? '' }} 
-                                {{ \$student->studentProfile->middle_name ?? '' }} 
-                                {{ \$student->studentProfile->last_name ?? '' }} 
-                                {{ \$student->studentProfile->suffix ?? '' }}
+                                {{ $student->studentProfile->first_name ?? '' }} 
+                                {{ $student->studentProfile->middle_name ?? '' }} 
+                                {{ $student->studentProfile->last_name ?? '' }} 
+                                {{ $student->studentProfile->suffix ?? '' }}
                             </p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Sex</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->sex ?? 'N/A' }}
+                                {{ $student->studentProfile->sex ?? 'N/A' }}
                             </p>
                         </div>
                         @if($canViewFullInfo ?? false)
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->date_of_birth ? \$student->studentProfile->date_of_birth->format('M d, Y') : 'N/A' }}
+                                {{ $student->studentProfile->date_of_birth ? $student->studentProfile->date_of_birth->format('M d, Y') : 'N/A' }}
                             </p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Civil Status</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->civil_status ?? 'N/A' }}
+                                {{ $student->studentProfile->civil_status ?? 'N/A' }}
                             </p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nationality</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->nationality ?? 'N/A' }}
+                                {{ $student->studentProfile->nationality ?? 'N/A' }}
                             </p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Place of Birth</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ \$student->studentProfile->place_of_birth ?? 'N/A' }}
+                                {{ $student->studentProfile->place_of_birth ?? 'N/A' }}
                             </p>
                         </div>
                         @endif
@@ -109,15 +109,15 @@
                         @if($canViewFullInfo ?? false)
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Mobile Number</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->mobile ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->mobile ?? 'N/A' }}</p>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Current Address</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->current_address ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->current_address ?? 'N/A' }}</p>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Permanent Address</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->permanent_address ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->permanent_address ?? 'N/A' }}</p>
                         </div>
                         @endif
                     </div>
@@ -137,17 +137,17 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Department</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->department ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->department ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Course</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->course ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->course ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Year Level</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                @if(\$student->studentProfile->year_level)
-                                    {{ \$student->studentProfile->year_level }}{{ \$student->studentProfile->year_level == 1 ? 'st' : (\$student->studentProfile->year_level == 2 ? 'nd' : (\$student->studentProfile->year_level == 3 ? 'rd' : 'th')) }} Year
+                                @if($student->studentProfile->year_level)
+                                    {{ $student->studentProfile->year_level }}{{ $student->studentProfile->year_level == 1 ? 'st' : ($student->studentProfile->year_level == 2 ? 'nd' : ($student->studentProfile->year_level == 3 ? 'rd' : 'th')) }} Year
                                 @else
                                     N/A
                                 @endif
@@ -175,7 +175,7 @@
             </div>
 
             <!-- Emergency Contact -->
-            @if(($canViewFullInfo ?? false) && \$student->studentProfile->emergency_name)
+            @if(($canViewFullInfo ?? false) && $student->studentProfile->emergency_name)
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Emergency Contact</h3>
@@ -184,19 +184,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Contact Person</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->emergency_name }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->emergency_name }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Relationship</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->emergency_relationship ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->emergency_relationship ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->emergency_phone ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->emergency_phone ?? 'N/A' }}</p>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Address</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \$student->studentProfile->emergency_address ?? 'N/A' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $student->studentProfile->emergency_address ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
@@ -276,3 +276,4 @@
     </div>
 </div>
 @endsection
+

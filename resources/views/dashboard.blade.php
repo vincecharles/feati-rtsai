@@ -36,11 +36,12 @@
         'under_review' => Violation::where('status', 'under_review')->count(),
     ];
 
-    $severityData = [
-        'minor' => \App\Models\Violation::where('severity', 'minor')->count(),
-        'moderate' => \App\Models\Violation::where('severity', 'moderate')->count(),
-        'major' => \App\Models\Violation::where('severity', 'major')->count(),
-        'critical' => \App\Models\Violation::where('severity', 'critical')->count(),
+    $sanctionData = [
+        'citation' => \App\Models\Violation::where('sanction', 'Disciplinary Citation (E)')->count(),
+        'suspension' => \App\Models\Violation::where('sanction', 'Suspension (D)')->count(),
+        'preventive_suspension' => \App\Models\Violation::where('sanction', 'Preventive Suspension (C)')->count(),
+        'exclusion' => \App\Models\Violation::where('sanction', 'Exclusion (B)')->count(),
+        'expulsion' => \App\Models\Violation::where('sanction', 'Expulsion (A)')->count(),
     ];
 
     // Get top violation types
@@ -74,7 +75,7 @@
      data-programs='@json($programs)'
      data-year-levels='@json($yearLevels)'
      data-violations='@json($violationStats)'
-     data-severity='@json($severityData)'
+     data-sanctions='@json($sanctionData)'
      data-top-types='@json($topViolationTypes)'
      data-trends='@json($violationTrends)'
      class="hidden"></div>

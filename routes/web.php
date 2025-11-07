@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Employee routes
     Route::resource('employees', EmployeeController::class);
+    Route::get('/api/employees/autocomplete', [EmployeeController::class, 'autocomplete'])->name('employees.autocomplete');
     Route::post('/employees/{employee}/dependents', [EmployeeController::class,'addDependent'])
         ->name('employees.dependents.store');
     Route::delete('/employees/{employee}/dependents/{dependent}', [EmployeeController::class,'removeDependent'])
@@ -37,11 +38,13 @@ Route::middleware(['auth'])->group(function () {
     // Violation routes
     Route::resource('violations', App\Http\Controllers\ViolationController::class);
     Route::post('/violations/{violation}/resolve', [App\Http\Controllers\ViolationController::class, 'resolve'])->name('violations.resolve');
+    Route::post('/violations/{violation}/notes', [App\Http\Controllers\ViolationController::class, 'addNote'])->name('violations.notes.store');
     Route::get('/api/violations/statistics', [App\Http\Controllers\ViolationController::class, 'getStatistics'])->name('violations.statistics');
     Route::get('/api/violations/students', [App\Http\Controllers\ViolationController::class, 'getStudents'])->name('violations.students');
 
     // Student routes
     Route::resource('students', StudentController::class);
+    Route::get('/api/students/autocomplete', [StudentController::class, 'autocomplete'])->name('students.autocomplete');
     Route::get('/api/students/statistics', [StudentController::class, 'getStatistics'])->name('students.statistics');
     Route::post('/api/students/bulk-action', [StudentController::class, 'bulkAction'])->name('students.bulk-action');
     Route::post('/api/students/sync-data', [StudentController::class, 'syncStudentData'])->name('students.sync-data');

@@ -17,7 +17,7 @@ class ViolationController extends Controller
         $userRole = $user->role?->name;
         $userDepartment = $user->profile?->department;
 
-        $query = Violation::with(['student', 'reporter']);
+        $query = Violation::with(['student', 'reporter', 'notes.user']);
 
         // Filter by department if specified
         $filterDepartment = $request->has('department') && $request->department ? $request->department : null;
@@ -68,14 +68,9 @@ class ViolationController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Filter by severity
-        if ($request->has('severity') && $request->severity) {
-            $query->where('severity', $request->severity);
-        }
-
-        // Filter by level
-        if ($request->has('level') && $request->level) {
-            $query->where('level', $request->level);
+        // Filter by sanction
+        if ($request->has('sanction') && $request->sanction) {
+            $query->where('sanction', $request->sanction);
         }
 
         // Filter by student
@@ -218,10 +213,9 @@ class ViolationController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
             'violation_type' => 'required|string|max:255',
-            'level' => 'required|in:Level 1,Level 2,Level 3,Expulsion',
+            'sanction' => 'required|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)',
             'violation_date' => 'required|date',
             'description' => 'required|string|max:2000',
-            'severity' => 'required|in:minor,moderate,major,severe',
             'action_taken' => 'nullable|string|max:1000',
         ]);
 
@@ -239,11 +233,10 @@ class ViolationController extends Controller
             $violation = Violation::create([
                 'student_id' => $validated['student_id'],
                 'violation_type' => $validated['violation_type'],
-                'level' => $validated['level'],
+                'sanction' => $validated['sanction'],
                 'reported_by' => auth()->id(),
                 'violation_date' => $validated['violation_date'],
                 'description' => $validated['description'],
-                'severity' => $validated['severity'],
                 'status' => 'pending',
                 'action_taken' => $validated['action_taken'],
             ]);
@@ -301,11 +294,9 @@ class ViolationController extends Controller
             }
         }
         
-        $students = User::whereHas('role', function($q) {
-            $q->where('name', 'student');
-        })->select('id', 'name', 'email', 'student_id')->orderBy('name')->get();
+        $violation->load(['student', 'reporter', 'notes.user']);
         
-        return view('violations.edit', compact('violation', 'students'));
+        return view('violations.edit', compact('violation'));
     }
 
     /**
@@ -327,16 +318,9 @@ class ViolationController extends Controller
         }
         
         $validated = $request->validate([
-            'student_id' => 'required|exists:users,id',
-            'violation_type' => 'required|string|max:255',
-            'level' => 'required|in:Level 1,Level 2,Level 3,Expulsion',
-            'violation_date' => 'required|date',
-            'description' => 'required|string|max:2000',
-            'severity' => 'required|in:minor,moderate,major,severe',
             'status' => 'required|in:pending,under_review,resolved,dismissed',
             'action_taken' => 'nullable|string|max:1000',
             'resolution_date' => 'nullable|date',
-            'notes' => 'nullable|string|max:1000',
         ]);
 
         try {
@@ -347,16 +331,9 @@ class ViolationController extends Controller
             }
             
             $violation->update([
-                'student_id' => $validated['student_id'],
-                'violation_type' => $validated['violation_type'],
-                'level' => $validated['level'],
-                'violation_date' => $validated['violation_date'],
-                'description' => $validated['description'],
-                'severity' => $validated['severity'],
                 'status' => $validated['status'],
                 'action_taken' => $validated['action_taken'],
                 'resolution_date' => $validated['resolution_date'],
-                'notes' => $validated['notes'],
             ]);
 
             if ($request->expectsJson()) {
@@ -421,16 +398,21 @@ class ViolationController extends Controller
     public function resolve(Request $request, Violation $violation)
     {
         $request->validate([
-            'notes' => 'required|string|max:1000',
+            'note' => 'required|string|max:1000',
             'action_taken' => 'nullable|string|max:1000',
         ]);
 
         try {
             $violation->update([
                 'status' => 'resolved',
-                'notes' => $request->notes,
                 'action_taken' => $request->action_taken ?? $violation->action_taken,
                 'resolution_date' => now(),
+            ]);
+
+            // Add note
+            $violation->notes()->create([
+                'user_id' => auth()->id(),
+                'note' => $request->note,
             ]);
 
             if ($request->expectsJson()) {
@@ -449,6 +431,36 @@ class ViolationController extends Controller
     }
 
     /**
+     * Add a note to a violation
+     */
+    public function addNote(Request $request, Violation $violation)
+    {
+        $request->validate([
+            'note' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $violation->notes()->create([
+                'user_id' => auth()->id(),
+                'note' => $request->note,
+            ]);
+
+            if ($request->expectsJson()) {
+                return $this->successResponse('Note added successfully');
+            }
+
+            return back()->with('success', 'Note added successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return $this->errorResponse('Failed to add note: ' . $e->getMessage());
+            }
+            
+            return back()->with('error', 'Failed to add note: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Get violation statistics
      */
     public function getStatistics(Request $request)
@@ -460,10 +472,11 @@ class ViolationController extends Controller
                 'under_review_violations' => Violation::where('status', 'under_review')->count(),
                 'resolved_violations' => Violation::where('status', 'resolved')->count(),
                 'dismissed_violations' => Violation::where('status', 'dismissed')->count(),
-                'minor_violations' => Violation::where('severity', 'minor')->count(),
-                'moderate_violations' => Violation::where('severity', 'moderate')->count(),
-                'major_violations' => Violation::where('severity', 'major')->count(),
-                'severe_violations' => Violation::where('severity', 'severe')->count(),
+                'citation_violations' => Violation::where('sanction', 'Disciplinary Citation (E)')->count(),
+                'suspension_violations' => Violation::where('sanction', 'Suspension (D)')->count(),
+                'preventive_suspension_violations' => Violation::where('sanction', 'Preventive Suspension (C)')->count(),
+                'exclusion_violations' => Violation::where('sanction', 'Exclusion (B)')->count(),
+                'expulsion_violations' => Violation::where('sanction', 'Expulsion (A)')->count(),
             ];
 
             return $this->successResponse('Violation statistics retrieved successfully', $stats);

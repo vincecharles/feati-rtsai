@@ -14,5 +14,11 @@ class EmployeeProfile extends Model {
         'emergency_name','emergency_relationship','emergency_phone','emergency_address',
         'department','position',
     ];
+    
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'date_hired' => 'date',
+    ];
+    
     public function user(){ return $this->belongsTo(User::class); }
 }

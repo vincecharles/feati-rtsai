@@ -82,11 +82,13 @@
     <!-- Filters -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
+            <div class="relative">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
-                <input type="text" name="search" value="{{ request('search') }}" 
+                <input type="text" name="search" id="student-search" value="{{ request('search') }}" 
                        placeholder="Search students..." 
-                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       autocomplete="off">
+                <div id="student-autocomplete" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
@@ -254,3 +256,62 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('student-search');
+    const autocompleteDiv = document.getElementById('student-autocomplete');
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            autocompleteDiv.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`{{ route('students.autocomplete') }}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        autocompleteDiv.innerHTML = '<div class="px-4 py-2 text-gray-500 dark:text-gray-400">No results found</div>';
+                        autocompleteDiv.classList.remove('hidden');
+                        return;
+                    }
+
+                    autocompleteDiv.innerHTML = data.map(item => `
+                        <div class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer autocomplete-item" data-name="${item.name}">
+                            <div class="font-medium text-gray-900 dark:text-gray-100">${item.name}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                ${item.student_id} • ${item.program} • Year ${item.year_level}
+                            </div>
+                        </div>
+                    `).join('');
+                    autocompleteDiv.classList.remove('hidden');
+
+                    // Add click handlers
+                    document.querySelectorAll('.autocomplete-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            searchInput.value = this.dataset.name;
+                            autocompleteDiv.classList.add('hidden');
+                            searchInput.closest('form').submit();
+                        });
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }, 300);
+    });
+
+    // Close autocomplete when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
+            autocompleteDiv.classList.add('hidden');
+        }
+    });
+});
+</script>
+@endpush

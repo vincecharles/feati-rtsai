@@ -31,13 +31,15 @@ class EmployeeController extends Controller
         }
 
         $query = User::with(['role', 'profile'])
-            ->whereHas('profile');
+            ->whereHas('profile')
+            ->whereHas('role', function($q) {
+                $q->whereIn('name', ['teacher', 'department_head', 'program_head', 'osa', 'security']);
+            });
 
         if ($request->filled('search')) {
             $search = $request->search;
             
             $employeeIds = User::search($search)
-                ->whereIn('role', ['teacher', 'department_head', 'program_head', 'osa', 'security'])
                 ->get()
                 ->pluck('id');
             
@@ -65,6 +67,38 @@ class EmployeeController extends Controller
             ->appends($request->query());
 
         return view('employees.index', compact('employees'));
+    }
+
+    /**
+     * Autocomplete search for employees (AJAX endpoint)
+     */
+    public function autocomplete(Request $request)
+    {
+        $search = $request->input('q', '');
+        
+        if (empty($search)) {
+            return response()->json([]);
+        }
+
+        $results = User::search($search)
+            ->take(10)
+            ->get()
+            ->filter(function($user) {
+                return $user->role && in_array($user->role->name, ['teacher', 'department_head', 'program_head', 'osa', 'security']);
+            })
+            ->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->name . ' (' . ($user->profile->employee_number ?? 'No ID') . ')',
+                    'name' => $user->name,
+                    'employee_number' => $user->profile->employee_number ?? 'N/A',
+                    'department' => $user->profile->department ?? 'N/A',
+                    'email' => $user->email,
+                ];
+            })
+            ->values();
+
+        return response()->json($results);
     }
 
     /**

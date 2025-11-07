@@ -11,17 +11,16 @@ class ViolationType extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
         'name',
         'description',
-        'severity_level',
-        'penalty_points',
-        'is_active',
-        'created_by',
-        'updated_by',
+        'category',
+        'offense_class',
+        'penalties',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'penalties' => 'array',
     ];
 
     // Relationships
@@ -30,24 +29,31 @@ class ViolationType extends Model
         return $this->hasMany(Violation::class);
     }
 
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updater(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
     // Scopes
-    public function scopeActive($query)
+    public function scopeMajor($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('category', 'major');
     }
 
-    public function scopeBySeverity($query, $severity)
+    public function scopeMinor($query)
     {
-        return $query->where('severity_level', $severity);
+        return $query->where('category', 'minor');
+    }
+
+    public function scopeByClass($query, $class)
+    {
+        return $query->where('offense_class', $class);
+    }
+    
+    // Helper methods
+    public function getPenalty($offenseNumber)
+    {
+        $offenseNumber = (string)$offenseNumber;
+        return $this->penalties[$offenseNumber] ?? 'Not specified';
+    }
+    
+    public function getFullCode()
+    {
+        return "Code {$this->code} - {$this->name}";
     }
 }

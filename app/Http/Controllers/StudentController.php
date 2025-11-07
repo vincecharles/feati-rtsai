@@ -48,15 +48,22 @@ class StudentController extends Controller
             // super_admin and others see all students
         }
 
-        // Search functionality
+        // Search functionality using Algolia Scout
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('student_id', 'like', "%{$search}%")
-                  ->orWhere('program', 'like', "%{$search}%");
-            });
+            
+            // Use Scout search
+            $studentIds = User::search($search)
+                ->where('role', 'student')
+                ->get()
+                ->pluck('id');
+            
+            if ($studentIds->isNotEmpty()) {
+                $query->whereIn('id', $studentIds);
+            } else {
+                // No results found, return empty
+                $query->whereRaw('1 = 0');
+            }
         }
 
         // Filter by department (program for students) - only if user has permission
@@ -101,8 +108,17 @@ class StudentController extends Controller
 
         $roles = Role::where('name', 'student')->get();
         $departments = $this->getDepartments();
+        $programs = $this->getPrograms();
+        $departmentPrograms = $this->getDepartmentProgramsMapping();
         
-        return view('students.create', compact('roles', 'departments'));
+        // Get all countries using the laravel-countries package
+        $countries = \Lwwcas\LaravelCountries\Models\Country::select('id', 'official_name', 'iso_alpha_2')
+            ->where('is_visible', 1)
+            ->orderBy('official_name')
+            ->get()
+            ->pluck('official_name', 'official_name');
+        
+        return view('students.create', compact('roles', 'departments', 'programs', 'departmentPrograms', 'countries'));
     }
 
     /**
@@ -165,20 +181,20 @@ class StudentController extends Controller
                 'date_hired' => $validated['enrollment_date'],
                 'last_name' => $validated['last_name'],
                 'first_name' => $validated['first_name'],
-                'middle_name' => $validated['middle_name'],
-                'suffix' => $validated['suffix'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'suffix' => $validated['suffix'] ?? null,
                 'sex' => $validated['sex'],
                 'date_of_birth' => $validated['date_of_birth'],
-                'place_of_birth' => $validated['place_of_birth'],
-                'civil_status' => $validated['civil_status'],
-                'nationality' => $validated['nationality'],
-                'mobile' => $validated['mobile'],
-                'current_address' => $validated['current_address'],
-                'permanent_address' => $validated['permanent_address'],
-                'emergency_name' => $validated['emergency_name'],
-                'emergency_relationship' => $validated['emergency_relationship'],
-                'emergency_phone' => $validated['emergency_phone'],
-                'emergency_address' => $validated['emergency_address'],
+                'place_of_birth' => $validated['place_of_birth'] ?? null,
+                'civil_status' => $validated['civil_status'] ?? null,
+                'nationality' => $validated['nationality'] ?? null,
+                'mobile' => $validated['mobile'] ?? null,
+                'current_address' => $validated['current_address'] ?? null,
+                'permanent_address' => $validated['permanent_address'] ?? null,
+                'emergency_name' => $validated['emergency_name'] ?? null,
+                'emergency_relationship' => $validated['emergency_relationship'] ?? null,
+                'emergency_phone' => $validated['emergency_phone'] ?? null,
+                'emergency_address' => $validated['emergency_address'] ?? null,
                 'department' => $validated['department'],
                 'course' => $validated['course'],
                 'year_level' => $validated['year_level'],
@@ -256,9 +272,18 @@ class StudentController extends Controller
 
         $roles = Role::where('name', 'student')->get();
         $departments = $this->getDepartments();
+        $programs = $this->getPrograms();
+        $departmentPrograms = $this->getDepartmentProgramsMapping();
         $student->load('profile');
         
-        return view('students.edit', compact('student', 'roles', 'departments'));
+        // Get all countries using the laravel-countries package
+        $countries = \Lwwcas\LaravelCountries\Models\Country::select('id', 'official_name', 'iso_alpha_2')
+            ->where('is_visible', 1)
+            ->orderBy('official_name')
+            ->get()
+            ->pluck('official_name', 'official_name');
+        
+        return view('students.edit', compact('student', 'roles', 'departments', 'programs', 'departmentPrograms', 'countries'));
     }
 
     /**
@@ -320,20 +345,20 @@ class StudentController extends Controller
                 'date_hired' => $validated['enrollment_date'],
                 'last_name' => $validated['last_name'],
                 'first_name' => $validated['first_name'],
-                'middle_name' => $validated['middle_name'],
-                'suffix' => $validated['suffix'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'suffix' => $validated['suffix'] ?? null,
                 'sex' => $validated['sex'],
                 'date_of_birth' => $validated['date_of_birth'],
-                'place_of_birth' => $validated['place_of_birth'],
-                'civil_status' => $validated['civil_status'],
-                'nationality' => $validated['nationality'],
-                'mobile' => $validated['mobile'],
-                'current_address' => $validated['current_address'],
-                'permanent_address' => $validated['permanent_address'],
-                'emergency_name' => $validated['emergency_name'],
-                'emergency_relationship' => $validated['emergency_relationship'],
-                'emergency_phone' => $validated['emergency_phone'],
-                'emergency_address' => $validated['emergency_address'],
+                'place_of_birth' => $validated['place_of_birth'] ?? null,
+                'civil_status' => $validated['civil_status'] ?? null,
+                'nationality' => $validated['nationality'] ?? null,
+                'mobile' => $validated['mobile'] ?? null,
+                'current_address' => $validated['current_address'] ?? null,
+                'permanent_address' => $validated['permanent_address'] ?? null,
+                'emergency_name' => $validated['emergency_name'] ?? null,
+                'emergency_relationship' => $validated['emergency_relationship'] ?? null,
+                'emergency_phone' => $validated['emergency_phone'] ?? null,
+                'emergency_address' => $validated['emergency_address'] ?? null,
                 'department' => $validated['department'],
                 'course' => $validated['course'],
                 'year_level' => $validated['year_level'],
@@ -461,6 +486,21 @@ class StudentController extends Controller
             
             // College of Arts, Sciences and Education
             'BAC' => 'Bachelor of Arts in Communication',
+        ];
+    }
+
+    /**
+     * Get department to programs mapping
+     */
+    private function getDepartmentProgramsMapping()
+    {
+        return [
+            'COE' => ['BSCE', 'BSEE', 'BSGE', 'BSEcE', 'BSIT', 'BSCS', 'ACS', 'BSME', 'BSAeroE', 'BSAMT', 'CAMT'],
+            'CME' => ['BSMarE', 'BSMarT'],
+            'COB' => ['BSTM', 'BSCA', 'BSBA'],
+            'COA' => ['BSArch'],
+            'SFA' => ['BFA-VC'],
+            'CASE' => ['BAC'],
         ];
     }
 

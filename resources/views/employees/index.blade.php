@@ -3,25 +3,64 @@
 @section('page-title', 'Employees')
 
 @section('content')
-<div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-        Employees
-    </h2>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Employees</h2>
+            <p class="text-gray-600 dark:text-gray-400">Manage employee records and information</p>
+        </div>
+        @if(Auth::user()->role->name === 'admin')
+        <a href="{{ route('employees.create') }}"
+           class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium
+                  bg-blue-600 hover:bg-blue-700 text-white shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  dark:focus:ring-offset-gray-800">
+            <i class="fa-solid fa-user-plus"></i>
+            Add Employee
+        </a>
+        @endif
+    </div>
 
-    @if(Auth::user()->role->name === 'admin')
-    <a href="{{ route('employees.create') }}"
-       class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium
-              bg-blue-600 hover:bg-blue-700 text-white shadow-sm
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-              dark:focus:ring-offset-gray-800">
-        <i class="fa-solid fa-user-plus"></i>
-        Add Employee
-    </a>
-    @endif
-</div>
+    <!-- Search Filter -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="Search by name, email, position..." 
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+            </div>
+            
+            @if(Auth::user()->role->name === 'admin')
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
+                <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="">All Departments</option>
+                    <option value="College of Engineering" {{ request('department') == 'College of Engineering' ? 'selected' : '' }}>College of Engineering</option>
+                    <option value="College of Architecture" {{ request('department') == 'College of Architecture' ? 'selected' : '' }}>College of Architecture</option>
+                    <option value="College of Computer Studies" {{ request('department') == 'College of Computer Studies' ? 'selected' : '' }}>College of Computer Studies</option>
+                    <option value="College of Business" {{ request('department') == 'College of Business' ? 'selected' : '' }}>College of Business</option>
+                    <option value="Office of Student Affairs" {{ request('department') == 'Office of Student Affairs' ? 'selected' : '' }}>Office of Student Affairs</option>
+                    <option value="Security Office" {{ request('department') == 'Security Office' ? 'selected' : '' }}>Security Office</option>
+                </select>
+            </div>
+            @endif
+            
+            <div class="flex items-end gap-2">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition flex items-center gap-2">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <a href="{{ route('employees.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md transition">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
 
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow
-            dark:border-gray-700 dark:bg-gray-800">
+    <!-- Table -->
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow
+                dark:border-gray-700 dark:bg-gray-800">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead class="bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-100">
@@ -108,8 +147,5 @@
                     </div>
                 @endif
             </div>
-
-        </div>
-    </div>
+</div>
 @endsection
-

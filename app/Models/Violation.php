@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Violation extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'student_id',
@@ -29,6 +30,28 @@ class Violation extends Model
         'violation_date' => 'date',
         'resolution_date' => 'date',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'student_name' => $this->student?->name,
+            'student_id' => $this->student?->student_id,
+            'student_program' => $this->student?->program,
+            'violation_type' => $this->violation_type,
+            'level' => $this->level,
+            'description' => $this->description,
+            'status' => $this->status,
+            'severity' => $this->severity,
+            'violation_date' => $this->violation_date?->format('Y-m-d'),
+            'reporter_name' => $this->reporter?->name,
+        ];
+    }
 
     // Relationships
     public function student(): BelongsTo

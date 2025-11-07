@@ -46,17 +46,21 @@ class ViolationController extends Controller
             });
         }
 
-        // Search functionality
+        // Search functionality using Algolia Scout
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('violation_type', 'like', "%{$search}%")
-                  ->orWhereHas('student', function($studentQuery) use ($search) {
-                      $studentQuery->where('name', 'like', "%{$search}%")
-                                  ->orWhere('email', 'like', "%{$search}%");
-                  });
-            });
+            
+            // Use Scout search
+            $violationIds = Violation::search($search)
+                ->get()
+                ->pluck('id');
+            
+            if ($violationIds->isNotEmpty()) {
+                $query->whereIn('id', $violationIds);
+            } else {
+                // No results found, return empty
+                $query->whereRaw('1 = 0');
+            }
         }
 
         // Filter by status
@@ -181,28 +185,22 @@ class ViolationController extends Controller
             abort(403, 'You do not have permission to create violations.');
         }
         
-        // Filter students based on user role
-        $studentsQuery = User::whereHas('role', function($q) {
-            $q->where('name', 'student');
-        });
-        
-        // Program heads and teachers can only report violations for students in their program
-        if (in_array($userRole, ['program_head', 'teacher']) && $userDepartment) {
-            $studentsQuery->where('program', $userDepartment);
-        }
-        // Department heads can report violations for students in their department
-        elseif ($userRole === 'department_head' && $userDepartment) {
-            $studentsQuery->where('program', $userDepartment);
+        // Get students based on role
+        if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
+            $students = User::whereHas('role', function($q) {
+                $q->where('name', 'student');
+            })->where('program', $userDepartment)->get();
+        } else {
+            $students = User::whereHas('role', function($q) {
+                $q->where('name', 'student');
+            })->get();
         }
         
-        $students = $studentsQuery->select('id', 'name', 'email', 'student_id', 'program')
-            ->orderBy('name')
-            ->get();
+        // Get violation types from handbook
+        $violationTypes = \App\Models\ViolationType::orderBy('code')->get()->groupBy('category');
         
-        return view('violations.create', compact('students'));
-    }
-
-    /**
+        return view('violations.create', compact('students', 'violationTypes'));
+    }    /**
      * Store a newly created violation
      */
     public function store(Request $request)

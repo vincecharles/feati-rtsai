@@ -9,6 +9,11 @@ class DatabaseSeeder extends Seeder {
         $this->call([ 
             RoleSeeder::class, 
             AdminUserSeeder::class,
+            ViolationTypesSeeder::class,
+            // Removed faker seeders - users created through system
+            // EmployeeSeeder::class,
+            // StudentSeeder::class,
+            // ViolationSeeder::class,
         ]);
     }
 }

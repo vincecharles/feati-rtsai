@@ -8,23 +8,23 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Filters Section -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Filter Report</h3>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Filter Report</h3>
                     <form method="GET" action="{{ route('reports.students') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Date</label>
                             <input type="date" name="start_date" value="{{ $filters['start_date'] ?? '' }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">End Date</label>
                             <input type="date" name="end_date" value="{{ $filters['end_date'] ?? '' }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Program</label>
-                            <select name="department" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Program</label>
+                            <select name="department" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">All Programs</option>
                                 <!-- College of Engineering -->
                                 <option value="Civil Engineering" {{ ($filters['department'] ?? '') == 'Civil Engineering' ? 'selected' : '' }}>BS Civil Engineering</option>
@@ -57,7 +57,7 @@
                             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
                                 Apply Filters
                             </button>
-                            <a href="{{ route('reports.students') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition">
+                            <a href="{{ route('reports.students') }}" class="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition">
                                 Reset
                             </a>
                         </div>
@@ -67,30 +67,30 @@
 
             <!-- Summary Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-600 mb-2">Total Students</div>
-                    <div class="text-3xl font-bold text-blue-600">{{ $total_count }}</div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Students</div>
+                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ $total_count }}</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-600 mb-2">Active Students</div>
-                    <div class="text-3xl font-bold text-green-600">{{ $students->where('status', 'active')->count() }}</div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">Active Students</div>
+                    <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ $students->where('status', 'active')->count() }}</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-600 mb-2">Suspended</div>
-                    <div class="text-3xl font-bold text-red-600">{{ $students->where('status', 'suspended')->count() }}</div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">Suspended</div>
+                    <div class="text-3xl font-bold text-red-600 dark:text-red-400">{{ $students->where('status', 'suspended')->count() }}</div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <div class="text-sm text-gray-600 mb-2">Graduated</div>
-                    <div class="text-3xl font-bold text-indigo-600">{{ $students->where('status', 'graduated')->count() }}</div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">Graduated</div>
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{{ $students->where('status', 'graduated')->count() }}</div>
                 </div>
             </div>
 
             <!-- Export Options -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 flex justify-between items-center">
                     <div>
-                        <h3 class="text-lg font-semibold">Export Options</h3>
-                        <p class="text-sm text-gray-600 mt-1">Download this report in different formats</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Export Options</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Download this report in different formats</p>
                     </div>
                     <div class="flex gap-2">
                         <form method="GET" action="{{ route('reports.students') }}" class="inline">
@@ -131,70 +131,70 @@
             </div>
 
             <!-- Students Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Student Enrollment Details</h3>
-                        <div class="text-sm text-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Student Enrollment Details</h3>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
                             Generated: {{ $generated_at->format('F d, Y H:i:s') }}
                         </div>
                     </div>
                     
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Program</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year Level</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Program</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Year Level</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Mobile</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Enrolled Date</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($students as $student)
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {{ $student->student_id }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $student->name }}</div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $student->program ?? 'N/A' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $student->year_level ?? 'N/A' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{ $student->email }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{ $student->mobile ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @php
                                                 $statusColors = [
-                                                    'active' => 'bg-green-100 text-green-800',
-                                                    'inactive' => 'bg-yellow-100 text-yellow-800',
-                                                    'suspended' => 'bg-red-100 text-red-800',
-                                                    'graduated' => 'bg-blue-100 text-blue-800',
+                                                    'active' => 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+                                                    'inactive' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
+                                                    'suspended' => 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
+                                                    'graduated' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
                                                 ];
                                             @endphp
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$student->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$student->status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
                                                 {{ ucfirst($student->status) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{ $student->created_at->format('M d, Y') }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                             No students found matching the filters.
                                         </td>
                                     </tr>
@@ -207,7 +207,7 @@
 
             <!-- Back Button -->
             <div class="mt-6">
-                <a href="{{ route('reports.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                <a href="{{ route('reports.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>

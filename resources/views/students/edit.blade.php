@@ -101,6 +101,50 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div>
+                        <label for="place_of_birth" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Place of Birth
+                        </label>
+                        <input type="text" id="place_of_birth" name="place_of_birth" value="{{ old('place_of_birth', $student->profile->place_of_birth ?? '') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('place_of_birth') border-red-500 @enderror">
+                        @error('place_of_birth')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="civil_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Civil Status
+                        </label>
+                        <select id="civil_status" name="civil_status" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('civil_status') border-red-500 @enderror">
+                            <option value="">Select Status</option>
+                            <option value="Single" {{ old('civil_status', $student->profile->civil_status ?? '') == 'Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Married" {{ old('civil_status', $student->profile->civil_status ?? '') == 'Married' ? 'selected' : '' }}>Married</option>
+                            <option value="Widowed" {{ old('civil_status', $student->profile->civil_status ?? '') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                            <option value="Separated" {{ old('civil_status', $student->profile->civil_status ?? '') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                        </select>
+                        @error('civil_status')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="nationality" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nationality
+                        </label>
+                        <select id="nationality" name="nationality" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('nationality') border-red-500 @enderror">
+                            <option value="">Select Nationality</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country }}" {{ old('nationality', $student->profile->nationality ?? 'Philippines') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                            @endforeach
+                        </select>
+                        @error('nationality')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
@@ -140,6 +184,67 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div class="md:col-span-2">
+                        <label for="permanent_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Permanent Address
+                        </label>
+                        <textarea id="permanent_address" name="permanent_address" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('permanent_address') border-red-500 @enderror">{{ old('permanent_address', $student->profile->permanent_address ?? '') }}</textarea>
+                        @error('permanent_address')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact Information -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Emergency Contact Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="emergency_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Contact Name
+                        </label>
+                        <input type="text" id="emergency_name" name="emergency_name" value="{{ old('emergency_name', $student->profile->emergency_name ?? '') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_name') border-red-500 @enderror">
+                        @error('emergency_name')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_relationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Relationship
+                        </label>
+                        <input type="text" id="emergency_relationship" name="emergency_relationship" value="{{ old('emergency_relationship', $student->profile->emergency_relationship ?? '') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_relationship') border-red-500 @enderror">
+                        @error('emergency_relationship')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Phone
+                        </label>
+                        <input type="text" id="emergency_phone" name="emergency_phone" value="{{ old('emergency_phone', $student->profile->emergency_phone ?? '') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_phone') border-red-500 @enderror">
+                        @error('emergency_phone')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Address
+                        </label>
+                        <input type="text" id="emergency_address" name="emergency_address" value="{{ old('emergency_address', $student->profile->emergency_address ?? '') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_address') border-red-500 @enderror">
+                        @error('emergency_address')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
@@ -176,10 +281,13 @@
 
                     <div>
                         <label for="course" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Course <span class="text-red-500">*</span>
+                            Course/Program <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="course" name="course" value="{{ old('course', $student->profile->course ?? '') }}" 
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('course') border-red-500 @enderror" required>
+                        <select id="course" name="course" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('course') border-red-500 @enderror" required>
+                            <option value="">Select a department first</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select a department first to view available programs</p>
                         @error('course')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -271,4 +379,57 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    // Department to Programs mapping
+    const departmentPrograms = @json($departmentPrograms);
+    const allPrograms = @json($programs);
+
+    // Get the current course value (either from validation error or existing student data)
+    const oldCourse = '{{ old("profile.course", $student->profile->course ?? "") }}';
+
+    const departmentSelect = document.getElementById('department');
+    const courseSelect = document.getElementById('course');
+
+    function updateCourseOptions() {
+        const selectedDepartment = departmentSelect.value;
+        
+        // Clear existing options
+        courseSelect.innerHTML = '<option value="">Select a program...</option>';
+        
+        if (selectedDepartment && departmentPrograms[selectedDepartment]) {
+            // Get programs for selected department
+            const programCodes = departmentPrograms[selectedDepartment];
+            
+            // Add program options
+            programCodes.forEach(code => {
+                if (allPrograms[code]) {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = allPrograms[code];
+                    
+                    // Pre-select the student's current course
+                    if (code === oldCourse) {
+                        option.selected = true;
+                    }
+                    
+                    courseSelect.appendChild(option);
+                }
+            });
+            
+            courseSelect.disabled = false;
+        } else {
+            courseSelect.disabled = true;
+        }
+    }
+
+    // Update course options when department changes
+    departmentSelect.addEventListener('change', updateCourseOptions);
+
+    // Initialize course options on page load
+    updateCourseOptions();
+</script>
+@endpush
+
 @endsection

@@ -18,7 +18,7 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $userRole = $user->role?->name;
@@ -33,6 +33,27 @@ class EmployeeController extends Controller
         $query = User::with(['role', 'profile'])
             ->whereHas('profile');
 
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%")
+                  ->orWhereHas('profile', function($profileQuery) use ($search) {
+                      $profileQuery->where('position', 'like', "%{$search}%")
+                                   ->orWhere('department', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Department filter
+        if ($request->filled('department')) {
+            $query->whereHas('profile', function($q) use ($request) {
+                $q->where('department', $request->department);
+            });
+        }
+
         // Role-based filtering
         if (in_array($userRole, ['department_head', 'program_head']) && $userDepartment) {
             // Department/Program heads can only see employees in their department
@@ -43,7 +64,8 @@ class EmployeeController extends Controller
         // Super Admin can see all employees
 
         $employees = $query->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20)
+            ->appends($request->query());
 
         return view('employees.index', compact('employees'));
     }

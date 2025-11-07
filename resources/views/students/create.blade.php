@@ -16,6 +16,30 @@
         </a>
     </div>
 
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-200 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-200 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-200 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Validation Errors:</strong>
+            <ul class="mt-2 list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- Form -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <form action="{{ route('students.store') }}" method="POST" class="p-6 space-y-6">
@@ -100,6 +124,50 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div>
+                        <label for="place_of_birth" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Place of Birth
+                        </label>
+                        <input type="text" id="place_of_birth" name="place_of_birth" value="{{ old('place_of_birth') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('place_of_birth') border-red-500 @enderror">
+                        @error('place_of_birth')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="civil_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Civil Status
+                        </label>
+                        <select id="civil_status" name="civil_status" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('civil_status') border-red-500 @enderror">
+                            <option value="">Select Status</option>
+                            <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                            <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                            <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                        </select>
+                        @error('civil_status')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="nationality" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nationality
+                        </label>
+                        <select id="nationality" name="nationality" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('nationality') border-red-500 @enderror">
+                            <option value="">Select Nationality</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country }}" {{ old('nationality', 'Philippines') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                            @endforeach
+                        </select>
+                        @error('nationality')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
@@ -139,6 +207,67 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div class="md:col-span-2">
+                        <label for="permanent_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Permanent Address
+                        </label>
+                        <textarea id="permanent_address" name="permanent_address" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('permanent_address') border-red-500 @enderror">{{ old('permanent_address') }}</textarea>
+                        @error('permanent_address')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact Information -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Emergency Contact Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="emergency_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Contact Name
+                        </label>
+                        <input type="text" id="emergency_name" name="emergency_name" value="{{ old('emergency_name') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_name') border-red-500 @enderror">
+                        @error('emergency_name')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_relationship" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Relationship
+                        </label>
+                        <input type="text" id="emergency_relationship" name="emergency_relationship" value="{{ old('emergency_relationship') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_relationship') border-red-500 @enderror">
+                        @error('emergency_relationship')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Phone
+                        </label>
+                        <input type="text" id="emergency_phone" name="emergency_phone" value="{{ old('emergency_phone') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_phone') border-red-500 @enderror">
+                        @error('emergency_phone')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="emergency_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Emergency Address
+                        </label>
+                        <input type="text" id="emergency_address" name="emergency_address" value="{{ old('emergency_address') }}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('emergency_address') border-red-500 @enderror">
+                        @error('emergency_address')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
@@ -175,10 +304,13 @@
 
                     <div>
                         <label for="course" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Course <span class="text-red-500">*</span>
+                            Course/Program <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="course" name="course" value="{{ old('course') }}" 
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('course') border-red-500 @enderror" required>
+                        <select id="course" name="course" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white @error('course') border-red-500 @enderror" required disabled>
+                            <option value="">Select a department first</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select a department first to view available programs</p>
                         @error('course')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -254,4 +386,66 @@
         </form>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic course/program selection based on department
+    const departmentPrograms = @json($departmentPrograms);
+    const programs = @json($programs);
+    const departmentSelect = document.getElementById('department');
+    const courseSelect = document.getElementById('course');
+    const studentForm = document.querySelector('form');
+    const oldCourse = "{{ old('course') }}";
+
+    // Function to update course options based on selected department
+    function updateCourseOptions() {
+        const selectedDepartment = departmentSelect.value;
+        courseSelect.innerHTML = '<option value="">Select a program</option>';
+        
+        if (selectedDepartment && departmentPrograms[selectedDepartment]) {
+            const availablePrograms = departmentPrograms[selectedDepartment];
+            
+            availablePrograms.forEach(programCode => {
+                const option = document.createElement('option');
+                option.value = programCode;
+                option.textContent = programs[programCode];
+                
+                // Restore old value if it exists
+                if (oldCourse && programCode === oldCourse) {
+                    option.selected = true;
+                }
+                
+                courseSelect.appendChild(option);
+            });
+            
+            courseSelect.disabled = false;
+        } else {
+            courseSelect.innerHTML = '<option value="">Select a department first</option>';
+            courseSelect.disabled = true;
+        }
+    }
+
+    // Initialize on page load
+    departmentSelect.addEventListener('change', updateCourseOptions);
+
+    // Trigger update if department has old value
+    if (departmentSelect.value) {
+        updateCourseOptions();
+    }
+
+    // Form submission validation
+    studentForm.addEventListener('submit', function(e) {
+        // Remove disabled attribute from course select before submission
+        // This ensures the value is included in the form data
+        courseSelect.disabled = false;
+        
+        console.log('Form submitting with course value:', courseSelect.value);
+        
+        // Let the form submit normally
+        return true;
+    });
+});
+</script>
+@endpush
 @endsection

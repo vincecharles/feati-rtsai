@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FEATI Pulse - Student Information System</title>
+    <title>FEATI PRISM - Platform for Records, Incidents & Student Management</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700" rel="stylesheet" />
@@ -25,7 +25,7 @@
                 <div class="flex items-center">
                     <h1 class="text-3xl font-bold">
                         <span class="text-blue-600">FEATI</span>
-                        <span class="text-yellow-500">Pulse</span>
+                        <span class="text-yellow-500">PRISM</span>
                     </h1>
                 </div>
                 
@@ -64,10 +64,10 @@
     <section class="py-20 px-4">
         <div class="max-w-7xl mx-auto text-center">
             <h2 class="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-                Welcome to <span class="text-blue-600">FEATI Pulse</span>
+                Welcome to <span class="text-blue-600">FEATI PRISM</span>
             </h2>
             <p class="text-xl md:text-2xl text-gray-600 mb-8 animate-slide-up">
-                Real-Time Student Affairs Intelligence System
+                Platform for Records, Incidents & Student Management
             </p>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto animate-slide-up-delay">
                 Streamlining student records, applications, and academic information management for FEATI University.
@@ -178,7 +178,7 @@
     <footer class="bg-white py-8 px-4 border-t">
         <div class="max-w-7xl mx-auto text-center">
             <p class="text-gray-600">&copy; {{ date('Y') }} FEATI University. All rights reserved.</p>
-            <p class="text-sm text-gray-500 mt-2">Powered by FEATI Pulse</p>
+            <p class="text-sm text-gray-500 mt-2">Powered by FEATI PRISM</p>
         </div>
     </footer>
 

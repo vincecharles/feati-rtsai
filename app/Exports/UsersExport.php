@@ -14,21 +14,23 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithColu
 {
     public function collection()
     {
-        return User::with('role')->get();
+        return User::with(['role', 'studentProfile', 'profile'])->get();
     }
 
     public function headings(): array
     {
         return [
             'ID',
-            'Employee/Student ID',
+            'Employee/Student Number',
             'First Name',
             'Last Name',
+            'Middle Name',
             'Email',
             'Role',
             'Department',
-            'Program',
+            'Program/Position',
             'Year Level',
+            'Mobile',
             'Status',
             'Created At',
         ];
@@ -36,17 +38,22 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithColu
 
     public function map($user): array
     {
+        $isStudent = $user->role?->name === 'student';
+        $profile = $isStudent ? $user->studentProfile : $user->profile;
+        
         return [
             $user->id,
-            $user->employee_id ?? $user->student_id ?? 'N/A',
-            $user->first_name,
-            $user->last_name,
+            $isStudent ? ($profile->student_number ?? 'N/A') : ($profile->employee_number ?? 'N/A'),
+            $profile->first_name ?? 'N/A',
+            $profile->last_name ?? 'N/A',
+            $profile->middle_name ?? '',
             $user->email,
             $user->role->label ?? 'N/A',
-            $user->department ?? 'N/A',
-            $user->program ?? 'N/A',
-            $user->year_level ?? 'N/A',
-            $user->email_verified_at ? 'Active' : 'Inactive',
+            $profile->department ?? 'N/A',
+            $isStudent ? ($profile->program ?? 'N/A') : ($profile->position ?? 'N/A'),
+            $isStudent ? ($profile->year_level ?? 'N/A') : 'N/A',
+            $profile->mobile ?? 'N/A',
+            $user->status ?? ($user->email_verified_at ? 'Active' : 'Inactive'),
             $user->created_at->format('Y-m-d H:i:s'),
         ];
     }
@@ -55,16 +62,18 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithColu
     {
         return [
             'A' => 8,
-            'B' => 18,
-            'C' => 20,
-            'D' => 20,
-            'E' => 30,
-            'F' => 25,
-            'G' => 30,
+            'B' => 20,
+            'C' => 18,
+            'D' => 18,
+            'E' => 15,
+            'F' => 30,
+            'G' => 25,
             'H' => 30,
-            'I' => 12,
+            'I' => 30,
             'J' => 12,
-            'K' => 20,
+            'K' => 15,
+            'L' => 12,
+            'M' => 20,
         ];
     }
 

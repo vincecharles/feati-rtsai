@@ -4,10 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Violation;
 use App\Models\User;
+use App\Services\ViolationNotificationService;
 use Illuminate\Http\Request;
 
 class ViolationController extends Controller
 {
+    protected ViolationNotificationService $notificationService;
+
+    public function __construct(ViolationNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Display a listing of violations
      */
@@ -37,8 +45,11 @@ class ViolationController extends Controller
             // Teachers can't view violations (implement if needed)
             abort(403, 'You do not have permission to view violations.');
         } elseif ($userRole === 'student') {
-            // Students can only see their own violations
-            $query->where('student_id', $user->id);
+            // Students can see violations against them OR complaints they filed
+            $query->where(function($q) use ($user) {
+                $q->where('student_id', $user->id)           // Violations against them
+                  ->orWhere('reported_by', $user->id);       // Complaints they filed
+            });
         } else if ($filterDepartment && in_array($userRole, ['admin', 'osa', 'security'])) {
             // Super Admin, OSA, Security can filter by department
             $query->whereHas('student.studentProfile', function($q) use ($filterDepartment) {
@@ -176,14 +187,15 @@ class ViolationController extends Controller
     {
         $user = auth()->user();
         $userRole = $user->role?->name;
-        $userDepartment = $user->profile?->department;
+        $userDepartment = $user->profile?->department ?? $user->studentProfile?->department;
         
-        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
+        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head', 'student'];
         if (!in_array($userRole, $allowedRoles)) {
             abort(403, 'You do not have permission to create violations.');
         }
         
         if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
+            // Department-restricted roles can only see students in their department
             $students = User::with('studentProfile')
                 ->whereHas('role', function($q) {
                     $q->where('name', 'student');
@@ -192,7 +204,16 @@ class ViolationController extends Controller
                     $q->where('department', $userDepartment);
                 })
                 ->get();
+        } elseif ($userRole === 'student') {
+            // Students can file complaints against other students (exclude themselves)
+            $students = User::with('studentProfile')
+                ->whereHas('role', function($q) {
+                    $q->where('name', 'student');
+                })
+                ->where('id', '!=', $user->id)
+                ->get();
         } else {
+            // Admin, OSA, Security can see all students
             $students = User::with('studentProfile')
                 ->whereHas('role', function($q) {
                     $q->where('name', 'student');
@@ -224,24 +245,32 @@ class ViolationController extends Controller
     {
         $user = auth()->user();
         $userRole = $user->role?->name;
-        $userDepartment = $user->profile?->department;
+        $userDepartment = $user->profile?->department ?? $user->studentProfile?->department;
         
-        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head'];
+        $allowedRoles = ['admin', 'osa', 'security', 'program_head', 'teacher', 'department_head', 'student'];
         if (!in_array($userRole, $allowedRoles)) {
             abort(403, 'You do not have permission to create violations.');
         }
         
-        $validated = $request->validate([
+        // Students filing complaints don't need to specify sanction (OSA will decide)
+        $validationRules = [
             'student_id' => 'required|exists:users,id',
             'offense_category' => 'required|in:major,minor',
             'violation_type' => 'required|string|max:255',
-            'sanction' => 'required|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)',
             'violation_date' => 'required|date',
             'description' => 'required|string|max:2000',
             'action_taken' => 'nullable|string|max:1000',
-        ]);
+        ];
+        
+        // Only non-students need to specify sanction
+        if ($userRole !== 'student') {
+            $validationRules['sanction'] = 'required|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)';
+        }
+        
+        $validated = $request->validate($validationRules);
 
         try {
+            // Department-restricted roles can only report students in their department
             if (in_array($userRole, ['program_head', 'teacher', 'department_head']) && $userDepartment) {
                 $student = User::with('studentProfile')->find($validated['student_id']);
                 if ($student->studentProfile && $student->studentProfile->department !== $userDepartment) {
@@ -250,17 +279,34 @@ class ViolationController extends Controller
                 }
             }
             
+            // Students cannot file complaints against themselves
+            if ($userRole === 'student' && $validated['student_id'] == $user->id) {
+                return back()->withInput()
+                    ->with('error', 'You cannot file a complaint against yourself.');
+            }
+            
             $violation = Violation::create([
                 'student_id' => $validated['student_id'],
                 'offense_category' => $validated['offense_category'],
                 'violation_type' => $validated['violation_type'],
-                'sanction' => $validated['sanction'],
+                'sanction' => $validated['sanction'] ?? null, // Null for student complaints, OSA will decide
                 'reported_by' => auth()->id(),
                 'violation_date' => $validated['violation_date'],
                 'description' => $validated['description'],
-                'status' => 'pending',
+                'status' => $userRole === 'student' ? 'pending_review' : 'pending', // Student complaints need review
                 'action_taken' => $validated['action_taken'],
             ]);
+
+            // Load relationships for notifications
+            $violation->load(['student.studentProfile', 'reporter.profile', 'reporter.studentProfile']);
+
+            // Send email notifications
+            try {
+                $this->notificationService->sendNewViolationNotifications($violation);
+            } catch (\Exception $notifError) {
+                // Log notification error but don't fail the violation creation
+                \Illuminate\Support\Facades\Log::error('Failed to send violation notifications: ' . $notifError->getMessage());
+            }
 
             if ($request->expectsJson()) {
                 return $this->successResponse('Violation created successfully', [
@@ -269,7 +315,7 @@ class ViolationController extends Controller
             }
 
             return redirect()->route('violations.index')
-                ->with('success', 'Violation created successfully.');
+                ->with('success', 'Violation created successfully. Notifications have been sent.');
 
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
@@ -346,7 +392,8 @@ class ViolationController extends Controller
         }
         
         $validated = $request->validate([
-            'status' => 'required|in:pending,under_review,resolved,dismissed',
+            'status' => 'required|in:pending,pending_review,under_review,resolved,dismissed',
+            'sanction' => 'nullable|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)',
             'action_taken' => 'nullable|string|max:1000',
             'resolution_date' => 'nullable|date',
         ]);
@@ -358,11 +405,35 @@ class ViolationController extends Controller
                     ->with('error', 'Security personnel cannot resolve or dismiss violations. Only OSA and Admin can do this.');
             }
             
+            // Track old status for notification
+            $oldStatus = $violation->status;
+            $wasResolved = in_array($oldStatus, ['resolved', 'dismissed']);
+            $isNowResolved = in_array($validated['status'], ['resolved', 'dismissed']);
+            
             $violation->update([
                 'status' => $validated['status'],
+                'sanction' => $validated['sanction'] ?? $violation->sanction,
                 'action_taken' => $validated['action_taken'],
                 'resolution_date' => $validated['resolution_date'],
             ]);
+
+            // Load relationships for notifications
+            $violation->load(['student.studentProfile', 'reporter.profile', 'reporter.studentProfile']);
+
+            // Send notifications based on status change
+            try {
+                if ($oldStatus !== $validated['status']) {
+                    if (!$wasResolved && $isNowResolved) {
+                        // Verdict/resolution notification
+                        $this->notificationService->notifyVerdict($violation);
+                    } else {
+                        // Status update notification
+                        $this->notificationService->notifyStatusUpdate($violation, $oldStatus);
+                    }
+                }
+            } catch (\Exception $notifError) {
+                \Illuminate\Support\Facades\Log::error('Failed to send violation update notifications: ' . $notifError->getMessage());
+            }
 
             if ($request->expectsJson()) {
                 return $this->successResponse('Violation updated successfully', [
@@ -371,7 +442,7 @@ class ViolationController extends Controller
             }
 
             return redirect()->route('violations.index')
-                ->with('success', 'Violation updated successfully.');
+                ->with('success', 'Violation updated successfully. Notifications have been sent.');
 
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
@@ -428,11 +499,13 @@ class ViolationController extends Controller
         $request->validate([
             'note' => 'required|string|max:1000',
             'action_taken' => 'nullable|string|max:1000',
+            'sanction' => 'nullable|in:Disciplinary Citation (E),Suspension (D),Preventive Suspension (C),Exclusion (B),Expulsion (A)',
         ]);
 
         try {
             $violation->update([
                 'status' => 'resolved',
+                'sanction' => $request->sanction ?? $violation->sanction,
                 'action_taken' => $request->action_taken ?? $violation->action_taken,
                 'resolution_date' => now(),
             ]);
@@ -443,11 +516,20 @@ class ViolationController extends Controller
                 'note' => $request->note,
             ]);
 
+            // Load relationships and send verdict notification
+            $violation->load(['student.studentProfile', 'reporter.profile', 'reporter.studentProfile']);
+            
+            try {
+                $this->notificationService->notifyVerdict($violation);
+            } catch (\Exception $notifError) {
+                \Illuminate\Support\Facades\Log::error('Failed to send verdict notifications: ' . $notifError->getMessage());
+            }
+
             if ($request->expectsJson()) {
                 return $this->successResponse('Violation resolved successfully');
             }
 
-            return back()->with('success', 'Violation resolved successfully.');
+            return back()->with('success', 'Violation resolved successfully. Notifications have been sent.');
 
         } catch (\Exception $e) {
             if ($request->expectsJson()) {

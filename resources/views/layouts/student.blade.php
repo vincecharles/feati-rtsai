@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('page-title') - FEATI Pulse Student Portal</title>
+    <title>@yield('page-title') - FEATI PRISM Student Portal</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

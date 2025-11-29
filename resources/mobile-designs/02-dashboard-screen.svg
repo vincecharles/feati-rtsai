@@ -1,0 +1,119 @@
+<svg width="375" height="812" viewBox="0 0 375 812" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Screen 2: Dashboard Home -->
+  <g id="dashboard-screen">
+    <!-- Background -->
+    <rect width="375" height="812" fill="#1E293B"/>
+    
+    <!-- Header -->
+    <rect y="0" width="375" height="100" fill="#0F172A"/>
+    
+    <!-- Status Bar -->
+    <text x="20" y="30" font-family="Arial, sans-serif" font-size="12" fill="white">9:41 AM</text>
+    <circle cx="330" cy="25" r="5" fill="#10B981"/>
+    <circle cx="345" cy="25" r="5" fill="#3B82F6"/>
+    <circle cx="360" cy="25" r="5" fill="#F59E0B"/>
+    
+    <!-- Header Content -->
+    <text x="20" y="70" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">Dashboard</text>
+    <circle cx="345" cy="65" r="20" fill="#475569"/>
+    <text x="345" y="72" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">JD</text>
+    
+    <!-- Quick Stats Cards -->
+    <!-- Today Card -->
+    <rect x="20" y="120" width="160" height="100" rx="12" fill="#334155"/>
+    <text x="30" y="145" font-family="Arial, sans-serif" font-size="14" fill="#94A3B8">Today</text>
+    <text x="30" y="180" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#3B82F6">12</text>
+    <text x="30" y="205" font-family="Arial, sans-serif" font-size="12" fill="#CBD5E1">Violations</text>
+    
+    <!-- This Week Card -->
+    <rect x="195" y="120" width="160" height="100" rx="12" fill="#334155"/>
+    <text x="205" y="145" font-family="Arial, sans-serif" font-size="14" fill="#94A3B8">This Week</text>
+    <text x="205" y="180" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#10B981">47</text>
+    <text x="205" y="205" font-family="Arial, sans-serif" font-size="12" fill="#CBD5E1">Violations</text>
+    
+    <!-- Total Card -->
+    <rect x="20" y="235" width="160" height="100" rx="12" fill="#334155"/>
+    <text x="30" y="260" font-family="Arial, sans-serif" font-size="14" fill="#94A3B8">Total</text>
+    <text x="30" y="295" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#F59E0B">234</text>
+    <text x="30" y="320" font-family="Arial, sans-serif" font-size="12" fill="#CBD5E1">Violations</text>
+    
+    <!-- Pending Card -->
+    <rect x="195" y="235" width="160" height="100" rx="12" fill="#334155"/>
+    <text x="205" y="260" font-family="Arial, sans-serif" font-size="14" fill="#94A3B8">Pending</text>
+    <text x="205" y="295" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#EF4444">18</text>
+    <text x="205" y="320" font-family="Arial, sans-serif" font-size="12" fill="#CBD5E1">Violations</text>
+    
+    <!-- Main Action Buttons -->
+    <text x="20" y="370" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Quick Actions</text>
+    
+    <!-- Scan QR Button (Primary) -->
+    <rect x="20" y="390" width="335" height="80" rx="12" fill="#3B82F6"/>
+    <circle cx="60" cy="430" r="20" fill="rgba(255,255,255,0.2)"/>
+    <!-- QR Code Icon -->
+    <rect x="50" y="420" width="20" height="20" rx="2" fill="white"/>
+    <rect x="52" y="422" width="7" height="7" fill="#3B82F6"/>
+    <rect x="61" y="422" width="7" height="7" fill="#3B82F6"/>
+    <rect x="52" y="431" width="7" height="7" fill="#3B82F6"/>
+    <rect x="61" y="431" width="7" height="7" fill="#3B82F6"/>
+    
+    <text x="100" y="425" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Scan QR Code</text>
+    <text x="100" y="445" font-family="Arial, sans-serif" font-size="13" fill="rgba(255,255,255,0.8)">Scan student ID or barcode</text>
+    
+    <!-- Search Student Button -->
+    <rect x="20" y="490" width="160" height="70" rx="12" fill="#334155"/>
+    <circle cx="60" cy="525" r="15" fill="rgba(59,130,246,0.2)"/>
+    <circle cx="60" cy="525" r="8" stroke="#3B82F6" stroke-width="2" fill="none"/>
+    <line x1="66" y1="531" x2="72" y2="537" stroke="#3B82F6" stroke-width="2"/>
+    <text x="85" y="522" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">Search</text>
+    <text x="85" y="537" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">Student</text>
+    
+    <!-- My Reports Button -->
+    <rect x="195" y="490" width="160" height="70" rx="12" fill="#334155"/>
+    <circle cx="235" cy="525" r="15" fill="rgba(16,185,129,0.2)"/>
+    <rect x="230" y="520" width="10" height="12" rx="1" stroke="#10B981" stroke-width="2" fill="none"/>
+    <line x1="230" y1="524" x2="240" y2="524" stroke="#10B981" stroke-width="1.5"/>
+    <line x1="230" y1="528" x2="240" y2="528" stroke="#10B981" stroke-width="1.5"/>
+    <text x="260" y="522" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">My Reports</text>
+    <text x="260" y="537" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">View history</text>
+    
+    <!-- Recent Activity -->
+    <text x="20" y="595" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Recent Activity</text>
+    
+    <!-- Activity Item 1 -->
+    <rect x="20" y="610" width="335" height="60" rx="8" fill="#334155"/>
+    <circle cx="40" cy="640" r="8" fill="#EF4444"/>
+    <text x="60" y="632" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">Late Entry - Juan Dela Cruz</text>
+    <text x="60" y="650" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">2 hours ago • Pending</text>
+    
+    <!-- Activity Item 2 -->
+    <rect x="20" y="680" width="335" height="60" rx="8" fill="#334155"/>
+    <circle cx="40" cy="710" r="8" fill="#F59E0B"/>
+    <text x="60" y="702" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">Dress Code - Maria Santos</text>
+    <text x="60" y="720" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">5 hours ago • Under Review</text>
+    
+    <!-- Bottom Navigation Bar -->
+    <rect y="750" width="375" height="62" fill="#0F172A"/>
+    
+    <!-- Nav Item 1 - Home (Active) -->
+    <circle cx="56" cy="775" r="4" fill="#3B82F6"/>
+    <rect x="48" y="779" width="16" height="16" rx="2" fill="#3B82F6"/>
+    <text x="56" y="808" font-family="Arial, sans-serif" font-size="10" fill="#3B82F6" text-anchor="middle">Home</text>
+    
+    <!-- Nav Item 2 - Scan -->
+    <circle cx="140" cy="787" r="20" fill="#3B82F6"/>
+    <rect x="132" y="783" width="16" height="16" rx="2" fill="white"/>
+    <text x="140" y="808" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Scan</text>
+    
+    <!-- Nav Item 3 - Reports -->
+    <rect x="272" y="779" width="16" height="16" rx="2" fill="#64748B"/>
+    <line x1="272" y1="783" x2="288" y2="783" stroke="#64748B" stroke-width="1.5"/>
+    <text x="280" y="808" font-family="Arial, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Reports</text>
+    
+    <!-- Nav Item 4 - Profile -->
+    <circle cx="319" cy="787" r="8" fill="#64748B"/>
+    <text x="319" y="808" font-family="Arial, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Profile</text>
+    
+    <!-- Screen Label -->
+    <text x="187.5" y="730" font-family="Arial, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Screen 2 of 5 - Dashboard</text>
+  </g>
+</svg>

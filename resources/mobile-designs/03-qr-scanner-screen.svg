@@ -1,0 +1,95 @@
+<svg width="375" height="812" viewBox="0 0 375 812" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Screen 3: QR/Barcode Scanner -->
+  <g id="scanner-screen">
+    <!-- Background (Camera View) -->
+    <rect width="375" height="812" fill="#000000"/>
+    <rect width="375" height="812" fill="url(#cameraGradient)"/>
+    
+    <!-- Gradient Definition -->
+    <defs>
+      <linearGradient id="cameraGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#1E293B;stop-opacity:0.8" />
+        <stop offset="50%" style="stop-color:#1E293B;stop-opacity:0.3" />
+        <stop offset="100%" style="stop-color:#1E293B;stop-opacity:0.8" />
+      </linearGradient>
+    </defs>
+    
+    <!-- Header -->
+    <rect y="0" width="375" height="80" fill="#0F172A" opacity="0.9"/>
+    
+    <!-- Back Button -->
+    <circle cx="35" cy="50" r="18" fill="rgba(255,255,255,0.1)"/>
+    <path d="M40 50 L30 50 M30 50 L35 45 M30 50 L35 55" stroke="white" stroke-width="2" fill="none"/>
+    
+    <!-- Header Title -->
+    <text x="187.5" y="55" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Scan QR Code</text>
+    
+    <!-- Flashlight Button -->
+    <circle cx="340" cy="50" r="18" fill="rgba(255,255,255,0.1)"/>
+    <circle cx="340" cy="47" r="5" fill="white"/>
+    <path d="M335 52 L340 57 L345 52" stroke="white" stroke-width="2" fill="none"/>
+    
+    <!-- Scanner Frame Container -->
+    <rect x="37.5" y="180" width="300" height="300" fill="none"/>
+    
+    <!-- Scanner Corner Brackets -->
+    <!-- Top Left -->
+    <path d="M50 200 L50 180 L70 180" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- Top Right -->
+    <path d="M305 180 L325 180 L325 200" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- Bottom Left -->
+    <path d="M50 460 L50 480 L70 480" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- Bottom Right -->
+    <path d="M325 460 L325 480 L305 480" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" fill="none"/>
+    
+    <!-- Scanner Center Frame -->
+    <rect x="80" y="250" width="215" height="180" rx="8" fill="rgba(59,130,246,0.1)" stroke="#3B82F6" stroke-width="2" stroke-dasharray="10,5"/>
+    
+    <!-- Scanning Line Animation (representing active scan) -->
+    <line x1="85" y1="340" x2="290" y2="340" stroke="#3B82F6" stroke-width="2" opacity="0.7"/>
+    <rect x="85" y="338" width="205" height="4" fill="#3B82F6" opacity="0.3"/>
+    
+    <!-- Sample QR Code in Center -->
+    <rect x="147.5" y="290" width="80" height="80" rx="4" fill="white"/>
+    <!-- QR Code Pattern -->
+    <rect x="152" y="295" width="15" height="15" fill="#000000"/>
+    <rect x="152" y="320" width="15" height="15" fill="#000000"/>
+    <rect x="152" y="345" width="15" height="15" fill="#000000"/>
+    <rect x="177" y="295" width="15" height="15" fill="#000000"/>
+    <rect x="177" y="320" width="15" height="15" fill="#000000"/>
+    <rect x="202" y="295" width="15" height="15" fill="#000000"/>
+    <rect x="202" y="320" width="15" height="15" fill="#000000"/>
+    <rect x="202" y="345" width="15" height="15" fill="#000000"/>
+    
+    <!-- Instructions -->
+    <rect x="37.5" y="510" width="300" height="120" rx="12" fill="rgba(15,23,42,0.8)"/>
+    
+    <!-- Instruction Icon -->
+    <circle cx="187.5" cy="545" r="15" fill="rgba(59,130,246,0.2)"/>
+    <rect x="182" y="540" width="11" height="11" rx="1" stroke="#3B82F6" stroke-width="2" fill="none"/>
+    
+    <!-- Instruction Text -->
+    <text x="187.5" y="580" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="white" text-anchor="middle">Align QR code within frame</text>
+    <text x="187.5" y="605" font-family="Arial, sans-serif" font-size="13" fill="#94A3B8" text-anchor="middle">Hold steady for automatic scanning</text>
+    
+    <!-- Bottom Actions -->
+    <rect y="660" width="375" height="152" fill="#0F172A" opacity="0.9"/>
+    
+    <!-- Manual Entry Button -->
+    <rect x="37.5" y="685" width="300" height="50" rx="8" fill="#334155"/>
+    <text x="187.5" y="715" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="white" text-anchor="middle">Enter Student Number Manually</text>
+    
+    <!-- Or Divider -->
+    <line x1="60" y1="760" x2="155" y2="760" stroke="#475569" stroke-width="1"/>
+    <text x="187.5" y="765" font-family="Arial, sans-serif" font-size="12" fill="#64748B" text-anchor="middle">OR</text>
+    <line x1="220" y1="760" x2="315" y2="760" stroke="#475569" stroke-width="1"/>
+    
+    <!-- Gallery Button -->
+    <rect x="115" y="775" width="145" height="45" rx="8" fill="rgba(59,130,246,0.2)"/>
+    <rect x="130" y="790" width="15" height="15" rx="2" fill="#3B82F6"/>
+    <text x="155" y="802" font-family="Arial, sans-serif" font-size="14" fill="#3B82F6">Upload from Gallery</text>
+    
+    <!-- Screen Label -->
+    <text x="187.5" y="645" font-family="Arial, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Screen 3 of 5 - QR Scanner</text>
+  </g>
+</svg>

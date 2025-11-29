@@ -148,13 +148,13 @@ class ImportExportController extends Controller
         $templates = [
             'students' => [
                 'filename' => 'student_import_template.csv',
-                'headers' => ['first_name', 'last_name', 'email', 'student_id', 'program', 'year_level', 'department', 'password'],
-                'sample' => ['Juan', 'Dela Cruz', 'juan.delacruz@student.feati.edu', '2024-00001', 'BS Computer Science', '1', 'College of Engineering', 'password123'],
+                'headers' => ['first_name', 'last_name', 'middle_name', 'email', 'student_id', 'program', 'course', 'year_level', 'department', 'sex', 'mobile', 'password'],
+                'sample' => ['Juan', 'Dela Cruz', 'Santos', 'juan.delacruz@student.feati.edu', '2024-00001', 'BS Computer Science', 'BS Computer Science', '1', 'College of Computer Studies', 'Male', '09171234567', 'password123'],
             ],
             'users' => [
                 'filename' => 'user_import_template.csv',
-                'headers' => ['first_name', 'last_name', 'email', 'role', 'employee_id', 'department', 'password'],
-                'sample' => ['Maria', 'Santos', 'maria.santos@feati.edu', 'teacher', 'EMP-2024-001', 'College of Engineering', 'password123'],
+                'headers' => ['first_name', 'last_name', 'middle_name', 'email', 'role', 'employee_id', 'department', 'position', 'sex', 'mobile', 'password'],
+                'sample' => ['Maria', 'Santos', 'Cruz', 'maria.santos@feati.edu', 'teacher', 'EMP-2024-001', 'College of Engineering', 'Professor', 'Female', '09181234567', 'password123'],
             ],
         ];
 

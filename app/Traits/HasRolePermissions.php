@@ -34,9 +34,16 @@ trait HasRolePermissions
             ],
             'program_head' => [
                 'view_program' => true,
+                'view_program_students' => true,
                 'edit_program_students' => true,
                 'view_program_violations' => true,
                 'view_program_only' => true,
+                // Violation permissions (department-restricted)
+                'create_violation' => true,
+                'view_violations' => true,
+                // Student view permissions (department-restricted)
+                'view_students' => true,
+                'view_student_profile' => true,
             ],
             'security' => [
                 'create_violation' => true,
@@ -46,10 +53,25 @@ trait HasRolePermissions
                 'generate_violation_reports' => true,
             ],
             'osa' => [
+                // Violation CRUD permissions
                 'view_all_violations' => true,
+                'create_violation' => true,
+                'edit_violation' => true,
+                'delete_violation' => true,
+                // Verdict permissions
+                'resolve_violation' => true,
+                'dismiss_violation' => true,
+                'give_verdict' => true,
+                // Student view permissions
+                'view_all_students' => true,
+                'view_student_profile' => true,
+                'view_student_violations' => true,
+                // Other OSA permissions
                 'approve_applications' => true,
                 'manage_events' => true,
                 'view_student_activities' => true,
+                'view_all_departments' => true,
+                'view_reports' => true,
             ],
             'teacher' => [
                 'view_students' => true,
@@ -57,7 +79,12 @@ trait HasRolePermissions
             ],
             'student' => [
                 'view_own_profile' => true,
-                'view_own_violations' => true,
+                // Violation permissions for students
+                'create_violation' => true,           // Can file complaints against other students
+                'view_own_violations' => true,        // Can view violations against them
+                'view_filed_complaints' => true,      // Can view complaints they filed
+                'select_complaint_target' => true,    // Can select who to file complaint against
+                // Other student permissions
                 'appeal_violations' => true,
                 'submit_applications' => true,
             ],
@@ -105,6 +132,8 @@ trait HasRolePermissions
 
         switch ($user->role->name) {
             case 'admin':
+            case 'osa':
+                // Admin and OSA have full access to all data
                 return $query; 
             
             case 'department_head':
@@ -150,7 +179,9 @@ trait HasRolePermissions
 
         switch ($user->role->name ?? null) {
             case 'super_admin':
-                // All programs
+            case 'admin':
+            case 'osa':
+                // All programs for admin and OSA
                 return [
                     'BS Civil Engineering',
                     'BS Electrical Engineering',

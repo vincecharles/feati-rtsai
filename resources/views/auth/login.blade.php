@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - FEATI Pulse</title>
+    <title>Login - FEATI PRISM</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700" rel="stylesheet" />
@@ -22,9 +22,9 @@
         <div class="text-center mb-8 animate-fade-in">
             <h1 class="text-5xl font-bold mb-2">
                 <span class="text-blue-600">FEATI</span>
-                <span class="text-yellow-500">Pulse</span>
+                <span class="text-yellow-500">PRISM</span>
             </h1>
-            <p class="text-gray-600 text-sm">Student Information System</p>
+            <p class="text-gray-600 text-sm">Platform for Records, Incidents & Student Management</p>
         </div>
 
         <!-- Login Card -->

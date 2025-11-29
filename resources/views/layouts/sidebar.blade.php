@@ -49,7 +49,7 @@
                     <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center mr-3">
                         <i class="fas fa-graduation-cap text-blue-600 text-lg"></i>
                     </div>
-                    <span class="text-white font-bold text-lg">FEATI Pulse</span>
+                    <span class="text-white font-bold text-lg">FEATI PRISM</span>
                 </div>
             </div>
 

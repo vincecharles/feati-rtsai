@@ -67,6 +67,11 @@ class User extends Authenticatable
         return $this->hasOne(StudentProfile::class)->withDefault();
     }
 
+    public function dependents()
+    {
+        return $this->hasMany(Dependent::class);
+    }
+
     public function violations()
     {
         return $this->hasMany(Violation::class, 'student_id');

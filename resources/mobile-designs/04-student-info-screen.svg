@@ -1,0 +1,112 @@
+<svg width="375" height="812" viewBox="0 0 375 812" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Screen 4: Student Information Display -->
+  <g id="student-info-screen">
+    <!-- Background -->
+    <rect width="375" height="812" fill="#1E293B"/>
+    
+    <!-- Header -->
+    <rect y="0" width="375" height="80" fill="#0F172A"/>
+    
+    <!-- Back Button -->
+    <circle cx="35" cy="50" r="18" fill="rgba(255,255,255,0.1)"/>
+    <path d="M40 50 L30 50 M30 50 L35 45 M30 50 L35 55" stroke="white" stroke-width="2" fill="none"/>
+    
+    <!-- Header Title -->
+    <text x="187.5" y="55" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Student Information</text>
+    
+    <!-- Student Profile Card -->
+    <rect x="20" y="100" width="335" height="180" rx="12" fill="#334155"/>
+    
+    <!-- Profile Photo -->
+    <circle cx="75" cy="160" r="35" fill="#475569"/>
+    <text x="75" y="170" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">JD</text>
+    
+    <!-- Status Badge -->
+    <circle cx="102" cy="142" r="8" fill="#10B981"/>
+    <circle cx="102" cy="142" r="5" fill="white"/>
+    
+    <!-- Student Name and Info -->
+    <text x="130" y="140" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">Juan Dela Cruz</text>
+    <text x="130" y="160" font-family="Arial, sans-serif" font-size="14" fill="#94A3B8">2021-00123</text>
+    <text x="130" y="180" font-family="Arial, sans-serif" font-size="13" fill="#CBD5E1">BS Computer Science</text>
+    
+    <!-- Contact Info Row -->
+    <rect x="30" y="210" width="315" height="50" rx="6" fill="rgba(71,85,105,0.5)"/>
+    
+    <!-- Year Level -->
+    <text x="40" y="230" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">YEAR LEVEL</text>
+    <text x="40" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="white">4th Year</text>
+    
+    <!-- Phone -->
+    <text x="150" y="230" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8">PHONE</text>
+    <text x="150" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="white">09XX-XXX-XXXX</text>
+    
+    <!-- Violation Summary Card -->
+    <rect x="20" y="300" width="335" height="120" rx="12" fill="#334155"/>
+    
+    <!-- Section Title -->
+    <text x="30" y="325" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Violation Summary</text>
+    
+    <!-- Statistics Grid -->
+    <!-- Total -->
+    <circle cx="60" cy="360" r="20" fill="rgba(59,130,246,0.2)"/>
+    <text x="60" y="367" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#3B82F6" text-anchor="middle">5</text>
+    <text x="60" y="395" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">Total</text>
+    
+    <!-- Pending -->
+    <circle cx="140" cy="360" r="20" fill="rgba(239,68,68,0.2)"/>
+    <text x="140" y="367" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#EF4444" text-anchor="middle">2</text>
+    <text x="140" y="395" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">Pending</text>
+    
+    <!-- Under Review -->
+    <circle cx="220" cy="360" r="20" fill="rgba(245,158,11,0.2)"/>
+    <text x="220" y="367" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#F59E0B" text-anchor="middle">1</text>
+    <text x="220" y="395" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">Review</text>
+    
+    <!-- Resolved -->
+    <circle cx="300" cy="360" r="20" fill="rgba(16,185,129,0.2)"/>
+    <text x="300" y="367" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#10B981" text-anchor="middle">2</text>
+    <text x="300" y="395" font-family="Arial, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">Resolved</text>
+    
+    <!-- Recent Violations List -->
+    <text x="20" y="450" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Recent Violations</text>
+    
+    <!-- Violation Item 1 -->
+    <rect x="20" y="465" width="335" height="70" rx="8" fill="#334155"/>
+    <circle cx="40" cy="500" r="6" fill="#EF4444"/>
+    <text x="60" y="490" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">Late Entry</text>
+    <text x="60" y="508" font-family="Arial, sans-serif" font-size="12" fill="#94A3B8">Oct 28, 2025 • 8:15 AM</text>
+    <text x="60" y="523" font-family="Arial, sans-serif" font-size="11" fill="#64748B">Reported by: Security Officer Lopez</text>
+    
+    <!-- Status Badge -->
+    <rect x="285" y="492" width="60" height="20" rx="10" fill="rgba(239,68,68,0.2)"/>
+    <text x="315" y="506" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#EF4444" text-anchor="middle">Pending</text>
+    
+    <!-- Violation Item 2 -->
+    <rect x="20" y="550" width="335" height="70" rx="8" fill="#334155"/>
+    <circle cx="40" cy="585" r="6" fill="#10B981"/>
+    <text x="60" y="575" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="white">Dress Code</text>
+    <text x="60" y="593" font-family="Arial, sans-serif" font-size="12" fill="#94A3B8">Oct 20, 2025 • 10:30 AM</text>
+    <text x="60" y="608" font-family="Arial, sans-serif" font-size="11" fill="#64748B">Reported by: Security Officer Santos</text>
+    
+    <!-- Status Badge -->
+    <rect x="280" y="577" width="65" height="20" rx="10" fill="rgba(16,185,129,0.2)"/>
+    <text x="312.5" y="591" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#10B981" text-anchor="middle">Resolved</text>
+    
+    <!-- View All Button -->
+    <rect x="20" y="635" width="335" height="45" rx="8" fill="rgba(59,130,246,0.1)" stroke="#3B82F6" stroke-width="1"/>
+    <text x="187.5" y="663" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#3B82F6" text-anchor="middle">View All Violations</text>
+    
+    <!-- Action Buttons -->
+    <rect x="20" y="705" width="160" height="50" rx="8" fill="#EF4444"/>
+    <text x="100" y="735" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="white" text-anchor="middle">Report Violation</text>
+    
+    <rect x="195" y="705" width="160" height="50" rx="8" fill="#334155"/>
+    <circle cx="235" cy="730" r="12" fill="rgba(59,130,246,0.2)"/>
+    <path d="M232 730 L238 730 M235 727 L235 733" stroke="#3B82F6" stroke-width="1.5" fill="none"/>
+    <text x="260" y="735" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="white" text-anchor="middle">Details</text>
+    
+    <!-- Screen Label -->
+    <text x="187.5" y="785" font-family="Arial, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Screen 4 of 5 - Student Info</text>
+  </g>
+</svg>

@@ -101,38 +101,27 @@
                 </select>
             </div>
             
-            <!-- Department Filter (Only Super Admin) -->
+            <!-- Program Filter (Only Super Admin) -->
             @if(Auth::user()->role->name === 'admin')
-            <div>
+            <div class="relative">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Program</label>
-                <select name="department" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                    <option value="">All Programs</option>
-                    <!-- College of Engineering -->
-                    <option value="BS Civil Engineering" {{ request('department') == 'BS Civil Engineering' ? 'selected' : '' }}>BS Civil Engineering</option>
-                    <option value="BS Electrical Engineering" {{ request('department') == 'BS Electrical Engineering' ? 'selected' : '' }}>BS Electrical Engineering</option>
-                    <option value="BS Geodetic Engineering" {{ request('department') == 'BS Geodetic Engineering' ? 'selected' : '' }}>BS Geodetic Engineering</option>
-                    <option value="BS Electronics Engineering" {{ request('department') == 'BS Electronics Engineering' ? 'selected' : '' }}>BS Electronics Engineering</option>
-                    <option value="BS Information Technology" {{ request('department') == 'BS Information Technology' ? 'selected' : '' }}>BS Information Technology</option>
-                    <option value="BS Computer Science" {{ request('department') == 'BS Computer Science' ? 'selected' : '' }}>BS Computer Science</option>
-                    <option value="Associate in Computer Science" {{ request('department') == 'Associate in Computer Science' ? 'selected' : '' }}>Associate in Computer Science</option>
-                    <option value="BS Mechanical Engineering" {{ request('department') == 'BS Mechanical Engineering' ? 'selected' : '' }}>BS Mechanical Engineering</option>
-                    <option value="BS Aeronautical Engineering" {{ request('department') == 'BS Aeronautical Engineering' ? 'selected' : '' }}>BS Aeronautical Engineering</option>
-                    <option value="BS Aircraft Maintenance Technology" {{ request('department') == 'BS Aircraft Maintenance Technology' ? 'selected' : '' }}>BS Aircraft Maintenance Technology</option>
-                    <option value="Certificate in Aircraft Maintenance Technology" {{ request('department') == 'Certificate in Aircraft Maintenance Technology' ? 'selected' : '' }}>Certificate in Aircraft Maintenance Technology</option>
-                    <!-- College of Maritime Education -->
-                    <option value="BS Marine Engineering" {{ request('department') == 'BS Marine Engineering' ? 'selected' : '' }}>BS Marine Engineering</option>
-                    <option value="BS Marine Transportation" {{ request('department') == 'BS Marine Transportation' ? 'selected' : '' }}>BS Marine Transportation</option>
-                    <!-- College of Business -->
-                    <option value="BS Tourism Management" {{ request('department') == 'BS Tourism Management' ? 'selected' : '' }}>BS Tourism Management</option>
-                    <option value="BS Customs Administration" {{ request('department') == 'BS Customs Administration' ? 'selected' : '' }}>BS Customs Administration</option>
-                    <option value="BS Business Administration" {{ request('department') == 'BS Business Administration' ? 'selected' : '' }}>BS Business Administration</option>
-                    <!-- College of Architecture -->
-                    <option value="BS Architecture" {{ request('department') == 'BS Architecture' ? 'selected' : '' }}>BS Architecture</option>
-                    <!-- School of Fine Arts -->
-                    <option value="BFA major in Visual Communication" {{ request('department') == 'BFA major in Visual Communication' ? 'selected' : '' }}>BFA major in Visual Communication</option>
-                    <!-- College of Arts, Sciences and Education -->
-                    <option value="BA in Communication" {{ request('department') == 'BA in Communication' ? 'selected' : '' }}>BA in Communication</option>
-                </select>
+                <div class="relative">
+                    <input type="text" 
+                           id="program-search" 
+                           name="program_search" 
+                           value="{{ request('program') }}" 
+                           placeholder="Type to search programs..."
+                           autocomplete="off"
+                           class="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <input type="hidden" id="program-hidden" name="program" value="{{ request('program') }}">
+                    <div id="program-loading" class="absolute right-3 top-1/2 transform -translate-y-1/2 hidden">
+                        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div id="program-autocomplete" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
             </div>
             @endif
             <div class="flex items-end">
@@ -312,6 +301,143 @@ document.addEventListener('DOMContentLoaded', function() {
             autocompleteDiv.classList.add('hidden');
         }
     });
+
+    // Program autocomplete
+    const programSearch = document.getElementById('program-search');
+    const programAutocomplete = document.getElementById('program-autocomplete');
+    const programHidden = document.getElementById('program-hidden');
+    const programLoading = document.getElementById('program-loading');
+
+    const allPrograms = [
+        // College of Engineering
+        { code: 'BSCE', name: 'Bachelor of Science in Civil Engineering' },
+        { code: 'BSEE', name: 'Bachelor of Science in Electrical Engineering' },
+        { code: 'BSGE', name: 'Bachelor of Science in Geodetic Engineering' },
+        { code: 'BSEcE', name: 'Bachelor of Science in Electronics Engineering' },
+        { code: 'BSIT', name: 'Bachelor of Science in Information Technology' },
+        { code: 'BSCS', name: 'Bachelor of Science in Computer Science' },
+        { code: 'ACS', name: 'Associate in Computer Science' },
+        { code: 'BSME', name: 'Bachelor of Science in Mechanical Engineering' },
+        { code: 'BSAeroE', name: 'Bachelor of Science in Aeronautical Engineering' },
+        { code: 'BSAMT', name: 'Bachelor of Science in Aircraft Maintenance Technology' },
+        { code: 'CAMT', name: 'Certificate in Aircraft Maintenance Technology' },
+        // College of Maritime Education
+        { code: 'BSMarE', name: 'Bachelor of Science in Marine Engineering' },
+        { code: 'BSMarT', name: 'Bachelor of Science in Marine Transportation' },
+        // College of Business
+        { code: 'BSTM', name: 'Bachelor of Science in Tourism Management' },
+        { code: 'BSCA', name: 'Bachelor of Science in Customs Administration' },
+        { code: 'BSBA', name: 'Bachelor of Science in Business Administration' },
+        // College of Architecture
+        { code: 'BSArch', name: 'Bachelor of Science in Architecture' },
+        // School of Fine Arts
+        { code: 'BFA-VC', name: 'Bachelor of Fine Arts major in Visual Communication' },
+        // College of Arts, Sciences and Education
+        { code: 'BAC', name: 'Bachelor of Arts in Communication' }
+    ];
+
+    if (programSearch) {
+        programSearch.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+
+            if (query.length < 1) {
+                programAutocomplete.classList.add('hidden');
+                programHidden.value = '';
+                return;
+            }
+
+            // Show loading
+            programLoading.classList.remove('hidden');
+
+            // Filter programs
+            setTimeout(() => {
+                const filtered = allPrograms.filter(program => 
+                    program.code.toLowerCase().includes(query) ||
+                    program.name.toLowerCase().includes(query)
+                );
+
+                programLoading.classList.add('hidden');
+
+                if (filtered.length === 0) {
+                    programAutocomplete.innerHTML = `
+                        <div class="px-4 py-3 text-center">
+                            <i class="fas fa-search text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-gray-500 dark:text-gray-400">No programs found</p>
+                        </div>
+                    `;
+                    programAutocomplete.classList.remove('hidden');
+                    return;
+                }
+
+                programAutocomplete.innerHTML = filtered.map(program => `
+                    <div class="px-4 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer program-item border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors" data-program="${program.code}">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-graduation-cap text-blue-600 dark:text-blue-300"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900 dark:text-gray-100">${program.code}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">${program.name}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                programAutocomplete.classList.remove('hidden');
+
+                // Add click handlers
+                document.querySelectorAll('.program-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const programCode = this.dataset.program;
+                        programSearch.value = programCode;
+                        programHidden.value = programCode;
+                        programAutocomplete.classList.add('hidden');
+                    });
+                });
+            }, 150);
+        });
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!programSearch.contains(e.target) && !programAutocomplete.contains(e.target)) {
+                programAutocomplete.classList.add('hidden');
+            }
+        });
+
+        // Keyboard navigation
+        programSearch.addEventListener('keydown', function(e) {
+            const items = programAutocomplete.querySelectorAll('.program-item');
+            const activeItem = programAutocomplete.querySelector('.program-item.bg-blue-100');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (!activeItem) {
+                    items[0]?.classList.add('bg-blue-100', 'dark:bg-blue-900');
+                } else {
+                    activeItem.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+                    const next = activeItem.nextElementSibling;
+                    if (next) {
+                        next.classList.add('bg-blue-100', 'dark:bg-blue-900');
+                        next.scrollIntoView({ block: 'nearest' });
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (activeItem) {
+                    activeItem.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+                    const prev = activeItem.previousElementSibling;
+                    if (prev) {
+                        prev.classList.add('bg-blue-100', 'dark:bg-blue-900');
+                        prev.scrollIntoView({ block: 'nearest' });
+                    }
+                }
+            } else if (e.key === 'Enter' && activeItem) {
+                e.preventDefault();
+                activeItem.click();
+            } else if (e.key === 'Escape') {
+                programAutocomplete.classList.add('hidden');
+            }
+        });
+    }
 });
 </script>
 @endpush

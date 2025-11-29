@@ -83,6 +83,22 @@ class StudentController extends Controller
             }
         }
 
+        // Filter by program - only if user has permission
+        if ($request->has('program') && $request->program) {
+            if ($userRole === 'admin' || $userRole === 'security' || $userRole === 'osa') {
+                // Only super admin, security, and osa can filter by arbitrary programs
+                $query->whereHas('studentProfile', function($q) use ($request) {
+                    $q->where('program', $request->program);
+                });
+            } elseif ($userRole === 'department_head' || $userRole === 'program_head') {
+                // Dept heads and program heads can filter by programs in their department
+                $query->whereHas('studentProfile', function($q) use ($request, $userDepartment) {
+                    $q->where('program', $request->program)
+                      ->where('department', $userDepartment);
+                });
+            }
+        }
+
         // Filter by status
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);

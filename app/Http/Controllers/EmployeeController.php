@@ -248,7 +248,7 @@ class EmployeeController extends Controller
 
         // Fetch only employee roles (exclude student and admin roles)
         $roles = Role::whereNotIn('name', ['student', 'admin'])->orderBy('label')->get();
-        $employee->load('profile');
+        $employee->load(['profile', 'dependents']);
         return view('employees.edit', compact('employee', 'roles'));
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome - FEATI Pulse</title>
+    <title>Welcome - FEATI PRISM</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700" rel="stylesheet" />
@@ -18,11 +18,11 @@
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-yellow-50 overflow-hidden">
     <div class="text-center px-6 py-12 max-w-4xl fade-in-scale">
-        <!-- FEATI Pulse Logo/Title -->
+        <!-- FEATI PRISM Logo/Title -->
         <div class="mb-8">
             <h1 class="text-7xl md:text-9xl font-bold mb-4">
                 <span class="text-blue-600">FEATI</span>
-                <span class="text-yellow-500">Pulse</span>
+                <span class="text-yellow-500">PRISM</span>
             </h1>
         </div>
 

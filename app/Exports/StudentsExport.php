@@ -16,20 +16,24 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithC
     {
         return User::whereHas('role', function($query) {
             $query->where('name', 'student');
-        })->with('role')->get();
+        })->with(['role', 'studentProfile'])->get();
     }
 
     public function headings(): array
     {
         return [
             'ID',
-            'Student ID',
+            'Student Number',
             'First Name',
             'Last Name',
+            'Middle Name',
             'Email',
             'Program',
+            'Course',
             'Year Level',
             'Department',
+            'Mobile',
+            'Sex',
             'Status',
             'Created At',
         ];
@@ -37,16 +41,22 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithC
 
     public function map($student): array
     {
+        $profile = $student->studentProfile;
+        
         return [
             $student->id,
-            $student->student_id ?? 'N/A',
-            $student->first_name,
-            $student->last_name,
+            $profile->student_number ?? 'N/A',
+            $profile->first_name ?? 'N/A',
+            $profile->last_name ?? 'N/A',
+            $profile->middle_name ?? '',
             $student->email,
-            $student->program ?? 'N/A',
-            $student->year_level ?? 'N/A',
-            $student->department ?? 'N/A',
-            $student->email_verified_at ? 'Active' : 'Inactive',
+            $profile->program ?? 'N/A',
+            $profile->course ?? 'N/A',
+            $profile->year_level ?? 'N/A',
+            $profile->department ?? 'N/A',
+            $profile->mobile ?? 'N/A',
+            $profile->sex ?? 'N/A',
+            $student->status ?? ($student->email_verified_at ? 'Active' : 'Inactive'),
             $student->created_at->format('Y-m-d H:i:s'),
         ];
     }
@@ -55,15 +65,19 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithC
     {
         return [
             'A' => 8,
-            'B' => 15,
-            'C' => 20,
-            'D' => 20,
-            'E' => 30,
+            'B' => 18,
+            'C' => 18,
+            'D' => 18,
+            'E' => 15,
             'F' => 30,
-            'G' => 12,
+            'G' => 30,
             'H' => 30,
             'I' => 12,
-            'J' => 20,
+            'J' => 30,
+            'K' => 15,
+            'L' => 10,
+            'M' => 12,
+            'N' => 20,
         ];
     }
 

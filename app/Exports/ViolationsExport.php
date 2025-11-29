@@ -14,7 +14,7 @@ class ViolationsExport implements FromCollection, WithHeadings, WithMapping, Wit
 {
     public function collection()
     {
-        return Violation::with(['student', 'reportedBy'])->get();
+        return Violation::with(['student.studentProfile', 'reporter.profile', 'reporter.studentProfile'])->get();
     }
 
     public function headings(): array
@@ -22,33 +22,56 @@ class ViolationsExport implements FromCollection, WithHeadings, WithMapping, Wit
         return [
             'ID',
             'Student Name',
-            'Student ID',
+            'Student Number',
+            'Department',
+            'Program',
+            'Offense Category',
             'Violation Type',
-            'Level',
-            'Severity',
+            'Sanction',
             'Description',
             'Reported By',
             'Violation Date',
             'Status',
-            'Resolution',
+            'Action Taken',
+            'Resolution Date',
             'Created At',
         ];
     }
 
     public function map($violation): array
     {
+        $studentProfile = $violation->student?->studentProfile;
+        $reporterProfile = $violation->reporter?->profile ?? $violation->reporter?->studentProfile;
+        
+        $studentName = 'N/A';
+        if ($studentProfile) {
+            $studentName = trim($studentProfile->first_name . ' ' . $studentProfile->last_name);
+        } elseif ($violation->student) {
+            $studentName = $violation->student->name;
+        }
+        
+        $reporterName = 'N/A';
+        if ($reporterProfile) {
+            $reporterName = trim($reporterProfile->first_name . ' ' . $reporterProfile->last_name);
+        } elseif ($violation->reporter) {
+            $reporterName = $violation->reporter->name;
+        }
+        
         return [
             $violation->id,
-            $violation->student ? $violation->student->first_name . ' ' . $violation->student->last_name : 'N/A',
-            $violation->student->student_id ?? 'N/A',
+            $studentName,
+            $studentProfile->student_number ?? 'N/A',
+            $studentProfile->department ?? 'N/A',
+            $studentProfile->program ?? 'N/A',
+            ucfirst($violation->offense_category ?? 'N/A'),
             $violation->violation_type ?? 'N/A',
-            $violation->level ?? 'N/A',
-            ucfirst($violation->severity ?? 'N/A'),
+            $violation->sanction ?? 'Pending',
             $violation->description ?? 'N/A',
-            $violation->reportedBy ? $violation->reportedBy->first_name . ' ' . $violation->reportedBy->last_name : 'N/A',
+            $reporterName,
             $violation->violation_date ? $violation->violation_date->format('Y-m-d') : 'N/A',
-            ucfirst($violation->status ?? 'N/A'),
-            $violation->resolution ?? 'N/A',
+            ucfirst(str_replace('_', ' ', $violation->status ?? 'N/A')),
+            $violation->action_taken ?? 'N/A',
+            $violation->resolution_date ? $violation->resolution_date->format('Y-m-d') : 'N/A',
             $violation->created_at->format('Y-m-d H:i:s'),
         ];
     }
@@ -58,16 +81,19 @@ class ViolationsExport implements FromCollection, WithHeadings, WithMapping, Wit
         return [
             'A' => 8,
             'B' => 25,
-            'C' => 15,
-            'D' => 25,
-            'E' => 12,
-            'F' => 12,
-            'G' => 40,
+            'C' => 18,
+            'D' => 30,
+            'E' => 30,
+            'F' => 15,
+            'G' => 25,
             'H' => 25,
-            'I' => 15,
-            'J' => 12,
-            'K' => 30,
-            'L' => 20,
+            'I' => 40,
+            'J' => 25,
+            'K' => 15,
+            'L' => 15,
+            'M' => 30,
+            'N' => 15,
+            'O' => 20,
         ];
     }
 

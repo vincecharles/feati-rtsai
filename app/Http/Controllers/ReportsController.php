@@ -774,12 +774,12 @@ class ReportsController extends Controller
      */
     private function getViolationsBySeverity()
     {
-        $violations = \App\Models\Violation::selectRaw('severity, COUNT(*) as count')
-            ->groupBy('severity')
+        $violations = \App\Models\Violation::selectRaw('sanction, COUNT(*) as count')
+            ->groupBy('sanction')
             ->get();
 
         return [
-            'labels' => $violations->pluck('severity')->map(function($s) { return ucfirst($s); })->toArray(),
+            'labels' => $violations->pluck('sanction')->toArray(),
             'data' => $violations->pluck('count')->toArray()
         ];
     }

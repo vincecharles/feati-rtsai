@@ -50,7 +50,7 @@ class ReportsController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
             'department' => 'nullable|string',
-            'format' => 'nullable|in:pdf,excel,csv',
+            'format' => 'nullable|in:pdf,csv',
         ]);
 
         try {
@@ -84,10 +84,8 @@ class ReportsController extends Controller
 
             if ($request->format === 'pdf') {
                 return $this->generatePDF('reports.student-enrollment', $data, 'student-enrollment-report.pdf');
-            } elseif ($request->format === 'excel') {
-                return $this->generateExcel($data, 'student-enrollment-report.xlsx');
             } elseif ($request->format === 'csv') {
-                return $this->generateCSV($data, 'student-enrollment-report.csv');
+                return $this->generateStudentCSV($students, 'student-enrollment-report.csv');
             }
 
             return view('reports.student-enrollment', $data);
@@ -109,7 +107,7 @@ class ReportsController extends Controller
             'end_date' => 'nullable|date|after:start_date',
             'severity' => 'nullable|in:minor,moderate,major,severe',
             'status' => 'nullable|in:pending,under_review,resolved,dismissed',
-            'format' => 'nullable|in:pdf,excel,csv',
+            'format' => 'nullable|in:pdf,csv',
         ]);
 
         try {
@@ -142,6 +140,12 @@ class ReportsController extends Controller
                 'filters' => $request->only(['start_date', 'end_date', 'severity', 'status']),
             ];
 
+            if ($request->format === 'pdf') {
+                return $this->generatePDF('reports.violations-report', $data, 'violations-report.pdf');
+            } elseif ($request->format === 'csv') {
+                return $this->generateViolationCSV($violations, 'violations-report.csv');
+            }
+
             if ($request->expectsJson()) {
                 return $this->successResponse('Violations report generated successfully', $data);
             }
@@ -172,7 +176,7 @@ class ReportsController extends Controller
             'end_date' => 'nullable|date|after:start_date',
             'department' => 'nullable|string',
             'status' => 'nullable|string',
-            'format' => 'nullable|in:pdf,excel,csv',
+            'format' => 'nullable|in:pdf,csv',
         ]);
 
         try {
@@ -216,10 +220,8 @@ class ReportsController extends Controller
 
             if ($request->format === 'pdf') {
                 return $this->generatePDF('reports.employee-report', $data, 'employee-report.pdf');
-            } elseif ($request->format === 'excel') {
-                return $this->generateExcel($data, 'employee-report.xlsx');
             } elseif ($request->format === 'csv') {
-                return $this->generateCSV($data, 'employee-report.csv');
+                return $this->generateEmployeeCSV($employees, 'employee-report.csv');
             }
 
             return view('reports.employee-report', $data);
@@ -735,38 +737,124 @@ class ReportsController extends Controller
      */
     private function generatePDF($view, $data, $filename)
     {
-        // This would typically use a PDF library like DomPDF or TCPDF
-        // For now, return a placeholder response
-        return response()->json([
-            'message' => 'PDF generation not implemented yet',
-            'filename' => $filename
-        ]);
+        // Pass data to a simplified print layout with just the table
+        $title = str_replace(['-report.pdf', '.pdf', '-'], [' Report', '', ' '], $filename);
+        $title = ucwords($title);
+        
+        return response()->view('reports.print-layout', [
+            'data' => $data,
+            'title' => $title,
+            'reportType' => $view
+        ])->header('Content-Type', 'text/html');
     }
 
     /**
-     * Generate Excel report
+     * Generate CSV report for students
      */
-    private function generateExcel($data, $filename)
+    private function generateStudentCSV($students, $filename)
     {
-        // This would typically use a library like Laravel Excel
-        // For now, return a placeholder response
-        return response()->json([
-            'message' => 'Excel generation not implemented yet',
-            'filename' => $filename
-        ]);
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($students) {
+            $file = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($file, ['Student ID', 'Name', 'Email', 'Program', 'Year Level', 'Mobile', 'Status', 'Enrolled Date']);
+            
+            // Add data
+            foreach ($students as $student) {
+                fputcsv($file, [
+                    $student->student_id ?? 'N/A',
+                    $student->name,
+                    $student->email,
+                    $student->program ?? 'N/A',
+                    $student->year_level ?? 'N/A',
+                    $student->mobile ?? 'N/A',
+                    $student->status ?? 'N/A',
+                    $student->created_at ? $student->created_at->format('Y-m-d') : 'N/A',
+                ]);
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
-     * Generate CSV report
+     * Generate CSV report for employees
      */
-    private function generateCSV($data, $filename)
+    private function generateEmployeeCSV($employees, $filename)
     {
-        // This would generate a CSV file
-        // For now, return a placeholder response
-        return response()->json([
-            'message' => 'CSV generation not implemented yet',
-            'filename' => $filename
-        ]);
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($employees) {
+            $file = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($file, ['Employee ID', 'Name', 'Email', 'Position', 'Department', 'Date Hired', 'Mobile', 'Status', 'Dependents']);
+            
+            // Add data
+            foreach ($employees as $employee) {
+                fputcsv($file, [
+                    $employee->profile->employee_id ?? 'N/A',
+                    $employee->name,
+                    $employee->email,
+                    $employee->profile->position ?? 'N/A',
+                    $employee->profile->department ?? 'N/A',
+                    $employee->profile && $employee->profile->date_hired ? $employee->profile->date_hired : 'N/A',
+                    $employee->mobile ?? 'N/A',
+                    $employee->status ?? 'N/A',
+                    $employee->dependents->count(),
+                ]);
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Generate CSV report for violations
+     */
+    private function generateViolationCSV($violations, $filename)
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($violations) {
+            $file = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($file, ['Date', 'Student Name', 'Student ID', 'Violation Type', 'Severity', 'Status', 'Reported By', 'Description']);
+            
+            // Add data
+            foreach ($violations as $violation) {
+                fputcsv($file, [
+                    $violation->violation_date ? Carbon::parse($violation->violation_date)->format('Y-m-d') : 'N/A',
+                    $violation->student->name ?? 'N/A',
+                    $violation->student->student_id ?? 'N/A',
+                    $violation->violation_type ?? 'N/A',
+                    $violation->severity ?? 'N/A',
+                    $violation->status ?? 'N/A',
+                    $violation->reporter->name ?? 'N/A',
+                    $violation->description ?? 'N/A',
+                ]);
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**

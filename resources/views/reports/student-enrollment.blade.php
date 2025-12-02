@@ -110,17 +110,6 @@
                                     <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                                 @endif
                             @endforeach
-                            <input type="hidden" name="format" value="excel">
-                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">
-                                <i class="fas fa-file-excel mr-2"></i>Export Excel
-                            </button>
-                        </form>
-                        <form method="GET" action="{{ route('reports.students') }}" class="inline">
-                            @foreach($filters as $key => $value)
-                                @if($value)
-                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endif
-                            @endforeach
                             <input type="hidden" name="format" value="csv">
                             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
                                 <i class="fas fa-file-csv mr-2"></i>Export CSV

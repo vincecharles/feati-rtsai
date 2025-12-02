@@ -60,11 +60,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/import-export', [ImportExportController::class, 'index'])->name('import-export.index');
     Route::post('/import/students', [ImportExportController::class, 'importStudents'])->name('import.students');
     Route::post('/import/users', [ImportExportController::class, 'importUsers'])->name('import.users');
-    Route::get('/export/students', [ImportExportController::class, 'exportStudents'])->name('export.students');
-    Route::get('/export/users', [ImportExportController::class, 'exportUsers'])->name('export.users');
     Route::get('/export/students/csv', [ImportExportController::class, 'exportStudentsCSV'])->name('export.students.csv');
     Route::get('/export/users/csv', [ImportExportController::class, 'exportUsersCSV'])->name('export.users.csv');
-    Route::get('/export/violations', [ImportExportController::class, 'exportViolations'])->name('export.violations');
     Route::get('/export/violations/csv', [ImportExportController::class, 'exportViolationsCSV'])->name('export.violations.csv');
     Route::get('/import/template/{type}', [ImportExportController::class, 'downloadTemplate'])->name('import.template');
 

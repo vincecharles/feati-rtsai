@@ -78,26 +78,6 @@ class ImportExportController extends Controller
         }
     }
 
-    // Export Students to Excel
-    public function exportStudents()
-    {
-        if (Auth::user()->role->name !== 'admin') {
-            abort(403, 'Only administrators can export students.');
-        }
-
-        return Excel::download(new StudentsExport(), 'students_' . date('Y-m-d_His') . '.xlsx');
-    }
-
-    // Export All Users to Excel
-    public function exportUsers()
-    {
-        if (Auth::user()->role->name !== 'admin') {
-            abort(403, 'Only administrators can export users.');
-        }
-
-        return Excel::download(new UsersExport(), 'users_' . date('Y-m-d_His') . '.xlsx');
-    }
-
     // Export Students to CSV
     public function exportStudentsCSV()
     {
@@ -116,16 +96,6 @@ class ImportExportController extends Controller
         }
 
         return Excel::download(new UsersExport(), 'users_' . date('Y-m-d_His') . '.csv');
-    }
-
-    // Export Violations to Excel
-    public function exportViolations()
-    {
-        if (!in_array(Auth::user()->role->name, ['admin', 'osa'])) {
-            abort(403, 'Only administrators and OSA can export violations.');
-        }
-
-        return Excel::download(new ViolationsExport(), 'violations_' . date('Y-m-d_His') . '.xlsx');
     }
 
     // Export Violations to CSV

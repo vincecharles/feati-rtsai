@@ -145,12 +145,9 @@
                         <!-- Export Students -->
                         <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                             <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Students</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Export all student records to Excel or CSV format.</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Export all student records to CSV format.</p>
                             <div class="space-y-2">
-                                <a href="{{ route('export.students') }}" class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
-                                    📊 Export to Excel
-                                </a>
-                                <a href="{{ route('export.students.csv') }}" class="block w-full px-4 py-2 bg-gray-600 text-white text-center rounded-lg hover:bg-gray-700 transition-colors">
+                                <a href="{{ route('export.students.csv') }}" class="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                                     📄 Export to CSV
                                 </a>
                             </div>
@@ -161,10 +158,7 @@
                             <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">All Users</h4>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Export all users including employees and students.</p>
                             <div class="space-y-2">
-                                <a href="{{ route('export.users') }}" class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
-                                    📊 Export to Excel
-                                </a>
-                                <a href="{{ route('export.users.csv') }}" class="block w-full px-4 py-2 bg-gray-600 text-white text-center rounded-lg hover:bg-gray-700 transition-colors">
+                                <a href="{{ route('export.users.csv') }}" class="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                                     📄 Export to CSV
                                 </a>
                             </div>
@@ -175,19 +169,16 @@
                             <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Violations</h4>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Export all violation records for analysis and reporting.</p>
                             <div class="space-y-2">
-                                <a href="{{ route('export.violations') }}" class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 transition-colors">
-                                    📊 Export to Excel
-                                </a>
-                                <a href="{{ route('export.violations.csv') }}" class="block w-full px-4 py-2 bg-gray-600 text-white text-center rounded-lg hover:bg-gray-700 transition-colors">
+                                <a href="{{ route('export.violations.csv') }}" class="block w-full px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 transition-colors">
                                     📄 Export to CSV
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                        <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                            <strong>⚠️ Note:</strong> Excel files (.xlsx) preserve formatting and are recommended for viewing. CSV files are better for importing into other systems.
+                    <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p class="text-sm text-blue-800 dark:text-blue-200">
+                            <strong>💡 Note:</strong> CSV files can be opened in Excel, Google Sheets, or any spreadsheet application.
                         </p>
                     </div>
                 </div>

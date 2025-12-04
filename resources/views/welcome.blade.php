@@ -49,9 +49,6 @@
                             Login
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" 
-                               class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium">
-                                Register
                             </a>
                         @endif
                     @endauth

@@ -41,11 +41,9 @@ RUN mkdir -p storage/logs storage/framework/cache/data storage/framework/session
     && touch storage/logs/laravel.log \
     && chmod 777 storage/logs/laravel.log
 
-# Create a simple test script
-RUN echo '<?php echo "PHP is working! " . PHP_VERSION; ?>' > /app/public/test.php
-
 # Expose port
 EXPOSE 8080
 
-# Start the application - simple and direct
-CMD php artisan migrate --force 2>/dev/null || true; php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Use PHP's built-in server with Laravel's server.php router
+CMD php artisan migrate --force 2>/dev/null || true; \
+    php -S 0.0.0.0:${PORT:-8080} server.php

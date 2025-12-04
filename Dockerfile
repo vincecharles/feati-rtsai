@@ -44,11 +44,38 @@ RUN mkdir -p storage/logs storage/framework/cache/data storage/framework/session
 # Expose port
 EXPOSE 8080
 
-# Create startup script that handles migrations and server
-RUN echo '#!/bin/bash\n\
-php artisan migrate --force 2>/dev/null || true\n\
-echo "Starting PHP server on port 8080..."\n\
-exec php -S 0.0.0.0:8080 -t public public/index.php\n\
-' > /app/start.sh && chmod +x /app/start.sh
+# Create a proper router script for PHP built-in server
+RUN echo '<?php\n\
+$uri = urldecode(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));\n\
+$path = __DIR__ . $uri;\n\
+if ($uri !== "/" && file_exists($path)) {\n\
+    if (is_file($path)) {\n\
+        $ext = pathinfo($path, PATHINFO_EXTENSION);\n\
+        $mimeTypes = [\n\
+            "css" => "text/css",\n\
+            "js" => "application/javascript",\n\
+            "json" => "application/json",\n\
+            "png" => "image/png",\n\
+            "jpg" => "image/jpeg",\n\
+            "jpeg" => "image/jpeg",\n\
+            "gif" => "image/gif",\n\
+            "svg" => "image/svg+xml",\n\
+            "ico" => "image/x-icon",\n\
+            "woff" => "font/woff",\n\
+            "woff2" => "font/woff2",\n\
+            "ttf" => "font/ttf",\n\
+            "eot" => "application/vnd.ms-fontobject",\n\
+        ];\n\
+        if (isset($mimeTypes[$ext])) {\n\
+            header("Content-Type: " . $mimeTypes[$ext]);\n\
+        }\n\
+        readfile($path);\n\
+        return true;\n\
+    }\n\
+    return false;\n\
+}\n\
+require_once __DIR__ . "/index.php";\n\
+' > /app/public/router.php
 
-CMD ["/bin/bash", "/app/start.sh"]
+CMD php artisan migrate --force 2>/dev/null || true; \
+    php -S 0.0.0.0:8080 -t public public/router.php

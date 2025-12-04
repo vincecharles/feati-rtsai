@@ -9,23 +9,36 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('violations', function (Blueprint $table) {
-            $table->dropColumn(['level', 'severity']);
-            $table->enum('sanction', [
-                'Disciplinary Citation (E)',
-                'Suspension (D)',
-                'Preventive Suspension (C)',
-                'Exclusion (B)',
-                'Expulsion (A)'
-            ])->after('violation_type');
+            // Only drop columns if they exist
+            if (Schema::hasColumn('violations', 'level')) {
+                $table->dropColumn('level');
+            }
+            if (Schema::hasColumn('violations', 'severity')) {
+                $table->dropColumn('severity');
+            }
         });
 
-        Schema::create('violation_notes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('violation_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->text('note');
-            $table->timestamps();
+        Schema::table('violations', function (Blueprint $table) {
+            if (!Schema::hasColumn('violations', 'sanction')) {
+                $table->enum('sanction', [
+                    'Disciplinary Citation (E)',
+                    'Suspension (D)',
+                    'Preventive Suspension (C)',
+                    'Exclusion (B)',
+                    'Expulsion (A)'
+                ])->after('violation_type')->nullable();
+            }
         });
+
+        if (!Schema::hasTable('violation_notes')) {
+            Schema::create('violation_notes', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('violation_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->text('note');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

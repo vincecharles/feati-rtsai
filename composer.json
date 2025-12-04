@@ -12,7 +12,6 @@
         "laravel/scout": "^10.21",
         "laravel/tinker": "^2.10.1",
         "lwwcas/laravel-countries": "^4.12",
-        "maatwebsite/excel": "3.1.67",
         "phpmailer/phpmailer": "^7.0",
         "psr/simple-cache": "2.0"
     },

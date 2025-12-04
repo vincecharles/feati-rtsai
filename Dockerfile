@@ -44,6 +44,11 @@ RUN mkdir -p storage/logs storage/framework/cache/data storage/framework/session
 # Expose port
 EXPOSE 8080
 
-# Use PHP's built-in server with Laravel's server.php router
-CMD php artisan migrate --force 2>/dev/null || true; \
-    php -S 0.0.0.0:${PORT:-8080} server.php
+# Create startup script that handles migrations and server
+RUN echo '#!/bin/bash\n\
+php artisan migrate --force 2>/dev/null || true\n\
+echo "Starting PHP server on port 8080..."\n\
+exec php -S 0.0.0.0:8080 -t public public/index.php\n\
+' > /app/start.sh && chmod +x /app/start.sh
+
+CMD ["/bin/bash", "/app/start.sh"]

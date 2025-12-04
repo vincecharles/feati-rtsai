@@ -27,3 +27,6 @@ Thumbs.db
 /database/EER Diagram.mwb
 /database/feati_rtsai_schema.sql
 /database/FEATI_RTSAI_EER.pdf
+
+# Local Netlify folder
+.netlify

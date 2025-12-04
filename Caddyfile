@@ -1,0 +1,20 @@
+{
+    auto_https off
+    admin off
+    
+    frankenphp {
+        worker ./public/index.php
+    }
+}
+
+:8080 {
+    root * ./public
+    
+    encode zstd br gzip
+    
+    # Handle PHP files
+    php_server
+    
+    # Serve static files
+    file_server
+}

@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (Railway uses proxies)
+        $middleware->trustProxies(at: '*');
+        
         $middleware->alias([
             'check.role' => \App\Http\Middleware\CheckRole::class,
             'check.permission' => \App\Http\Middleware\CheckPermission::class,

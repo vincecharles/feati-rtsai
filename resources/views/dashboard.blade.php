@@ -6,6 +6,7 @@
 @php
     use App\Models\Violation;
     use App\Models\ViolationType;
+    use App\Models\StudentProfile;
     use Illuminate\Support\Facades\Auth;
     
 
@@ -18,16 +19,16 @@
     
     if ($userRole === 'department_head' || $userRole === 'program_head') {
 
-        $programs = \App\Models\User::where('program', $userDept)->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
-        $yearLevels = \App\Models\User::where('program', $userDept)->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+        $programs = StudentProfile::where('program', $userDept)->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = StudentProfile::where('program', $userDept)->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
     } elseif ($userRole === 'security') {
   
-        $programs = \App\Models\User::whereHas('violations')->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
-        $yearLevels = \App\Models\User::whereHas('violations')->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+        $programs = StudentProfile::whereHas('user.violations')->whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = StudentProfile::whereHas('user.violations')->whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
     } else {
  
-        $programs = \App\Models\User::whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
-        $yearLevels = \App\Models\User::whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
+        $programs = StudentProfile::whereNotNull('program')->groupBy('program')->selectRaw('program, count(*) as count')->get();
+        $yearLevels = StudentProfile::whereNotNull('year_level')->groupBy('year_level')->selectRaw('year_level, count(*) as count')->orderBy('year_level')->get();
     }
     
     $violationStats = [

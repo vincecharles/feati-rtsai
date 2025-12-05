@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\StudentProfile;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -35,16 +36,27 @@ class StudentSeeder extends Seeder
                 $lastName = fake()->lastName();
                 $studentNumber = ($programIndex * $studentsPerProgram) + $i + 1;
                 
-                User::create([
+                $user = User::create([
                     'name' => $firstName . ' ' . $lastName,
                     'email' => fake()->unique()->safeEmail(),
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
                     'role_id' => $studentRole->id,
                     'status' => 'active',
-                    'student_id' => date('Y') . '-' . str_pad($studentNumber, 4, '0', STR_PAD_LEFT),
+                ]);
+
+                StudentProfile::create([
+                    'user_id' => $user->id,
+                    'student_number' => date('Y') . '-' . str_pad($studentNumber, 4, '0', STR_PAD_LEFT),
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
                     'program' => $program,
                     'year_level' => fake()->randomElement($yearLevels),
+                    'sex' => fake()->randomElement(['Male', 'Female']),
+                    'date_of_birth' => fake()->date('Y-m-d', '-20 years'),
+                    'mobile' => fake()->numerify('09#########'),
+                    'current_address' => fake()->address(),
+                    'enrollment_date' => fake()->dateTimeBetween('-4 years', 'now')->format('Y-m-d'),
                 ]);
             }
         }

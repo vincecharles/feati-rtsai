@@ -1,6 +1,5 @@
-<!-- wag na ito galawin pls -->
-
 <?php
+// wag na ito galawin pls
 
 namespace Database\Seeders;
 
